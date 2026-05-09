@@ -6,6 +6,7 @@ import matplotlib.ticker as ticker
 import os
 from pathlib import Path
 
+OPTIMISATION_FLAG = "-O3"
 DIR = Path(__file__).stem
 
 # ../matrix_multiply.out <L> <M> <N> <SEED>
@@ -13,7 +14,7 @@ PROGRAM_RUN = "../matrix_multiply.out {} {} {} {}"
 SEED = 1234
 MIN_DIM = 64
 MAX_DIM = 1024
-STEP = 16
+STEP = 64
 REPEAT_COUNT = 1
 
 def run_test(L: int, M: int, N: int) -> list[float]:
@@ -34,9 +35,10 @@ def run_test(L: int, M: int, N: int) -> list[float]:
     stats_vars = [float(x.split(" ")[-1]) for x in stats_strings]
     return stats_vars
 
+
 if __name__ == "__main__":
     os.system("make -C ../ clean")
-    os.system("make -C ../")
+    os.system(f"make -C ../ OPT={OPTIMISATION_FLAG}")
 
     data = []
     for i in range(MIN_DIM, MAX_DIM + 1, STEP):

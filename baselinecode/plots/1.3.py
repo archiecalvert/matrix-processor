@@ -6,6 +6,7 @@ import matplotlib.ticker as ticker
 import os
 from pathlib import Path
 
+OPTIMISATION_FLAG = "-O3"
 DIR = Path(__file__).stem
 
 # ../matrix_multiply.out <L> <M> <N> <SEED>
@@ -13,8 +14,8 @@ PROGRAM_RUN = "../matrix_multiply.out {} {} {} {}"
 SEED = 1234
 MIN_DIM = 64
 MAX_DIM = 1024
-STEP = 16
-REPEAT_COUNT = 1
+STEP = 64
+REPEAT_COUNT = 5
 
 def run_test(L: int, M: int, N: int) -> list[float]:
     """
@@ -34,9 +35,10 @@ def run_test(L: int, M: int, N: int) -> list[float]:
     stats_vars = [float(x.split(" ")[-1]) for x in stats_strings]
     return stats_vars
 
-if __name__ == "__main__":
+
+def run_full_experiment(flags: str):
     os.system("make -C ../ clean")
-    os.system("make -C ../")
+    os.system(f"make -C ../ OPT={flags}")
 
     data = []
     for i in range(MIN_DIM, MAX_DIM + 1, STEP):
@@ -52,7 +54,7 @@ if __name__ == "__main__":
         flops = float(L * N * (2 * M - 1)) / time if time != 0 else 0
         data.append([flops, L])
 
-    with open(f"data/{DIR}.csv", "w") as f:
+    with open(f"data/{DIR}/{flags}.csv", "w") as f:
         for line in data:
             f.write(f"{line[0]},{line[1]}\n")
 
@@ -65,5 +67,12 @@ if __name__ == "__main__":
     axis.set_ylabel("FLOPS")
     axis.grid(True, alpha=0.6)
     axis.plot(x, y, marker='o', linewidth=2, markersize=5)
-    plt.savefig(fname = f"graphs/{DIR}.png", dpi=200)
+    plt.savefig(fname = f"graphs/{DIR}/{flags}.png", dpi=200)
+
+
+if __name__ == "__main__":
+    run_full_experiment("-O")
+    run_full_experiment("-O1")
+    run_full_experiment("-O2")
+    run_full_experiment("-O3")
 
