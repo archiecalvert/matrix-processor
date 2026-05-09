@@ -8,6 +8,7 @@ from pathlib import Path
 
 OPTIMISATION_FLAG = "-O3"
 DIR = Path(__file__).stem
+MODE = 3
 
 # ../matrix_multiply.out <L> <M> <N> <SEED> <MODE> <ADDITIONAL ARGS>
 PROGRAM_RUN = "../matrix_multiply.out {} {} {} {} {} {}"
@@ -16,9 +17,9 @@ MIN_DIM = 64
 MAX_DIM = 1024
 STEP = 64
 REPEAT_COUNT = 1
-UNROLL_MAX = 8
+THREAD_MAX = 16
 
-def run_test(L: int, M: int, N: int, unroll: int) -> list[float]:
+def run_test(L: int, M: int, N: int, threads: int) -> list[float]:
     """
     Runs the experiment for the given matrix inputs.
 
@@ -26,7 +27,7 @@ def run_test(L: int, M: int, N: int, unroll: int) -> list[float]:
         list[float]: the resulting data of [L, M, N, TIME]
     """
     # run program and get output
-    std_args = subprocess.run(PROGRAM_RUN.format(max(L, 1), max(M, 1), max(N, 1), SEED, 2, unroll), shell=True, capture_output=True, text=True)
+    std_args = subprocess.run(PROGRAM_RUN.format(max(L, 1), max(M, 1), max(N, 1), SEED, MODE, max(1, threads)), shell=True, capture_output=True, text=True)
     raw_result = std_args.stdout
 
     # break each statistic into array
@@ -44,25 +45,24 @@ if __name__ == "__main__":
     data = []
     for i in range(MIN_DIM, MAX_DIM + 1, STEP):
         print(f"Running Experiment on M={i}")
-        for unroll in range(0, int(math.log2(UNROLL_MAX)) + 1):
+        for thread_count in range(0, THREAD_MAX + 1, 2):
             L = M = N = u = 0
             time_total = 0.0
             for j in range(REPEAT_COUNT):
-                res = run_test(i, i, i, 2**unroll)
-                L, M, N, time, u = int(res[0]), int(res[1]), int(res[2]), res[3], int(res[4])
+                res = run_test(i, i, i, thread_count)
+                L, M, N, time, T = int(res[0]), int(res[1]), int(res[2]), res[3], int(res[4])
                 time_total += time
-                print(unroll)
 
             time = time_total / float(REPEAT_COUNT)
 
             flops = (float(L * N * (2 * M - 1)) / time) if time != 0 else 0
-            data.append([flops, L, u])
+            data.append([flops, L, T])
 
     with open(f"data/{DIR}.csv", "w") as f:
         for line in data:
             f.write(f"{line[0]},{line[1]}\n")
 
-    df = pd.DataFrame(data, columns=["FLOPS", "Dimension", "Unroll"])
+    df = pd.DataFrame(data, columns=["FLOPS", "Dimension", "Threads"])
 
     figure, axis = plt.subplots(figsize=(10, 6))
 
@@ -71,8 +71,8 @@ if __name__ == "__main__":
     axis.grid(True, alpha=0.6)
 
     # Create a separate plot for each unroll factor
-    for unroll in sorted(df["Unroll"].unique()):
-        subset = df[df["Unroll"] == unroll]
+    for thread_count in sorted(df["Threads"].unique()):
+        subset = df[df["Threads"] == thread_count]
 
         axis.plot(
             subset["Dimension"],
@@ -80,7 +80,7 @@ if __name__ == "__main__":
             marker='o',
             linewidth=2,
             markersize=5,
-            label=f"Unroll {unroll}"
+            label=f"{thread_count} Thread(s)"
         )
 
     axis.legend()

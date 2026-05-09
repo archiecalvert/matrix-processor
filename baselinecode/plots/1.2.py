@@ -9,7 +9,7 @@ from pathlib import Path
 DIR = Path(__file__).stem
 
 # ../matrix_multiply.out <L> <M> <N> <SEED>
-PROGRAM_RUN = "../matrix_multiply.out {} {} {} {}"
+PROGRAM_RUN = "../matrix_multiply.out {} {} {} {} {}"
 SEED = 1234
 MIN_DIM = 64
 MAX_DIM = 1024
@@ -24,7 +24,7 @@ def run_test(L: int, M: int, N: int) -> list[float]:
         list[float]: the resulting data of [L, M, N, TIME]
     """
     # run program and get output
-    std_args = subprocess.run(PROGRAM_RUN.format(max(L, 1), max(M, 1), max(N, 1), SEED), shell=True, capture_output=True, text=True)
+    std_args = subprocess.run(PROGRAM_RUN.format(max(L, 1), max(M, 1), max(N, 1), SEED, 1), shell=True, capture_output=True, text=True)
     raw_result = std_args.stdout
 
     # break each statistic into array

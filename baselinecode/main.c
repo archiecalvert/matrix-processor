@@ -57,23 +57,26 @@ void matrix_multiply(double **A, double **B, double **C, int L, int M, int N) {
  * size of B is MxN
  * C should be allocated of size LxN
  */
-void unrolled_matrix_multiply(double **A, double **B, double **C, int L, int M, int N) {
+void unrolled_matrix_multiply(double **A, double **B, double **C, int L, int M, int N, int _unroll) {
     /* iterate over the rows of A */
     for(int i=0; i<L; i++) {
         /* Iterate over the columns of B */
-        for(int j=0; j<N; j+=UNROLL) {
-            double C_temp[UNROLL];
-	    for (int u=0; u<UNROLL; u++){
-                C_temp[u] = C[i][j+u];
-	    }
-	    for (int u=0; u<UNROLL; u++){
-	    /* Iterate over the rows of B */
-            	for(int k=0; k<M; k++){
-                    C_temp[u] += A[i][k] * B[k][j+u];
-	    	}
+        for(int j=0; j<N; j+=_unroll) {
+            double C_temp[_unroll];
+
+            for (int u=0; u<_unroll; u++){
+                    C_temp[u] = C[i][j+u];
             }
-	    for (int u=0; u<UNROLL; u++){
-	        C[i][j+u] = C_temp[u];
+
+            for (int u=0; u<_unroll; u++){
+                /* Iterate over the rows of B */
+                for(int k=0; k<M; k++){
+                    C_temp[u] += A[i][k] * B[k][j+u];
+                }
+            }
+
+            for (int u=0; u<_unroll; u++){
+                C[i][j+u] = C_temp[u];
             }
         }
     }
@@ -179,11 +182,12 @@ int main(int argc, char **argv) {
     // ######################################################
     // Read and check program arguments  
     // ######################################################
-    int L, M, N, seed;
+    int L, M, N, seed, ADDIT_ARG;
+    int mode;
     double **A, **B, **C;
     struct timeval start, stop, total;
 
-    if(argc != 5) {
+    if(argc > 7) {
         printf("ERROR: incorrect number of arguments\n");
         print_help_and_exit(argv);
     }
@@ -192,6 +196,8 @@ int main(int argc, char **argv) {
     M = atoi(argv[2]);
     N = atoi(argv[3]);
     seed = atoi(argv[4]);
+    mode = atoi(argv[5]);
+    ADDIT_ARG = atoi(argv[6]);
     srand(seed);
 
     if( !L || !M || !N ) {
@@ -200,7 +206,10 @@ int main(int argc, char **argv) {
     }
     
     // Set number of threads when using omp pragma
-    omp_set_num_threads(OMP_THREADS);
+    if (mode == 3)
+        omp_set_num_threads(ADDIT_ARG);
+    else
+        omp_set_num_threads(OMP_THREADS);
 
     // ######################################################
     // Initialise datastructures
@@ -276,11 +285,16 @@ int main(int argc, char **argv) {
     gettimeofday(&start, NULL);
 
     // Call one of the matrix multiply functions below:
-    matrix_multiply(A, B, C, L, M, N);
-    // unrolled_matrix_multiply(A, B, C, L, M, N);
-    // multicore_matrix_multiply(A, B, C, L, M, N);
-    // blocked_matrix_multiply(A, B, C, L, M, N);
-    // subword_parallelism_matrix_multiply(A, B, C, L, M, N);
+    if (mode == 1 || mode == 0)
+        matrix_multiply(A, B, C, L, M, N);
+    else if (mode == 2)
+        unrolled_matrix_multiply(A, B, C, L, M, N, ADDIT_ARG);
+    else if (mode == 3)
+        multicore_matrix_multiply(A, B, C, L, M, N);
+    else if (mode == 4)
+        blocked_matrix_multiply(A, B, C, L, M, N);
+    else if (mode == 5)
+        subword_parallelism_matrix_multiply(A, B, C, L, M, N);
 
     gettimeofday(&stop, NULL);
     timersub(&stop, &start, &total);
@@ -307,7 +321,12 @@ int main(int argc, char **argv) {
     }
  
     // Print timing results
-    printf("L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld\n", L, M, N, total.tv_sec, total.tv_usec);
+    if (mode == 2)
+        printf("L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld, UNROLL: %u\n", L, M, N, total.tv_sec, total.tv_usec, ADDIT_ARG);
+    else if (mode == 3)
+        printf("L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld, THREADS: %u\n", L, M, N, total.tv_sec, total.tv_usec, ADDIT_ARG);
+    else
+        printf("L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld\n", L, M, N, total.tv_sec, total.tv_usec);
     
     // Free datastructures
     free_matrices(A, B, C, L, M, N);

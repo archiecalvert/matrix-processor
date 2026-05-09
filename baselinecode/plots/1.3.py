@@ -8,9 +8,10 @@ from pathlib import Path
 
 OPTIMISATION_FLAG = "-O3"
 DIR = Path(__file__).stem
+SKIP_EXPERIMENT = True
 
 # ../matrix_multiply.out <L> <M> <N> <SEED>
-PROGRAM_RUN = "../matrix_multiply.out {} {} {} {}"
+PROGRAM_RUN = "../matrix_multiply.out {} {} {} {} {}"
 SEED = 1234
 MIN_DIM = 64
 MAX_DIM = 1024
@@ -25,7 +26,7 @@ def run_test(L: int, M: int, N: int) -> list[float]:
         list[float]: the resulting data of [L, M, N, TIME]
     """
     # run program and get output
-    std_args = subprocess.run(PROGRAM_RUN.format(max(L, 1), max(M, 1), max(N, 1), SEED), shell=True, capture_output=True, text=True)
+    std_args = subprocess.run(PROGRAM_RUN.format(max(L, 1), max(M, 1), max(N, 1), SEED, 1), shell=True, capture_output=True, text=True)
     raw_result = std_args.stdout
 
     # break each statistic into array
@@ -39,8 +40,8 @@ def run_test(L: int, M: int, N: int) -> list[float]:
 def run_full_experiment(flags: str):
     os.system("make -C ../ clean")
     os.system(f"make -C ../ OPT={flags}")
-
     data = []
+
     for i in range(MIN_DIM, MAX_DIM + 1, STEP):
         print(f"Running Experiment on M={i}")
         time_total = 0.0
@@ -71,8 +72,46 @@ def run_full_experiment(flags: str):
 
 
 if __name__ == "__main__":
-    run_full_experiment("-O")
-    run_full_experiment("-O1")
-    run_full_experiment("-O2")
-    run_full_experiment("-O3")
+    if not SKIP_EXPERIMENT:
+        run_full_experiment("-O")
+        run_full_experiment("-O1")
+        run_full_experiment("-O2")
+        run_full_experiment("-O3")
+
+    figure, axis = plt.subplots()
+    axis.set_xlabel("Matrix Dimension N")
+    axis.set_ylabel("FLOPS")
+
+    axis.grid(True, alpha=0.6)
+
+    data = []
+    with open(f"data/1.2.csv") as f:
+        for line in f:
+            a1 = float(line.split(",")[0])
+            a2 = int(line.split(",")[1])
+            data.append([a1, a2])
+
+    df = pd.DataFrame(data, columns=["FLOPS", "Dimension"])
+    x = df["Dimension"]
+    y = df["FLOPS"]
+    axis.plot(x, y, marker='o', linewidth=2, markersize=5, label="No Optimisation")
+
+    for i in ["-O", "-O1", "-O2", "-O3"]:
+        data = []
+        with open(f"data/{DIR}/{i}.csv") as f:
+            for line in f:
+                a1 = float(line.split(",")[0])
+                a2 = int(line.split(",")[1])
+                data.append([a1, a2])
+
+        df = pd.DataFrame(data, columns=["FLOPS", "Dimension"])
+        x = df["Dimension"]
+        y = df["FLOPS"]
+        axis.plot(x, y, marker='o', linewidth=2, markersize=5, label=i)
+
+    axis.legend()
+    plt.savefig(fname = f"graphs/{DIR}/FINAL.png", dpi=200)
+        
+            
+
 
