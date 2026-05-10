@@ -1,3 +1,5 @@
+# LOOP UNROLLING
+
 import subprocess
 import math
 import matplotlib.pyplot as plt
@@ -13,9 +15,9 @@ DIR = Path(__file__).stem
 PROGRAM_RUN = "../matrix_multiply.out {} {} {} {} {} {}"
 SEED = 1234
 MIN_DIM = 64
-MAX_DIM = 1024
-STEP = 64
-REPEAT_COUNT = 1
+MAX_DIM = 2048
+STEP = 128
+REPEAT_COUNT = 3
 UNROLL_MAX = 8
 
 def run_test(L: int, M: int, N: int, unroll: int) -> list[float]:
@@ -60,7 +62,7 @@ if __name__ == "__main__":
 
     with open(f"data/{DIR}.csv", "w") as f:
         for line in data:
-            f.write(f"{line[0]},{line[1]}\n")
+            f.write(f"{line[0]},{line[1]},{line[2]}\n")
 
     df = pd.DataFrame(data, columns=["FLOPS", "Dimension", "Unroll"])
 
@@ -70,7 +72,6 @@ if __name__ == "__main__":
     axis.set_ylabel("FLOPS")
     axis.grid(True, alpha=0.6)
 
-    # Create a separate plot for each unroll factor
     for unroll in sorted(df["Unroll"].unique()):
         subset = df[df["Unroll"] == unroll]
 

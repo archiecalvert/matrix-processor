@@ -1,5 +1,5 @@
 OPT=
-CFLAGS=-fopenmp -mavx
+CFLAGS=-fopenmp -mavx -g
 
 all: matrix_multiply.out
 

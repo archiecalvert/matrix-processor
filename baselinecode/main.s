@@ -3,1640 +3,1618 @@
 #	compiled by GNU C version 13.3.0, GMP version 6.3.0, MPFR version 4.2.1, MPC version 1.3.1, isl version isl-0.26-GMP
 
 # GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
-# options passed: -mavx -mtune=generic -march=x86-64 -O3 -fopenmp -fasynchronous-unwind-tables -fstack-protector-strong -fstack-clash-protection -fcf-protection
+# options passed: -mavx -mtune=generic -march=x86-64 -g -fopenmp -fasynchronous-unwind-tables -fstack-protector-strong -fstack-clash-protection -fcf-protection
 	.text
-	.p2align 4
-	.type	multicore_matrix_multiply._omp_fn.0, @function
-multicore_matrix_multiply._omp_fn.0:
-.LFB6653:
-	.cfi_startproc
-	endbr64	
-	pushq	%r13	#
-	.cfi_def_cfa_offset 16
-	.cfi_offset 13, -16
-	pushq	%r12	#
-	.cfi_def_cfa_offset 24
-	.cfi_offset 12, -24
-	pushq	%rbp	#
-	.cfi_def_cfa_offset 32
-	.cfi_offset 6, -32
-	movq	%rdi, %rbp	# tmp124, .omp_data_i
-	pushq	%rbx	#
-	.cfi_def_cfa_offset 40
-	.cfi_offset 3, -40
-	subq	$8, %rsp	#,
-	.cfi_def_cfa_offset 48
-	call	omp_get_num_threads@PLT	#
-	movl	%eax, %ebx	# tmp125, _18
-	call	omp_get_thread_num@PLT	#
-	movl	%eax, %r11d	# tmp126, _19
-	movl	24(%rbp), %eax	# *.omp_data_i_11(D).L, *.omp_data_i_11(D).L
-	cltd
-	idivl	%ebx	# _18
-	cmpl	%edx, %r11d	# tt.7_2, _19
-	jl	.L2	#,
-.L9:
-	imull	%eax, %r11d	# q.6_1, tmp118
-	addl	%edx, %r11d	# tt.7_2, _24
-	leal	(%rax,%r11), %ebx	#, _25
-	cmpl	%ebx, %r11d	# _25, _24
-	jge	.L14	#,
-# main.c:91:     #pragma omp parallel for
-	movslq	32(%rbp), %rdx	# *.omp_data_i_11(D).N,
-	movslq	28(%rbp), %rax	# *.omp_data_i_11(D).M,
-	testl	%edx, %edx	# N
-	jle	.L14	#,
-	testl	%eax, %eax	# M
-	jle	.L14	#,
-	movq	16(%rbp), %r12	# *.omp_data_i_11(D).C, C
-	movq	8(%rbp), %r9	# *.omp_data_i_11(D).B, B
-	movslq	%r11d, %r11	# _24, ivtmp.49
-	leaq	0(,%rdx,8), %r10	#, _80
-	movq	0(%rbp), %rbp	# *.omp_data_i_11(D).A, A
-	leaq	0(,%rax,8), %r8	#, _84
-	.p2align 4,,10
-	.p2align 3
-.L6:
-# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
-	movq	(%r12,%r11,8), %r13	# MEM[(double * *)C_15 + ivtmp.49_79 * 8], _31
-# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
-	movq	0(%rbp,%r11,8), %rdi	# MEM[(double * *)A_17 + ivtmp.49_79 * 8], _37
-	xorl	%ecx, %ecx	# ivtmp.46
-	.p2align 4,,10
-	.p2align 3
-.L7:
-# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
-	leaq	0(%r13,%rcx), %rsi	#, _34
-	xorl	%eax, %eax	# ivtmp.41
-	vmovsd	(%rsi), %xmm1	# *_34, _47
-	.p2align 4,,10
-	.p2align 3
-.L5:
-# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
-	movq	(%r9,%rax), %rdx	# MEM[(double * *)B_16 + ivtmp.41_89 * 1], MEM[(double * *)B_16 + ivtmp.41_89 * 1]
-# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
-	vmovsd	(%rdx,%rcx), %xmm0	# *_44, *_44
-	vmulsd	(%rdi,%rax), %xmm0, %xmm0	# MEM[(double *)_37 + ivtmp.41_89 * 1], *_44, tmp122
-# main.c:97:             for(int k=0; k<M; k++){
-	addq	$8, %rax	#, ivtmp.41
-# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
-	vaddsd	%xmm0, %xmm1, %xmm1	# tmp122, _47, _47
-	vmovsd	%xmm1, (%rsi)	# _47, *_34
-# main.c:97:             for(int k=0; k<M; k++){
-	cmpq	%rax, %r8	# ivtmp.41, _84
-	jne	.L5	#,
-# main.c:95:         for(int j=0; j<N; j++) {
-	addq	$8, %rcx	#, ivtmp.46
-	cmpq	%rcx, %r10	# ivtmp.46, _80
-	jne	.L7	#,
-	addq	$1, %r11	#, ivtmp.49
-	cmpl	%r11d, %ebx	# ivtmp.49, _25
-	jg	.L6	#,
-.L14:
-# main.c:91:     #pragma omp parallel for
-	addq	$8, %rsp	#,
-	.cfi_remember_state
-	.cfi_def_cfa_offset 40
-	popq	%rbx	#
-	.cfi_def_cfa_offset 32
-	popq	%rbp	#
-	.cfi_def_cfa_offset 24
-	popq	%r12	#
-	.cfi_def_cfa_offset 16
-	popq	%r13	#
-	.cfi_def_cfa_offset 8
-	ret	
-.L2:
-	.cfi_restore_state
-	addl	$1, %eax	#, q.6_1
-# main.c:91:     #pragma omp parallel for
-	xorl	%edx, %edx	# tt.7_2
-	jmp	.L9	#
-	.cfi_endproc
-.LFE6653:
-	.size	multicore_matrix_multiply._omp_fn.0, .-multicore_matrix_multiply._omp_fn.0
-	.section	.rodata.str1.1,"aMS",@progbits,1
+.Ltext0:
+	.file 0 "/home/calvert/Documents/University/Year 2/Semester 2/System Architecture/Coursework 3/baselinecode" "main.c"
+	.section	.rodata
+	.align 8
 .LC0:
-	.string	"usage: %s <L> <M> <N> <seed>\n"
+	.string	"usage: %s <L> <M> <N> <seed> <mode> <additional mode arg>\n"
 	.text
-	.p2align 4
 	.globl	print_help_and_exit
 	.type	print_help_and_exit, @function
 print_help_and_exit:
-.LFB6642:
+.LFB5039:
+	.file 1 "main.c"
+	.loc 1 17 39
 	.cfi_startproc
 	endbr64	
-	pushq	%rax	#
+	pushq	%rbp	#
 	.cfi_def_cfa_offset 16
-	popq	%rax	#
-	.cfi_def_cfa_offset 8
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	leaq	.LC0(%rip), %rsi	#, tmp85
-	xorl	%eax, %eax	#
-# main.c:17: void print_help_and_exit(char **argv) {
-	subq	$8, %rsp	#,
-	.cfi_def_cfa_offset 16
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	movq	(%rdi), %rdx	# *argv_3(D), *argv_3(D)
-	movl	$2, %edi	#,
-	call	__printf_chk@PLT	#
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp	#,
+	movq	%rdi, -8(%rbp)	# argv, argv
+# main.c:18:     printf("usage: %s <L> <M> <N> <seed> <mode> <additional mode arg>\n", argv[0]);
+	.loc 1 18 5
+	movq	-8(%rbp), %rax	# argv, tmp83
+	movq	(%rax), %rax	# *argv_3(D), _1
+	movq	%rax, %rsi	# _1,
+	leaq	.LC0(%rip), %rax	#, tmp84
+	movq	%rax, %rdi	# tmp84,
+	movl	$0, %eax	#,
+	call	printf@PLT	#
 # main.c:19:     exit(0);
-	xorl	%edi, %edi	#
+	.loc 1 19 5
+	movl	$0, %edi	#,
 	call	exit@PLT	#
 	.cfi_endproc
-.LFE6642:
+.LFE5039:
 	.size	print_help_and_exit, .-print_help_and_exit
-	.section	.rodata.str1.1
+	.section	.rodata
 .LC1:
 	.string	"%f "
 	.text
-	.p2align 4
 	.globl	print_matrix
 	.type	print_matrix, @function
 print_matrix:
-.LFB6643:
+.LFB5040:
+	.loc 1 22 53
 	.cfi_startproc
 	endbr64	
-# main.c:23:    for(int i=0; i<rows; i++) {
-	testl	%esi, %esi	# rows
-	jle	.L31	#,
-# main.c:22: void print_matrix(double **mat, int rows, int cols) {
-	pushq	%r14	#
-	.cfi_def_cfa_offset 16
-	.cfi_offset 14, -16
-	movslq	%esi, %rsi	# rows, rows
-	movq	%rdi, %r14	# mat, ivtmp.73
-	pushq	%r13	#
-	.cfi_def_cfa_offset 24
-	.cfi_offset 13, -24
-	leaq	(%rdi,%rsi,8), %r13	#, _9
-	pushq	%r12	#
-	.cfi_def_cfa_offset 32
-	.cfi_offset 12, -32
 	pushq	%rbp	#
-	.cfi_def_cfa_offset 40
-	.cfi_offset 6, -40
-	movslq	%edx, %rbp	# cols, cols
-	pushq	%rbx	#
-	.cfi_def_cfa_offset 48
-	.cfi_offset 3, -48
-	salq	$3, %rbp	#, _24
-	movl	%edx, %ebx	# tmp105, cols
-.L21:
-# main.c:24:         for(int j=0; j<cols; j++){
-	testl	%ebx, %ebx	# cols
-	jle	.L28	#,
-	leaq	.LC1(%rip), %r12	#, tmp102
-	.p2align 4,,10
-	.p2align 3
-.L23:
-# main.c:22: void print_matrix(double **mat, int rows, int cols) {
-	xorl	%ebx, %ebx	# ivtmp.68
-	.p2align 4,,10
-	.p2align 3
-.L22:
-# main.c:25:            printf("%f ", mat[i][j]);
-	movq	(%r14), %rax	# MEM[(double * *)_36], MEM[(double * *)_36]
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	movq	%r12, %rsi	# tmp102,
-	movl	$2, %edi	#,
-	vmovsd	(%rax,%rbx), %xmm0	# *_7, *_7
-	movl	$1, %eax	#,
-# main.c:24:         for(int j=0; j<cols; j++){
-	addq	$8, %rbx	#, ivtmp.68
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	call	__printf_chk@PLT	#
-# main.c:24:         for(int j=0; j<cols; j++){
-	cmpq	%rbx, %rbp	# ivtmp.68, _24
-	jne	.L22	#,
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	movl	$10, %edi	#,
-# main.c:23:    for(int i=0; i<rows; i++) {
-	addq	$8, %r14	#, ivtmp.73
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	call	putchar@PLT	#
-# main.c:23:    for(int i=0; i<rows; i++) {
-	cmpq	%r14, %r13	# ivtmp.73, _9
-	jne	.L23	#,
-.L29:
-# main.c:29: }
-	popq	%rbx	#
-	.cfi_remember_state
-	.cfi_def_cfa_offset 40
-	popq	%rbp	#
-	.cfi_def_cfa_offset 32
-	popq	%r12	#
-	.cfi_def_cfa_offset 24
-	popq	%r13	#
 	.cfi_def_cfa_offset 16
-	popq	%r14	#
-	.cfi_def_cfa_offset 8
-	ret	
-.L28:
-	.cfi_restore_state
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	movl	$10, %edi	#,
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
+	subq	$32, %rsp	#,
+	movq	%rdi, -24(%rbp)	# mat, mat
+	movl	%esi, -28(%rbp)	# rows, rows
+	movl	%edx, -32(%rbp)	# cols, cols
+.LBB34:
 # main.c:23:    for(int i=0; i<rows; i++) {
-	addq	$8, %r14	#, ivtmp.73
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
+	.loc 1 23 12
+	movl	$0, -8(%rbp)	#, i
+# main.c:23:    for(int i=0; i<rows; i++) {
+	.loc 1 23 4
+	jmp	.L3	#
+.L6:
+.LBB35:
+# main.c:24:         for(int j=0; j<cols; j++){
+	.loc 1 24 17
+	movl	$0, -4(%rbp)	#, j
+# main.c:24:         for(int j=0; j<cols; j++){
+	.loc 1 24 9
+	jmp	.L4	#
+.L5:
+# main.c:25:            printf("%f ", mat[i][j]);
+	.loc 1 25 29
+	movl	-8(%rbp), %eax	# i, tmp90
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _2
+	movq	-24(%rbp), %rax	# mat, tmp91
+	addq	%rdx, %rax	# _2, _3
+	movq	(%rax), %rax	# *_3, _4
+# main.c:25:            printf("%f ", mat[i][j]);
+	.loc 1 25 32
+	movl	-4(%rbp), %edx	# j, tmp92
+	movslq	%edx, %rdx	# tmp92, _5
+	salq	$3, %rdx	#, _6
+	addq	%rdx, %rax	# _6, _7
+# main.c:25:            printf("%f ", mat[i][j]);
+	.loc 1 25 12
+	movq	(%rax), %rax	# *_7, _8
+	vmovq	%rax, %xmm0	# _8,
+	leaq	.LC1(%rip), %rax	#, tmp93
+	movq	%rax, %rdi	# tmp93,
+	movl	$1, %eax	#,
+	call	printf@PLT	#
+# main.c:24:         for(int j=0; j<cols; j++){
+	.loc 1 24 31 discriminator 3
+	addl	$1, -4(%rbp)	#, j
+.L4:
+# main.c:24:         for(int j=0; j<cols; j++){
+	.loc 1 24 23 discriminator 1
+	movl	-4(%rbp), %eax	# j, tmp94
+	cmpl	-32(%rbp), %eax	# cols, tmp94
+	jl	.L5	#,
+.LBE35:
+# main.c:27:         printf("\n");
+	.loc 1 27 9
+	movl	$10, %edi	#,
 	call	putchar@PLT	#
 # main.c:23:    for(int i=0; i<rows; i++) {
-	cmpq	%r14, %r13	# ivtmp.73, _9
-	jne	.L21	#,
-	jmp	.L29	#
-.L31:
-	.cfi_def_cfa_offset 8
-	.cfi_restore 3
-	.cfi_restore 6
-	.cfi_restore 12
-	.cfi_restore 13
-	.cfi_restore 14
+	.loc 1 23 26 discriminator 2
+	addl	$1, -8(%rbp)	#, i
+.L3:
+# main.c:23:    for(int i=0; i<rows; i++) {
+	.loc 1 23 18 discriminator 1
+	movl	-8(%rbp), %eax	# i, tmp95
+	cmpl	-28(%rbp), %eax	# rows, tmp95
+	jl	.L6	#,
+.LBE34:
+# main.c:29: }
+	.loc 1 29 1
+	nop	
+	nop	
+	leave	
+	.cfi_def_cfa 7, 8
 	ret	
 	.cfi_endproc
-.LFE6643:
+.LFE5040:
 	.size	print_matrix, .-print_matrix
-	.p2align 4
 	.globl	drand
 	.type	drand, @function
 drand:
-.LFB6644:
+.LFB5041:
+	.loc 1 31 37
 	.cfi_startproc
 	endbr64	
-	subq	$24, %rsp	#,
-	.cfi_def_cfa_offset 32
-# main.c:31: double drand(double min, double max){ //
-	vmovsd	%xmm0, 8(%rsp)	# min, %sfp
-	vmovsd	%xmm1, (%rsp)	# max, %sfp
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
+	subq	$32, %rsp	#,
+	vmovsd	%xmm0, -24(%rbp)	# min, min
+	vmovsd	%xmm1, -32(%rbp)	# max, max
 # main.c:32:     double random_double = (double) rand() / RAND_MAX; 
+	.loc 1 32 37
 	call	rand@PLT	#
-# main.c:33:     random_double = (random_double * (max - min)) + min;
-	vmovsd	8(%rsp), %xmm0	# %sfp, min
-	vmovsd	(%rsp), %xmm1	# %sfp, max
 # main.c:32:     double random_double = (double) rand() / RAND_MAX; 
-	vxorps	%xmm2, %xmm2, %xmm2	# tmp98
-	vcvtsi2sdl	%eax, %xmm2, %xmm2	# tmp97, tmp98, tmp99
+	.loc 1 32 28 discriminator 1
+	vcvtsi2sdl	%eax, %xmm0, %xmm0	# _1, _2
 # main.c:32:     double random_double = (double) rand() / RAND_MAX; 
-	vdivsd	.LC2(%rip), %xmm2, %xmm2	#, tmp90, random_double
+	.loc 1 32 12 discriminator 1
+	vmovsd	.LC2(%rip), %xmm1	#, tmp89
+	vdivsd	%xmm1, %xmm0, %xmm0	# tmp89, _2, tmp88
+	vmovsd	%xmm0, -8(%rbp)	# tmp88, random_double
+# main.c:33:     random_double = (random_double * (max - min)) + min;
+	.loc 1 33 43
+	vmovsd	-32(%rbp), %xmm0	# max, tmp90
+	vsubsd	-24(%rbp), %xmm0, %xmm0	# min, tmp90, _3
+# main.c:33:     random_double = (random_double * (max - min)) + min;
+	.loc 1 33 36
+	vmulsd	-8(%rbp), %xmm0, %xmm0	# random_double, _3, _4
+# main.c:33:     random_double = (random_double * (max - min)) + min;
+	.loc 1 33 19
+	vmovsd	-24(%rbp), %xmm1	# min, tmp92
+	vaddsd	%xmm0, %xmm1, %xmm0	# _4, tmp92, tmp91
+	vmovsd	%xmm0, -8(%rbp)	# tmp91, random_double
+# main.c:34:     return random_double;
+	.loc 1 34 12
+	vmovsd	-8(%rbp), %xmm0	# random_double, _11
 # main.c:35: }
-	addq	$24, %rsp	#,
-	.cfi_def_cfa_offset 8
-# main.c:33:     random_double = (random_double * (max - min)) + min;
-	vsubsd	%xmm0, %xmm1, %xmm1	# min, max, tmp93
-# main.c:33:     random_double = (random_double * (max - min)) + min;
-	vmulsd	%xmm1, %xmm2, %xmm1	# tmp93, random_double, _4
-# main.c:33:     random_double = (random_double * (max - min)) + min;
-	vaddsd	%xmm0, %xmm1, %xmm0	# min, _4, random_double
-# main.c:35: }
+	.loc 1 35 1
+	leave	
+	.cfi_def_cfa 7, 8
 	ret	
 	.cfi_endproc
-.LFE6644:
+.LFE5041:
 	.size	drand, .-drand
-	.p2align 4
 	.globl	matrix_multiply
 	.type	matrix_multiply, @function
 matrix_multiply:
-.LFB6645:
+.LFB5042:
+	.loc 1 42 79
 	.cfi_startproc
 	endbr64	
-# main.c:44:     for(int i=0; i<L; i++) {
-	testl	%ecx, %ecx	# L
-	jle	.L47	#,
-# main.c:42: void matrix_multiply(double **A, double **B, double **C, int L, int M, int N) {
-	pushq	%r13	#
-	.cfi_def_cfa_offset 16
-	.cfi_offset 13, -16
-	pushq	%r12	#
-	.cfi_def_cfa_offset 24
-	.cfi_offset 12, -24
 	pushq	%rbp	#
-	.cfi_def_cfa_offset 32
-	.cfi_offset 6, -32
-	pushq	%rbx	#
-	.cfi_def_cfa_offset 40
-	.cfi_offset 3, -40
-	movq	%rdx, %rbx	# tmp114, C
-	movslq	%r9d, %rdx	# tmp117,
-	testl	%edx, %edx	# N
-	jle	.L45	#,
-	movslq	%r8d, %rax	# tmp116,
-	testl	%eax, %eax	# M
-	jle	.L45	#,
-	movslq	%ecx, %rcx	# L, L
-	movq	%rdi, %r10	# tmp112, A
-	movq	%rsi, %r11	# tmp113, B
-# main.c:44:     for(int i=0; i<L; i++) {
-	xorl	%r13d, %r13d	# ivtmp.100
-	leaq	0(,%rcx,8), %r12	#, _61
-	leaq	0(,%rdx,8), %rbp	#, _65
-	leaq	0(,%rax,8), %r8	#, _69
-	.p2align 4,,10
-	.p2align 3
-.L39:
-# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
-	movq	(%rbx,%r13), %r9	# MEM[(double * *)C_33(D) + ivtmp.100_64 * 1], _4
-# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
-	movq	(%r10,%r13), %rdi	# MEM[(double * *)A_34(D) + ivtmp.100_64 * 1], _10
-	xorl	%ecx, %ecx	# ivtmp.93
-	.p2align 4,,10
-	.p2align 3
-.L42:
-# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
-	leaq	(%r9,%rcx), %rsi	#, _7
-	xorl	%eax, %eax	# ivtmp.89
-	vmovsd	(%rsi), %xmm1	# *_7, _20
-	.p2align 4,,10
-	.p2align 3
-.L40:
-# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
-	movq	(%r11,%rax), %rdx	# MEM[(double * *)B_35(D) + ivtmp.89_74 * 1], MEM[(double * *)B_35(D) + ivtmp.89_74 * 1]
-# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
-	vmovsd	(%rdx,%rcx), %xmm0	# *_17, *_17
-	vmulsd	(%rdi,%rax), %xmm0, %xmm0	# MEM[(double *)_10 + ivtmp.89_74 * 1], *_17, tmp110
-# main.c:48:             for(int k=0; k<M; k++){
-	addq	$8, %rax	#, ivtmp.89
-# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
-	vaddsd	%xmm0, %xmm1, %xmm1	# tmp110, _20, _20
-	vmovsd	%xmm1, (%rsi)	# _20, *_7
-# main.c:48:             for(int k=0; k<M; k++){
-	cmpq	%rax, %r8	# ivtmp.89, _69
-	jne	.L40	#,
-# main.c:46:         for(int j=0; j<N; j++) {
-	addq	$8, %rcx	#, ivtmp.93
-	cmpq	%rcx, %rbp	# ivtmp.93, _65
-	jne	.L42	#,
-# main.c:44:     for(int i=0; i<L; i++) {
-	addq	$8, %r13	#, ivtmp.100
-	cmpq	%r13, %r12	# ivtmp.100, _61
-	jne	.L39	#,
-.L45:
-# main.c:53: }
-	popq	%rbx	#
-	.cfi_def_cfa_offset 32
-	popq	%rbp	#
-	.cfi_def_cfa_offset 24
-	popq	%r12	#
 	.cfi_def_cfa_offset 16
-	popq	%r13	#
-	.cfi_def_cfa_offset 8
-	ret	
-.L47:
-	.cfi_restore 3
-	.cfi_restore 6
-	.cfi_restore 12
-	.cfi_restore 13
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
+	movq	%rdi, -24(%rbp)	# A, A
+	movq	%rsi, -32(%rbp)	# B, B
+	movq	%rdx, -40(%rbp)	# C, C
+	movl	%ecx, -44(%rbp)	# L, L
+	movl	%r8d, -48(%rbp)	# M, M
+	movl	%r9d, -52(%rbp)	# N, N
+.LBB36:
+# main.c:44:     for(int i=0; i<L; i++) {
+	.loc 1 44 13
+	movl	$0, -12(%rbp)	#, i
+# main.c:44:     for(int i=0; i<L; i++) {
+	.loc 1 44 5
+	jmp	.L10	#
+.L15:
+.LBB37:
+# main.c:46:         for(int j=0; j<N; j++) {
+	.loc 1 46 17
+	movl	$0, -8(%rbp)	#, j
+# main.c:46:         for(int j=0; j<N; j++) {
+	.loc 1 46 9
+	jmp	.L11	#
+.L14:
+.LBB38:
+# main.c:48:             for(int k=0; k<M; k++){
+	.loc 1 48 21
+	movl	$0, -4(%rbp)	#, k
+# main.c:48:             for(int k=0; k<M; k++){
+	.loc 1 48 13
+	jmp	.L12	#
+.L13:
+# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 49 18
+	movl	-12(%rbp), %eax	# i, tmp115
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _2
+	movq	-40(%rbp), %rax	# C, tmp116
+	addq	%rdx, %rax	# _2, _3
+	movq	(%rax), %rax	# *_3, _4
+# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 49 21
+	movl	-8(%rbp), %edx	# j, tmp117
+	movslq	%edx, %rdx	# tmp117, _5
+	salq	$3, %rdx	#, _6
+	addq	%rdx, %rax	# _6, _7
+	vmovsd	(%rax), %xmm1	# *_7, _8
+# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 49 29
+	movl	-12(%rbp), %eax	# i, tmp118
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _10
+	movq	-24(%rbp), %rax	# A, tmp119
+	addq	%rdx, %rax	# _10, _11
+	movq	(%rax), %rax	# *_11, _12
+# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 49 32
+	movl	-4(%rbp), %edx	# k, tmp120
+	movslq	%edx, %rdx	# tmp120, _13
+	salq	$3, %rdx	#, _14
+	addq	%rdx, %rax	# _14, _15
+	vmovsd	(%rax), %xmm2	# *_15, _16
+# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 49 39
+	movl	-4(%rbp), %eax	# k, tmp121
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _18
+	movq	-32(%rbp), %rax	# B, tmp122
+	addq	%rdx, %rax	# _18, _19
+	movq	(%rax), %rax	# *_19, _20
+# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 49 42
+	movl	-8(%rbp), %edx	# j, tmp123
+	movslq	%edx, %rdx	# tmp123, _21
+	salq	$3, %rdx	#, _22
+	addq	%rdx, %rax	# _22, _23
+	vmovsd	(%rax), %xmm0	# *_23, _24
+# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 49 36
+	vmulsd	%xmm0, %xmm2, %xmm0	# _24, _16, _25
+# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 49 18
+	movl	-12(%rbp), %eax	# i, tmp124
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _27
+	movq	-40(%rbp), %rax	# C, tmp125
+	addq	%rdx, %rax	# _27, _28
+	movq	(%rax), %rax	# *_28, _29
+# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 49 21
+	movl	-8(%rbp), %edx	# j, tmp126
+	movslq	%edx, %rdx	# tmp126, _30
+	salq	$3, %rdx	#, _31
+	addq	%rdx, %rax	# _31, _32
+# main.c:49:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 49 25
+	vaddsd	%xmm0, %xmm1, %xmm0	# _25, _8, _33
+	vmovsd	%xmm0, (%rax)	# _33, *_32
+# main.c:48:             for(int k=0; k<M; k++){
+	.loc 1 48 32 discriminator 3
+	addl	$1, -4(%rbp)	#, k
+.L12:
+# main.c:48:             for(int k=0; k<M; k++){
+	.loc 1 48 27 discriminator 1
+	movl	-4(%rbp), %eax	# k, tmp127
+	cmpl	-48(%rbp), %eax	# M, tmp127
+	jl	.L13	#,
+.LBE38:
+# main.c:46:         for(int j=0; j<N; j++) {
+	.loc 1 46 28 discriminator 2
+	addl	$1, -8(%rbp)	#, j
+.L11:
+# main.c:46:         for(int j=0; j<N; j++) {
+	.loc 1 46 23 discriminator 1
+	movl	-8(%rbp), %eax	# j, tmp128
+	cmpl	-52(%rbp), %eax	# N, tmp128
+	jl	.L14	#,
+.LBE37:
+# main.c:44:     for(int i=0; i<L; i++) {
+	.loc 1 44 24 discriminator 2
+	addl	$1, -12(%rbp)	#, i
+.L10:
+# main.c:44:     for(int i=0; i<L; i++) {
+	.loc 1 44 19 discriminator 1
+	movl	-12(%rbp), %eax	# i, tmp129
+	cmpl	-44(%rbp), %eax	# L, tmp129
+	jl	.L15	#,
+.LBE36:
+# main.c:53: }
+	.loc 1 53 1
+	nop	
+	nop	
+	popq	%rbp	#
+	.cfi_def_cfa 7, 8
 	ret	
 	.cfi_endproc
-.LFE6645:
+.LFE5042:
 	.size	matrix_multiply, .-matrix_multiply
-	.p2align 4
 	.globl	unrolled_matrix_multiply
 	.type	unrolled_matrix_multiply, @function
 unrolled_matrix_multiply:
-.LFB6646:
+.LFB5043:
+	.loc 1 60 101
 	.cfi_startproc
 	endbr64	
-	leaq	8(%rsp), %r10	#,
-	.cfi_def_cfa 10, 0
-	andq	$-32, %rsp	#,
-	movq	%rdi, %rax	# tmp290, A
-	movq	%rdx, %rdi	# tmp292, C
-	pushq	-8(%r10)	#
-	movslq	%ecx, %rdx	# tmp293,
 	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
 	movq	%rsp, %rbp	#,
-	.cfi_escape 0x10,0x6,0x2,0x76,0
-	pushq	%r15	#
-	.cfi_escape 0x10,0xf,0x2,0x76,0x78
-	movq	%rsi, %r15	# tmp291, B
-	pushq	%r14	#
-	pushq	%r13	#
-	pushq	%r12	#
-	pushq	%r10	#
-	.cfi_escape 0xf,0x3,0x76,0x58,0x6
-	.cfi_escape 0x10,0xe,0x2,0x76,0x70
-	.cfi_escape 0x10,0xd,0x2,0x76,0x68
-	.cfi_escape 0x10,0xc,0x2,0x76,0x60
-	pushq	%rbx	#
-	subq	$160, %rsp	#,
-	.cfi_escape 0x10,0x3,0x2,0x76,0x50
+	.cfi_def_cfa_register 6
+	subq	$96, %rsp	#,
+	movq	%rdi, -56(%rbp)	# A, A
+	movq	%rsi, -64(%rbp)	# B, B
+	movq	%rdx, -72(%rbp)	# C, C
+	movl	%ecx, -76(%rbp)	# L, L
+	movl	%r8d, -80(%rbp)	# M, M
+	movl	%r9d, -84(%rbp)	# N, N
 # main.c:60: void unrolled_matrix_multiply(double **A, double **B, double **C, int L, int M, int N, int _unroll) {
-	movl	%r9d, -140(%rbp)	# N, %sfp
-	movl	(%r10), %esi	# _unroll, _unroll
-	movq	%fs:40, %rcx	# MEM[(<address-space-1> long unsigned int *)40B], tmp296
-	movq	%rcx, -56(%rbp)	# tmp296, D.41108
-	xorl	%ecx, %ecx	# tmp296
+	.loc 1 60 101
+	movq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp188
+	movq	%rax, -8(%rbp)	# tmp188, D.31746
+	xorl	%eax, %eax	# tmp188
+.LBB39:
 # main.c:62:     for(int i=0; i<L; i++) {
-	testl	%edx, %edx	# L
-	jle	.L50	#,
-# main.c:65:             double C_temp[_unroll];
-	movslq	%esi, %rcx	# _unroll, _unroll
-	leaq	0(,%rcx,8), %rbx	#, _2
-	movq	%rbx, -136(%rbp)	# _2, %sfp
-	testl	%r9d, %r9d	# N
-	jle	.L50	#,
-	movq	%rdi, -128(%rbp)	# ivtmp.149, %sfp
-	leaq	(%rdi,%rdx,8), %rdi	#, _176
-# main.c:68:                     C_temp[u] = C[i][j+u];
-	leal	-1(%rsi), %edx	#, tmp189
-	movl	%r8d, %r14d	# M, _136
-	movl	%r8d, %r12d	# tmp294, M
-	leal	-1(%r8), %r11d	#, _116
-	andl	$-4, %r14d	#, _136
-	movl	%esi, -88(%rbp)	# _unroll, %sfp
-	leaq	8(,%rdx,8), %rcx	#, _130
-	movl	%r8d, %edx	# M, bnd.112
-	movl	%r14d, %r10d	# _136, _136
-	movq	%rdi, %r8	# _176, _176
-	shrl	$2, %edx	#,
-	movq	%rcx, -96(%rbp)	# _130, %sfp
-	movl	%r12d, %r14d	# M, M
-	movq	%rax, %rsi	# ivtmp.150, ivtmp.150
-	salq	$5, %rdx	#, bnd.112
-	movl	%r11d, %r12d	# _116, _116
-	movq	%rdx, %r13	# bnd.112, _172
-	leaq	15(%rbx), %rdx	#, tmp280
-# main.c:65:             double C_temp[_unroll];
-	movq	%rdx, %rbx	# tmp280, tmp199
-	andl	$4080, %edx	#, tmp280
-	andq	$-16, %rbx	#, tmp199
-	movq	%rdx, %r11	# tmp203, tmp203
-	movq	%rbx, -160(%rbp)	# tmp199, %sfp
-	leaq	-8(%rdx), %rbx	#, tmp287
-	movq	%rbx, -176(%rbp)	# tmp287, %sfp
-.L52:
-	movq	-160(%rbp), %rdi	# %sfp, tmp201
-# main.c:60: void unrolled_matrix_multiply(double **A, double **B, double **C, int L, int M, int N, int _unroll) {
-	xorl	%eax, %eax	# ivtmp.144
+	.loc 1 62 13
+	movl	$0, -48(%rbp)	#, i
+# main.c:62:     for(int i=0; i<L; i++) {
+	.loc 1 62 5
+	jmp	.L17	#
+.L31:
+.LBB40:
 # main.c:64:         for(int j=0; j<N; j+=_unroll) {
-	xorl	%ebx, %ebx	# j
-# main.c:65:             double C_temp[_unroll];
-	andq	$-4096, %rdi	#, tmp201
-.L57:
-	movq	%rsp, %rdx	#, tmp202
+	.loc 1 64 17
+	movl	$0, -44(%rbp)	#, j
 # main.c:64:         for(int j=0; j<N; j+=_unroll) {
-	movq	%rsp, %r9	#, saved_stack.2_156
+	.loc 1 64 9
+	jmp	.L18	#
+.L30:
+.LBB41:
+# main.c:64:         for(int j=0; j<N; j+=_unroll) {
+	.loc 1 64 39 discriminator 3
+	movq	%rsp, %rax	#, tmp135
+	movq	%rax, %rsi	# tmp135, saved_stack.2_71
 # main.c:65:             double C_temp[_unroll];
-	subq	%rdi, %rdx	# tmp201, tmp202
-	cmpq	%rdx, %rsp	# tmp202,
-	je	.L54	#,
-.L88:
+	.loc 1 65 13
+	movl	16(%rbp), %eax	# _unroll, _unroll.0_73
+# main.c:65:             double C_temp[_unroll];
+	.loc 1 65 20
+	movslq	%eax, %rdx	# _unroll.0_73, _1
+	subq	$1, %rdx	#, _2
+	movq	%rdx, -24(%rbp)	# _3, D.31421
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _13
+	movl	$16, %eax	#, tmp186
+	subq	$1, %rax	#, tmp136
+	addq	%rdx, %rax	# _13, tmp137
+	movl	$16, %edi	#, tmp187
+	movl	$0, %edx	#, tmp140
+	divq	%rdi	# tmp187
+	imulq	$16, %rax, %rax	#, tmp139, tmp141
+	movq	%rax, %rcx	# tmp141, tmp143
+	andq	$-4096, %rcx	#, tmp143
+	movq	%rsp, %rdx	#, tmp144
+	subq	%rcx, %rdx	# tmp143, tmp144
+.L19:
+	cmpq	%rdx, %rsp	# tmp144,
+	je	.L20	#,
 	subq	$4096, %rsp	#,
 	orq	$0, 4088(%rsp)	#,
-	cmpq	%rdx, %rsp	# tmp202,
-	jne	.L88	#,
-.L54:
-	subq	%r11, %rsp	# tmp203,
-	testq	%r11, %r11	# tmp203
-	je	.L55	#,
-	movq	-176(%rbp), %rcx	# %sfp, tmp287
-	orq	$0, (%rsp,%rcx)	#,
-.L55:
+	jmp	.L19	#
+.L20:
+	movq	%rax, %rdx	# tmp141, tmp145
+	andl	$4095, %edx	#, tmp145
+	subq	%rdx, %rsp	# tmp145,
+	movq	%rax, %rdx	# tmp141, tmp146
+	andl	$4095, %edx	#, tmp146
+	testq	%rdx, %rdx	# tmp146
+	je	.L21	#,
+	andl	$4095, %eax	#, tmp147
+	subq	$8, %rax	#, tmp147
+	addq	%rsp, %rax	#, tmp148
+	orq	$0, (%rax)	#,
+.L21:
+	movq	%rsp, %rax	#, tmp142
+	addq	$7, %rax	#, tmp149
+	shrq	$3, %rax	#, tmp150
+	salq	$3, %rax	#, tmp151
+	movq	%rax, -16(%rbp)	# tmp151, C_temp.1
+.LBB42:
 # main.c:67:             for (int u=0; u<_unroll; u++){
-	movl	-88(%rbp), %edx	# %sfp,
-# main.c:65:             double C_temp[_unroll];
-	movq	%rsp, %rcx	#, C_temp.1
+	.loc 1 67 22
+	movl	$0, -40(%rbp)	#, u
 # main.c:67:             for (int u=0; u<_unroll; u++){
-	testl	%edx, %edx	#
-	jle	.L89	#,
-	movq	%rsi, -120(%rbp)	# ivtmp.150, %sfp
-	movq	%rax, -104(%rbp)	# ivtmp.144, %sfp
-	movq	%r9, -152(%rbp)	# saved_stack.2_156, %sfp
-	movq	%r8, -184(%rbp)	# _176, %sfp
-	movq	%r11, -168(%rbp)	# tmp203, %sfp
-	movl	%r12d, -84(%rbp)	# _116, %sfp
-	movl	%r10d, %r12d	# _136, _136
-.L56:
-	movq	-128(%rbp), %rax	# %sfp, ivtmp.149
-	movq	-104(%rbp), %r11	# %sfp, _127
+	.loc 1 67 13
+	jmp	.L22	#
+.L23:
 # main.c:68:                     C_temp[u] = C[i][j+u];
-	movq	%rcx, %rdi	# C_temp.1,
-	movq	-96(%rbp), %rdx	# %sfp,
-	addq	(%rax), %r11	# MEM[(double * *)_177], _127
-	movq	%r11, %rsi	# _127,
-	movq	%r11, -72(%rbp)	# _127, %sfp
-	call	memcpy@PLT	#
-	movq	-72(%rbp), %r11	# %sfp, _127
-	movl	%ebx, %edx	# j, ivtmp.139
-	movq	%rax, %rcx	#, C_temp.1
-	movq	%rax, %rdi	# C_temp.1, ivtmp.138
-	movl	-88(%rbp), %eax	# %sfp, _unroll
-	leal	(%rbx,%rax), %ebx	#, j
-.L59:
-# main.c:73:                 for(int k=0; k<M; k++){
-	testl	%r14d, %r14d	# M
-	jle	.L82	#,
-	movq	-120(%rbp), %rax	# %sfp, ivtmp.150
-	movl	%edx, -72(%rbp)	# ivtmp.139, %sfp
-	movq	%r11, -112(%rbp)	# _127, %sfp
-	movq	%rcx, %r11	# C_temp.1, C_temp.1
-	movq	(%rax), %r9	# MEM[(double * *)_178], _16
-	.p2align 4,,10
-	.p2align 3
-.L63:
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	movslq	-72(%rbp), %rcx	# %sfp, ivtmp.139
-	cmpl	$2, -84(%rbp)	#, %sfp
-	vmovsd	(%rdi), %xmm2	# MEM[(double *)_161], C_temp.1__I_lsm.109
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	leaq	0(,%rcx,8), %rsi	#, _25
-	jbe	.L70	#,
-	movq	%rdi, -80(%rbp)	# ivtmp.138, %sfp
-	xorl	%eax, %eax	# ivtmp.129
-	.p2align 4,,10
-	.p2align 3
-.L61:
-	leaq	(%r15,%rax), %rdx	#, _104
-	movq	(%rdx), %r8	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_104], 64, 0>, BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_104], 64, 0>
-	movq	16(%rdx), %r10	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_104], 64, 128>, BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_104], 64, 128>
-	movq	8(%rdx), %rdi	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_104], 64, 64>, BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_104], 64, 64>
-	movq	24(%rdx), %rdx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_104], 64, 192>, BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_104], 64, 192>
-	vmovsd	(%r10,%rsi), %xmm1	# MEM[(double *)_48], MEM[(double *)_48]
-	vmovsd	(%r8,%rsi), %xmm0	# MEM[(double *)_79], MEM[(double *)_79]
-	vmovhpd	(%rdx,%rsi), %xmm1, %xmm1	# MEM[(double *)_44], MEM[(double *)_48], tmp223
-	vmovhpd	(%rdi,%rsi), %xmm0, %xmm0	# MEM[(double *)_73], MEM[(double *)_79], tmp226
-	vinsertf128	$0x1, %xmm1, %ymm0, %ymm0	# tmp223, tmp226, vect__27.121
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	vmulpd	(%r9,%rax), %ymm0, %ymm0	# MEM <vector(4) double> [(double *)_16 + ivtmp.129_175 * 1], vect__27.121, vect__28.122
-	addq	$32, %rax	#, ivtmp.129
-	vaddsd	%xmm2, %xmm0, %xmm2	# C_temp.1__I_lsm.109, stmp__29.123, stmp__29.123
-	vunpckhpd	%xmm0, %xmm0, %xmm1	# tmp230, stmp__29.123
-	vextractf128	$0x1, %ymm0, %xmm0	# vect__28.122, tmp232
-	vaddsd	%xmm2, %xmm1, %xmm1	# stmp__29.123, stmp__29.123, stmp__29.123
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	vaddsd	%xmm0, %xmm1, %xmm1	# stmp__29.123, stmp__29.123, stmp__29.123
-	vunpckhpd	%xmm0, %xmm0, %xmm0	# tmp232, stmp__29.123
-	vaddsd	%xmm0, %xmm1, %xmm2	# stmp__29.123, stmp__29.123, C_temp.1__I_lsm.109
-	cmpq	%rax, %r13	# ivtmp.129, _172
-	jne	.L61	#,
-	movq	-80(%rbp), %rdi	# %sfp, ivtmp.138
-# main.c:73:                 for(int k=0; k<M; k++){
-	movl	%r12d, %eax	# _136, k
-	cmpl	%r12d, %r14d	# _136, M
-	je	.L62	#,
-.L60:
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	movslq	%eax, %r8	# k, k
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	movq	(%r15,%r8,8), %rdx	# *_26, *_26
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	leaq	0(,%r8,8), %rsi	#, _20
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	vmovsd	(%rdx,%rcx,8), %xmm0	# *_28, *_28
-	vmulsd	(%r9,%r8,8), %xmm0, %xmm0	# *_21, *_28, tmp238
-# main.c:73:                 for(int k=0; k<M; k++){
-	leal	1(%rax), %r8d	#, k
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	vaddsd	%xmm0, %xmm2, %xmm2	# tmp238, C_temp.1__I_lsm.109, C_temp.1__I_lsm.109
-# main.c:73:                 for(int k=0; k<M; k++){
-	cmpl	%r8d, %r14d	# k, M
-	jle	.L62	#,
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	movq	8(%r15,%rsi), %r8	# *_145, *_145
-# main.c:73:                 for(int k=0; k<M; k++){
-	addl	$2, %eax	#, k
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	vmovsd	(%r8,%rcx,8), %xmm0	# *_147, *_147
-	vmulsd	8(%r9,%rsi), %xmm0, %xmm0	# *_143, *_147, tmp242
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	vaddsd	%xmm0, %xmm2, %xmm2	# tmp242, C_temp.1__I_lsm.109, C_temp.1__I_lsm.109
-# main.c:73:                 for(int k=0; k<M; k++){
-	cmpl	%eax, %r14d	# k, M
-	jle	.L62	#,
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	movq	16(%r15,%rsi), %rax	# *_64, *_64
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	vmovsd	(%rax,%rcx,8), %xmm0	# *_87, *_87
-	vmulsd	16(%r9,%rsi), %xmm0, %xmm0	# *_38, *_87, tmp246
-# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
-	vaddsd	%xmm0, %xmm2, %xmm2	# tmp246, C_temp.1__I_lsm.109, C_temp.1__I_lsm.109
-.L62:
+	.loc 1 68 34
+	movl	-48(%rbp), %eax	# i, tmp152
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _15
+	movq	-72(%rbp), %rax	# C, tmp153
+	addq	%rdx, %rax	# _15, _16
+	movq	(%rax), %rax	# *_16, _17
+# main.c:68:                     C_temp[u] = C[i][j+u];
+	.loc 1 68 39
+	movl	-44(%rbp), %ecx	# j, tmp154
+	movl	-40(%rbp), %edx	# u, tmp155
+	addl	%ecx, %edx	# tmp154, _18
+	movslq	%edx, %rdx	# _18, _19
+# main.c:68:                     C_temp[u] = C[i][j+u];
+	.loc 1 68 37
+	salq	$3, %rdx	#, _20
+	addq	%rdx, %rax	# _20, _21
+	vmovsd	(%rax), %xmm0	# *_21, _22
+# main.c:68:                     C_temp[u] = C[i][j+u];
+	.loc 1 68 31
+	movq	-16(%rbp), %rax	# C_temp.1, tmp156
+	movl	-40(%rbp), %edx	# u, tmp158
+	movslq	%edx, %rdx	# tmp158, tmp157
+	vmovsd	%xmm0, (%rax,%rdx,8)	# _22, (*C_temp.1_80)[u_54]
+# main.c:67:             for (int u=0; u<_unroll; u++){
+	.loc 1 67 39 discriminator 3
+	addl	$1, -40(%rbp)	#, u
+.L22:
+# main.c:67:             for (int u=0; u<_unroll; u++){
+	.loc 1 67 28 discriminator 1
+	movl	-40(%rbp), %eax	# u, tmp159
+	cmpl	16(%rbp), %eax	# _unroll, tmp159
+	jl	.L23	#,
+.LBE42:
+.LBB43:
 # main.c:71:             for (int u=0; u<_unroll; u++){
-	addl	$1, -72(%rbp)	#, %sfp
-	movl	-72(%rbp), %eax	# %sfp, ivtmp.139
-	addq	$8, %rdi	#, ivtmp.138
-	vmovsd	%xmm2, -8(%rdi)	# C_temp.1__I_lsm.109, MEM[(double *)_161]
-	cmpl	%ebx, %eax	# j, ivtmp.139
-	jne	.L63	#,
-	movq	%r11, %rcx	# C_temp.1, C_temp.1
-	movq	-112(%rbp), %r11	# %sfp, _127
-	vzeroupper
-.L64:
+	.loc 1 71 22
+	movl	$0, -36(%rbp)	#, u
+# main.c:71:             for (int u=0; u<_unroll; u++){
+	.loc 1 71 13
+	jmp	.L24	#
+.L27:
+.LBB44:
+# main.c:73:                 for(int k=0; k<M; k++){
+	.loc 1 73 25
+	movl	$0, -32(%rbp)	#, k
+# main.c:73:                 for(int k=0; k<M; k++){
+	.loc 1 73 17
+	jmp	.L25	#
+.L26:
+# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
+	.loc 1 74 27
+	movq	-16(%rbp), %rax	# C_temp.1, tmp160
+	movl	-36(%rbp), %edx	# u, tmp162
+	movslq	%edx, %rdx	# tmp162, tmp161
+	vmovsd	(%rax,%rdx,8), %xmm1	# (*C_temp.1_80)[u_55], _23
+# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
+	.loc 1 74 35
+	movl	-48(%rbp), %eax	# i, tmp163
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _25
+	movq	-56(%rbp), %rax	# A, tmp164
+	addq	%rdx, %rax	# _25, _26
+	movq	(%rax), %rax	# *_26, _27
+# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
+	.loc 1 74 38
+	movl	-32(%rbp), %edx	# k, tmp165
+	movslq	%edx, %rdx	# tmp165, _28
+	salq	$3, %rdx	#, _29
+	addq	%rdx, %rax	# _29, _30
+	vmovsd	(%rax), %xmm2	# *_30, _31
+# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
+	.loc 1 74 45
+	movl	-32(%rbp), %eax	# k, tmp166
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _33
+	movq	-64(%rbp), %rax	# B, tmp167
+	addq	%rdx, %rax	# _33, _34
+	movq	(%rax), %rax	# *_34, _35
+# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
+	.loc 1 74 50
+	movl	-44(%rbp), %ecx	# j, tmp168
+	movl	-36(%rbp), %edx	# u, tmp169
+	addl	%ecx, %edx	# tmp168, _36
+	movslq	%edx, %rdx	# _36, _37
+# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
+	.loc 1 74 48
+	salq	$3, %rdx	#, _38
+	addq	%rdx, %rax	# _38, _39
+	vmovsd	(%rax), %xmm0	# *_39, _40
+# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
+	.loc 1 74 42
+	vmulsd	%xmm0, %xmm2, %xmm0	# _40, _31, _41
+# main.c:74:                     C_temp[u] += A[i][k] * B[k][j+u];
+	.loc 1 74 31
+	vaddsd	%xmm0, %xmm1, %xmm0	# _41, _23, _42
+	movq	-16(%rbp), %rax	# C_temp.1, tmp170
+	movl	-36(%rbp), %edx	# u, tmp172
+	movslq	%edx, %rdx	# tmp172, tmp171
+	vmovsd	%xmm0, (%rax,%rdx,8)	# _42, (*C_temp.1_80)[u_55]
+# main.c:73:                 for(int k=0; k<M; k++){
+	.loc 1 73 36 discriminator 3
+	addl	$1, -32(%rbp)	#, k
+.L25:
+# main.c:73:                 for(int k=0; k<M; k++){
+	.loc 1 73 31 discriminator 1
+	movl	-32(%rbp), %eax	# k, tmp173
+	cmpl	-80(%rbp), %eax	# M, tmp173
+	jl	.L26	#,
+.LBE44:
+# main.c:71:             for (int u=0; u<_unroll; u++){
+	.loc 1 71 39 discriminator 2
+	addl	$1, -36(%rbp)	#, u
+.L24:
+# main.c:71:             for (int u=0; u<_unroll; u++){
+	.loc 1 71 28 discriminator 1
+	movl	-36(%rbp), %eax	# u, tmp174
+	cmpl	16(%rbp), %eax	# _unroll, tmp174
+	jl	.L27	#,
+.LBE43:
+.LBB45:
+# main.c:78:             for (int u=0; u<_unroll; u++){
+	.loc 1 78 22
+	movl	$0, -28(%rbp)	#, u
+# main.c:78:             for (int u=0; u<_unroll; u++){
+	.loc 1 78 13
+	jmp	.L28	#
+.L29:
 # main.c:79:                 C[i][j+u] = C_temp[u];
-	movq	-96(%rbp), %rdx	# %sfp,
-	movq	%rcx, %rsi	# C_temp.1,
-	movq	%r11, %rdi	# _127,
-	call	memcpy@PLT	#
-	movq	-152(%rbp), %rsp	# %sfp,
+	.loc 1 79 18
+	movl	-48(%rbp), %eax	# i, tmp175
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _44
+	movq	-72(%rbp), %rax	# C, tmp176
+	addq	%rdx, %rax	# _44, _45
+	movq	(%rax), %rax	# *_45, _46
+# main.c:79:                 C[i][j+u] = C_temp[u];
+	.loc 1 79 23
+	movl	-44(%rbp), %ecx	# j, tmp177
+	movl	-28(%rbp), %edx	# u, tmp178
+	addl	%ecx, %edx	# tmp177, _47
+	movslq	%edx, %rdx	# _47, _48
+# main.c:79:                 C[i][j+u] = C_temp[u];
+	.loc 1 79 21
+	salq	$3, %rdx	#, _49
+	leaq	(%rax,%rdx), %rcx	#, _50
+# main.c:79:                 C[i][j+u] = C_temp[u];
+	.loc 1 79 35
+	movq	-16(%rbp), %rax	# C_temp.1, tmp179
+	movl	-28(%rbp), %edx	# u, tmp181
+	movslq	%edx, %rdx	# tmp181, tmp180
+	vmovsd	(%rax,%rdx,8), %xmm0	# (*C_temp.1_80)[u_57], _51
+# main.c:79:                 C[i][j+u] = C_temp[u];
+	.loc 1 79 27
+	vmovsd	%xmm0, (%rcx)	# _51, *_50
+# main.c:78:             for (int u=0; u<_unroll; u++){
+	.loc 1 78 39 discriminator 3
+	addl	$1, -28(%rbp)	#, u
+.L28:
+# main.c:78:             for (int u=0; u<_unroll; u++){
+	.loc 1 78 28 discriminator 1
+	movl	-28(%rbp), %eax	# u, tmp182
+	cmpl	16(%rbp), %eax	# _unroll, tmp182
+	jl	.L29	#,
+.LBE45:
+	movq	%rsi, %rsp	# saved_stack.2_71,
+.LBE41:
 # main.c:64:         for(int j=0; j<N; j+=_unroll) {
-	movq	-136(%rbp), %rcx	# %sfp, _2
-	addq	%rcx, -104(%rbp)	# _2, %sfp
-	cmpl	%ebx, -140(%rbp)	# j, %sfp
-	jle	.L85	#,
-# main.c:65:             double C_temp[_unroll];
-	movq	-160(%rbp), %rdx	# %sfp, tmp263
-	movq	%rsp, %rax	#, tmp264
-	andq	$-4096, %rdx	#, tmp263
-	subq	%rdx, %rax	# tmp263, tmp264
-	cmpq	%rax, %rsp	# tmp264,
-	je	.L67	#,
-.L90:
-	subq	$4096, %rsp	#,
-	orq	$0, 4088(%rsp)	#,
-	cmpq	%rax, %rsp	# tmp264,
-	jne	.L90	#,
-.L67:
-	movq	-168(%rbp), %rax	# %sfp, tmp203
-	subq	%rax, %rsp	# tmp203,
-	testq	%rax, %rax	# tmp203
-	je	.L68	#,
-	movq	-176(%rbp), %rax	# %sfp, tmp287
-	orq	$0, (%rsp,%rax)	#,
-.L68:
-	movq	%rsp, %rcx	#, C_temp.1
-	jmp	.L56	#
-.L82:
-# main.c:71:             for (int u=0; u<_unroll; u++){
-	addl	$1, %edx	#, ivtmp.139
-	addq	$8, %rdi	#, ivtmp.138
-	cmpl	%edx, %ebx	# ivtmp.139, j
-	jne	.L59	#,
-	jmp	.L64	#
-.L70:
-# main.c:73:                 for(int k=0; k<M; k++){
-	xorl	%eax, %eax	# k
-	jmp	.L60	#
-.L89:
+	.loc 1 64 28 discriminator 2
+	movl	16(%rbp), %eax	# _unroll, tmp183
+	addl	%eax, -44(%rbp)	# tmp183, j
+.L18:
 # main.c:64:         for(int j=0; j<N; j+=_unroll) {
-	movl	-88(%rbp), %ecx	# %sfp, _unroll
-	movq	%r9, %rsp	# saved_stack.2_156,
-	addl	%ecx, %ebx	# _unroll, j
-# main.c:64:         for(int j=0; j<N; j+=_unroll) {
-	movq	-136(%rbp), %rcx	# %sfp, _2
-	addq	%rcx, %rax	# _2, ivtmp.144
-	cmpl	%ebx, -140(%rbp)	# j, %sfp
-	jg	.L57	#,
-.L58:
+	.loc 1 64 23 discriminator 1
+	movl	-44(%rbp), %eax	# j, tmp184
+	cmpl	-84(%rbp), %eax	# N, tmp184
+	jl	.L30	#,
+.LBE40:
 # main.c:62:     for(int i=0; i<L; i++) {
-	addq	$8, -128(%rbp)	#, %sfp
-	movq	-128(%rbp), %rax	# %sfp, ivtmp.149
-	addq	$8, %rsi	#, ivtmp.150
-	cmpq	%r8, %rax	# _176, ivtmp.149
-	jne	.L52	#,
-.L50:
+	.loc 1 62 24 discriminator 2
+	addl	$1, -48(%rbp)	#, i
+.L17:
+# main.c:62:     for(int i=0; i<L; i++) {
+	.loc 1 62 19 discriminator 1
+	movl	-48(%rbp), %eax	# i, tmp185
+	cmpl	-76(%rbp), %eax	# L, tmp185
+	jl	.L31	#,
+.LBE39:
 # main.c:83: }
-	movq	-56(%rbp), %rax	# D.41108, tmp297
-	subq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp297
-	jne	.L91	#,
-	leaq	-48(%rbp), %rsp	#,
-	popq	%rbx	#
-	popq	%r10	#
-	.cfi_remember_state
-	.cfi_def_cfa 10, 0
-	popq	%r12	#
-	popq	%r13	#
-	popq	%r14	#
-	popq	%r15	#
-	popq	%rbp	#
-	leaq	-8(%r10), %rsp	#,
+	.loc 1 83 1
+	nop	
+	movq	-8(%rbp), %rax	# D.31746, tmp189
+	subq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp189
+	je	.L32	#,
+	call	__stack_chk_fail@PLT	#
+.L32:
+	leave	
 	.cfi_def_cfa 7, 8
 	ret	
-.L85:
-	.cfi_restore_state
-	movl	%r12d, %r10d	# _136, _136
-	movq	-120(%rbp), %rsi	# %sfp, ivtmp.150
-	movl	-84(%rbp), %r12d	# %sfp, _116
-	movq	-184(%rbp), %r8	# %sfp, _176
-	movq	-168(%rbp), %r11	# %sfp, tmp203
-	jmp	.L58	#
-.L91:
-	call	__stack_chk_fail@PLT	#
 	.cfi_endproc
-.LFE6646:
+.LFE5043:
 	.size	unrolled_matrix_multiply, .-unrolled_matrix_multiply
-	.p2align 4
 	.globl	multicore_matrix_multiply
 	.type	multicore_matrix_multiply, @function
 multicore_matrix_multiply:
-.LFB6647:
+.LFB5044:
+	.loc 1 90 89
 	.cfi_startproc
 	endbr64	
-	subq	$56, %rsp	#,
-	.cfi_def_cfa_offset 64
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
+	subq	$96, %rsp	#,
+	movq	%rdi, -56(%rbp)	# A, A
+	movq	%rsi, -64(%rbp)	# B, B
+	movq	%rdx, -72(%rbp)	# C, C
+	movl	%ecx, -76(%rbp)	# L, L
+	movl	%r8d, -80(%rbp)	# M, M
+	movl	%r9d, -84(%rbp)	# N, N
 # main.c:90: void multicore_matrix_multiply(double **A, double **B, double **C, int L, int M, int N) {
-	movq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp98
-	movq	%rax, 40(%rsp)	# tmp98, D.41120
-	xorl	%eax, %eax	# tmp98
+	.loc 1 90 89
+	movq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp90
+	movq	%rax, -8(%rbp)	# tmp90, D.31749
+	xorl	%eax, %eax	# tmp90
+.LBB46:
 # main.c:91:     #pragma omp parallel for
-	movl	%ecx, 24(%rsp)	# tmp95, .omp_data_o.5.L
-	xorl	%ecx, %ecx	#
-	movq	%rdx, 16(%rsp)	# tmp94, .omp_data_o.5.C
-	xorl	%edx, %edx	#
-	movq	%rsi, 8(%rsp)	# tmp93, .omp_data_o.5.B
-	movq	%rsp, %rsi	#, tmp89
-	movq	%rdi, (%rsp)	# tmp92, .omp_data_o.5.A
-	leaq	multicore_matrix_multiply._omp_fn.0(%rip), %rdi	#, tmp90
-	movl	%r9d, 32(%rsp)	# tmp97, .omp_data_o.5.N
-	movl	%r8d, 28(%rsp)	# tmp96, .omp_data_o.5.M
+	.loc 1 91 13
+	movl	-84(%rbp), %eax	# N, tmp82
+	movl	%eax, -16(%rbp)	# tmp82, .omp_data_o.5.N
+	movl	-80(%rbp), %eax	# M, tmp83
+	movl	%eax, -20(%rbp)	# tmp83, .omp_data_o.5.M
+	movl	-76(%rbp), %eax	# L, tmp84
+	movl	%eax, -24(%rbp)	# tmp84, .omp_data_o.5.L
+	movq	-72(%rbp), %rax	# C, tmp85
+	movq	%rax, -32(%rbp)	# tmp85, .omp_data_o.5.C
+	movq	-64(%rbp), %rax	# B, tmp86
+	movq	%rax, -40(%rbp)	# tmp86, .omp_data_o.5.B
+	movq	-56(%rbp), %rax	# A, tmp87
+	movq	%rax, -48(%rbp)	# tmp87, .omp_data_o.5.A
+	leaq	-48(%rbp), %rax	#, tmp88
+	movl	$0, %ecx	#,
+	movl	$0, %edx	#,
+	movq	%rax, %rsi	# tmp88,
+	leaq	multicore_matrix_multiply._omp_fn.0(%rip), %rax	#, tmp89
+	movq	%rax, %rdi	# tmp89,
 	call	GOMP_parallel@PLT	#
+.LBE46:
 # main.c:102: }
-	movq	40(%rsp), %rax	# D.41120, tmp99
-	subq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp99
-	jne	.L96	#,
-	addq	$56, %rsp	#,
-	.cfi_remember_state
-	.cfi_def_cfa_offset 8
-	ret	
-.L96:
-	.cfi_restore_state
+	.loc 1 102 1
+	nop	
+	movq	-8(%rbp), %rax	# D.31749, tmp91
+	subq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp91
+	je	.L34	#,
 	call	__stack_chk_fail@PLT	#
+.L34:
+	leave	
+	.cfi_def_cfa 7, 8
+	ret	
 	.cfi_endproc
-.LFE6647:
+.LFE5044:
 	.size	multicore_matrix_multiply, .-multicore_matrix_multiply
-	.p2align 4
 	.globl	do_block
 	.type	do_block, @function
 do_block:
-.LFB6648:
+.LFB5045:
+	.loc 1 104 91
 	.cfi_startproc
 	endbr64	
 	pushq	%rbp	#
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
-	movslq	%edi, %rdi	# tmp436, si
-	movslq	%esi, %rsi	# tmp437, sj
-	movslq	%edx, %rdx	# tmp438, sk
-	leaq	0(,%rdi,8), %rax	#, ivtmp.192
 	movq	%rsp, %rbp	#,
 	.cfi_def_cfa_register 6
-	pushq	%r15	#
-	pushq	%r14	#
-	pushq	%r13	#
-	pushq	%r12	#
-	pushq	%rbx	#
-	andq	$-32, %rsp	#,
-	subq	$136, %rsp	#,
-	.cfi_offset 15, -24
-	.cfi_offset 14, -32
-	.cfi_offset 13, -40
-	.cfi_offset 12, -48
-	.cfi_offset 3, -56
-	movq	%rax, -56(%rsp)	# ivtmp.192, %sfp
-	addq	$256, %rax	#, _145
-	movq	%rax, -80(%rsp)	# _145, %sfp
-	leaq	0(,%rsi,8), %rax	#, ivtmp.180
-	movq	%rax, -72(%rsp)	# ivtmp.180, %sfp
-	addq	$256, %rax	#, _20
-	movq	%rax, 112(%rsp)	# _20, %sfp
-	leaq	0(,%rdx,8), %rax	#, _98
-	movq	%rax, -64(%rsp)	# _98, %sfp
-	addq	%r8, %rax	# tmp440, vectp.165
-	movq	24(%rax), %rbx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94], 64, 192>, _60
-	movq	16(%rax), %r15	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94], 64, 128>, _41
-# main.c:104: void do_block(int si, int sj, int sk, double **A, double **B, double **C){
-	movq	%rcx, -88(%rsp)	# tmp439, %sfp
-	movq	%r9, -96(%rsp)	# tmp441, %sfp
-	movq	(%rax), %r14	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94], 64, 0>, _11
-	movq	%rbx, 104(%rsp)	# _60, %sfp
-	movq	8(%rax), %rbx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94], 64, 64>, _15
-	movq	%rbx, 120(%rsp)	# _15, %sfp
-	movq	56(%rax), %rbx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 32B], 64, 192>, _125
-	movq	%rbx, 56(%rsp)	# _125, %sfp
-	movq	48(%rax), %r13	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 32B], 64, 128>, _121
-	movq	40(%rax), %rdi	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 32B], 64, 64>, _117
-	movq	184(%rax), %rcx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 160B], 64, 192>, _265
-	movq	88(%rax), %rbx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 64B], 64, 192>, _160
-	movq	32(%rax), %r12	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 32B], 64, 0>, _113
-	movq	64(%rax), %r11	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 64B], 64, 0>, _148
-	movq	112(%rax), %r10	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 96B], 64, 128>, _191
-	movq	%rdi, 64(%rsp)	# _117, %sfp
-	movq	72(%rax), %rdi	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 64B], 64, 64>, _152
-	movq	96(%rax), %r9	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 96B], 64, 0>, _183
-	movq	%rcx, -16(%rsp)	# _265, %sfp
-	movq	168(%rax), %rcx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 160B], 64, 64>, _257
-	movq	%rbx, 40(%rsp)	# _160, %sfp
-	movq	144(%rax), %r8	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 128B], 64, 128>, _226
-	movq	80(%rax), %rbx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 64B], 64, 128>, _156
-	movq	%rdi, 48(%rsp)	# _152, %sfp
-	movq	120(%rax), %rdi	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 96B], 64, 192>, _195
-	movq	176(%rax), %rsi	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 160B], 64, 128>, _261
-	movq	%rcx, -8(%rsp)	# _257, %sfp
-	movq	160(%rax), %rcx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 160B], 64, 0>, _253
-	movq	%rdi, 24(%rsp)	# _195, %sfp
-	movq	104(%rax), %rdi	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 96B], 64, 64>, _187
-	movq	%rcx, (%rsp)	# _253, %sfp
-	movq	216(%rax), %rcx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 192B], 64, 192>, _300
-	movq	%rdi, 32(%rsp)	# _187, %sfp
-	movq	152(%rax), %rdi	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 128B], 64, 192>, _230
-	movq	%rcx, -48(%rsp)	# _300, %sfp
-	movq	208(%rax), %rcx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 192B], 64, 128>, _296
-	movq	%rdi, 8(%rsp)	# _230, %sfp
-	movq	136(%rax), %rdi	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 128B], 64, 64>, _222
-	movq	%rdi, 16(%rsp)	# _222, %sfp
-	movq	128(%rax), %rdi	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 128B], 64, 0>, _218
-	movq	%rcx, -40(%rsp)	# _296, %sfp
-	movq	200(%rax), %rcx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 192B], 64, 64>, _292
-	movq	%rcx, -32(%rsp)	# _292, %sfp
-	movq	192(%rax), %rcx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 192B], 64, 0>, _288
-	movq	%rcx, -24(%rsp)	# _288, %sfp
-	movq	248(%rax), %rcx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 224B], 64, 192>, _76
-	movq	%rcx, 96(%rsp)	# _76, %sfp
-	movq	240(%rax), %rcx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 224B], 64, 128>, _80
-	movq	%rcx, 88(%rsp)	# _80, %sfp
-	movq	232(%rax), %rcx	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 224B], 64, 64>, _84
-	movq	224(%rax), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)vectp.165_94 + 224B], 64, 0>, _88
-	movq	%rcx, 80(%rsp)	# _84, %sfp
-	movq	%rax, 72(%rsp)	# _88, %sfp
-.L98:
+	movl	%edi, -36(%rbp)	# si, si
+	movl	%esi, -40(%rbp)	# sj, sj
+	movl	%edx, -44(%rbp)	# sk, sk
+	movq	%rcx, -56(%rbp)	# A, A
+	movq	%r8, -64(%rbp)	# B, B
+	movq	%r9, -72(%rbp)	# C, C
+.LBB47:
+# main.c:106:     for (int i=si; i<si+_block_size; i++){
+	.loc 1 106 14
+	movl	-36(%rbp), %eax	# si, tmp116
+	movl	%eax, -20(%rbp)	# tmp116, i
+# main.c:106:     for (int i=si; i<si+_block_size; i++){
+	.loc 1 106 5
+	jmp	.L36	#
+.L41:
+.LBB48:
+# main.c:107:         for (int j=sj; j<sj+_block_size; j++){
+	.loc 1 107 18
+	movl	-40(%rbp), %eax	# sj, tmp117
+	movl	%eax, -16(%rbp)	# tmp117, j
+# main.c:107:         for (int j=sj; j<sj+_block_size; j++){
+	.loc 1 107 9
+	jmp	.L37	#
+.L40:
+.LBB49:
 # main.c:108: 	    double C_ij = C[i][j];
-	movq	-56(%rsp), %rax	# %sfp, ivtmp.192
-	movq	-96(%rsp), %rcx	# %sfp, C
-	movq	-64(%rsp), %rdx	# %sfp, vectp.162
-	movq	(%rcx,%rax), %rcx	# MEM[(double * *)C_33(D) + ivtmp.192_19 * 1], _4
-	movq	%rcx, 128(%rsp)	# _4, %sfp
-	movq	-88(%rsp), %rcx	# %sfp, A
-	addq	(%rcx,%rax), %rdx	# MEM[(double * *)A_38(D) + ivtmp.192_19 * 1], vectp.162
-	movq	128(%rsp), %rcx	# %sfp, _4
-	movq	%rsi, 128(%rsp)	# _261, %sfp
+	.loc 1 108 21
+	movl	-20(%rbp), %eax	# i, tmp118
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _2
+	movq	-72(%rbp), %rax	# C, tmp119
+	addq	%rdx, %rax	# _2, _3
+	movq	(%rax), %rax	# *_3, _4
+# main.c:108: 	    double C_ij = C[i][j];
+	.loc 1 108 24
+	movl	-16(%rbp), %edx	# j, tmp120
+	movslq	%edx, %rdx	# tmp120, _5
+	salq	$3, %rdx	#, _6
+	addq	%rdx, %rax	# _6, _7
+# main.c:108: 	    double C_ij = C[i][j];
+	.loc 1 108 13
+	vmovsd	(%rax), %xmm0	# *_7, tmp121
+	vmovsd	%xmm0, -8(%rbp)	# tmp121, C_ij
+.LBB50:
+# main.c:109:             for (int k=sk; k<sk+_block_size; k++){
+	.loc 1 109 22
+	movl	-44(%rbp), %eax	# sk, tmp122
+	movl	%eax, -12(%rbp)	# tmp122, k
+# main.c:109:             for (int k=sk; k<sk+_block_size; k++){
+	.loc 1 109 13
+	jmp	.L38	#
+.L39:
 # main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	movq	-72(%rsp), %rax	# %sfp, ivtmp.180
-	.p2align 4,,10
-	.p2align 3
-.L99:
+	.loc 1 111 12
+	movl	-20(%rbp), %eax	# i, tmp123
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _9
+	movq	-56(%rbp), %rax	# A, tmp124
+	addq	%rdx, %rax	# _9, _10
+	movq	(%rax), %rax	# *_10, _11
 # main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%r15), %xmm0	# MEM[(double *)_93], MEM[(double *)_93]
-	movq	104(%rsp), %rsi	# %sfp, _60
-	vmovsd	(%r14,%rax), %xmm1	# MEM[(double *)_13], MEM[(double *)_13]
-	vmovsd	(%rcx,%rax), %xmm2	# MEM[(double *)_4 + ivtmp.180_21 * 1], stmp_C_ij_40.169
-	vmovhpd	(%rax,%rsi), %xmm0, %xmm0	# MEM[(double *)_57], MEM[(double *)_93], tmp323
-	movq	120(%rsp), %rsi	# %sfp, _15
-	vmovhpd	(%rsi,%rax), %xmm1, %xmm1	# MEM[(double *)_17], MEM[(double *)_13], tmp326
-	movq	56(%rsp), %rsi	# %sfp, _125
-	vinsertf128	$0x1, %xmm0, %ymm1, %ymm1	# tmp323, tmp326, vect__17.167
+	.loc 1 111 15
+	movl	-12(%rbp), %edx	# k, tmp125
+	movslq	%edx, %rdx	# tmp125, _12
+	salq	$3, %rdx	#, _13
+	addq	%rdx, %rax	# _13, _14
+	vmovsd	(%rax), %xmm1	# *_14, _15
 # main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	(%rdx), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.162_103], vect__17.167, vect__18.168
-	vaddsd	%xmm1, %xmm2, %xmm2	# tmp330, stmp_C_ij_40.169, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm0	# tmp330, stmp_C_ij_40.169
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__18.168, tmp332
-	vaddsd	%xmm2, %xmm0, %xmm2	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
+	.loc 1 111 22
+	movl	-12(%rbp), %eax	# k, tmp126
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _17
+	movq	-64(%rbp), %rax	# B, tmp127
+	addq	%rdx, %rax	# _17, _18
+	movq	(%rax), %rax	# *_18, _19
 # main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm2, %xmm1, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
+	.loc 1 111 25
+	movl	-16(%rbp), %edx	# j, tmp128
+	movslq	%edx, %rdx	# tmp128, _20
+	salq	$3, %rdx	#, _21
+	addq	%rdx, %rax	# _21, _22
+	vmovsd	(%rax), %xmm0	# *_22, _23
 # main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%r13), %xmm2	# MEM[(double *)_123], MEM[(double *)_123]
+	.loc 1 111 19
+	vmulsd	%xmm0, %xmm1, %xmm0	# _23, _15, _24
 # main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp332, stmp_C_ij_40.169
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovhpd	(%rax,%rsi), %xmm2, %xmm2	# MEM[(double *)_127], MEM[(double *)_123], tmp337
-	movq	64(%rsp), %rsi	# %sfp, _117
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%r12), %xmm1	# MEM[(double *)_115], MEM[(double *)_115]
-	vmovhpd	(%rax,%rsi), %xmm1, %xmm1	# MEM[(double *)_119], MEM[(double *)_115], tmp340
-	movq	40(%rsp), %rsi	# %sfp, _160
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp337, tmp340, vect__17.167
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	32(%rdx), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.162_103 + 32B], vect__17.167, vect__18.168
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, C_ij, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp344, stmp_C_ij_40.169
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__18.168, tmp346
-	vaddsd	%xmm2, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%rbx), %xmm2	# MEM[(double *)_158], MEM[(double *)_158]
-	vmovhpd	(%rax,%rsi), %xmm2, %xmm2	# MEM[(double *)_162], MEM[(double *)_158], tmp351
-	movq	48(%rsp), %rsi	# %sfp, _152
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp346, stmp_C_ij_40.169
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%r11), %xmm1	# MEM[(double *)_150], MEM[(double *)_150]
-	vmovhpd	(%rax,%rsi), %xmm1, %xmm1	# MEM[(double *)_154], MEM[(double *)_150], tmp354
-	movq	24(%rsp), %rsi	# %sfp, _195
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp351, tmp354, vect__17.167
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	64(%rdx), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.162_103 + 64B], vect__17.167, vect__18.168
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, C_ij, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp358, stmp_C_ij_40.169
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__18.168, tmp360
-	vaddsd	%xmm2, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%r10), %xmm2	# MEM[(double *)_193], MEM[(double *)_193]
-	vmovhpd	(%rax,%rsi), %xmm2, %xmm2	# MEM[(double *)_197], MEM[(double *)_193], tmp365
-	movq	32(%rsp), %rsi	# %sfp, _187
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp360, stmp_C_ij_40.169
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%r9), %xmm1	# MEM[(double *)_185], MEM[(double *)_185]
-	vmovhpd	(%rax,%rsi), %xmm1, %xmm1	# MEM[(double *)_189], MEM[(double *)_185], tmp368
-	movq	8(%rsp), %rsi	# %sfp, _230
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp365, tmp368, vect__17.167
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	96(%rdx), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.162_103 + 96B], vect__17.167, vect__18.168
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, C_ij, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp372, stmp_C_ij_40.169
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__18.168, tmp374
-	vaddsd	%xmm2, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%r8), %xmm2	# MEM[(double *)_228], MEM[(double *)_228]
-	vmovhpd	(%rax,%rsi), %xmm2, %xmm2	# MEM[(double *)_232], MEM[(double *)_228], tmp379
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp374, stmp_C_ij_40.169
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%rdi), %xmm1	# MEM[(double *)_220], MEM[(double *)_220]
-	movq	16(%rsp), %rsi	# %sfp, _222
-	vmovhpd	(%rax,%rsi), %xmm1, %xmm1	# MEM[(double *)_224], MEM[(double *)_220], tmp382
-	movq	128(%rsp), %rsi	# %sfp, _261
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp379, tmp382, vect__17.167
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	128(%rdx), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.162_103 + 128B], vect__17.167, vect__18.168
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, C_ij, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp386, stmp_C_ij_40.169
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__18.168, tmp388
-	vaddsd	%xmm2, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%rsi), %xmm2	# MEM[(double *)_263], MEM[(double *)_263]
-	movq	-16(%rsp), %rsi	# %sfp, _265
-	vmovhpd	(%rax,%rsi), %xmm2, %xmm2	# MEM[(double *)_267], MEM[(double *)_263], tmp393
-	movq	(%rsp), %rsi	# %sfp, _253
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp388, stmp_C_ij_40.169
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%rsi), %xmm1	# MEM[(double *)_255], MEM[(double *)_255]
-	movq	-8(%rsp), %rsi	# %sfp, _257
-	vmovhpd	(%rax,%rsi), %xmm1, %xmm1	# MEM[(double *)_259], MEM[(double *)_255], tmp396
-	movq	-40(%rsp), %rsi	# %sfp, _296
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp393, tmp396, vect__17.167
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	160(%rdx), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.162_103 + 160B], vect__17.167, vect__18.168
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, C_ij, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp400, stmp_C_ij_40.169
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__18.168, tmp402
-	vaddsd	%xmm2, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%rsi), %xmm2	# MEM[(double *)_298], MEM[(double *)_298]
-	movq	-48(%rsp), %rsi	# %sfp, _300
-	vmovhpd	(%rax,%rsi), %xmm2, %xmm2	# MEM[(double *)_302], MEM[(double *)_298], tmp407
-	movq	-24(%rsp), %rsi	# %sfp, _288
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp402, stmp_C_ij_40.169
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%rsi), %xmm1	# MEM[(double *)_290], MEM[(double *)_290]
-	movq	-32(%rsp), %rsi	# %sfp, _292
-	vmovhpd	(%rax,%rsi), %xmm1, %xmm1	# MEM[(double *)_294], MEM[(double *)_290], tmp410
-	movq	88(%rsp), %rsi	# %sfp, _80
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp407, tmp410, vect__17.167
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	192(%rdx), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.162_103 + 192B], vect__17.167, vect__18.168
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, C_ij, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp414, stmp_C_ij_40.169
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__18.168, tmp416
-	vaddsd	%xmm2, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%rsi), %xmm2	# MEM[(double *)_78], MEM[(double *)_78]
-	movq	96(%rsp), %rsi	# %sfp, _76
-	vmovhpd	(%rax,%rsi), %xmm2, %xmm2	# MEM[(double *)_74], MEM[(double *)_78], tmp421
-	movq	72(%rsp), %rsi	# %sfp, _88
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp416, stmp_C_ij_40.169
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rax,%rsi), %xmm1	# MEM[(double *)_86], MEM[(double *)_86]
-	movq	80(%rsp), %rsi	# %sfp, _84
-	vmovhpd	(%rax,%rsi), %xmm1, %xmm1	# MEM[(double *)_82], MEM[(double *)_86], tmp424
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp421, tmp424, vect__17.167
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	224(%rdx), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.162_103 + 224B], vect__17.167, vect__18.168
-	vaddsd	%xmm0, %xmm1, %xmm0	# C_ij, stmp_C_ij_40.169, stmp_C_ij_40.169
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp428, stmp_C_ij_40.169
-	vaddsd	%xmm0, %xmm2, %xmm2	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-	vextractf128	$0x1, %ymm1, %xmm0	# vect__18.168, tmp430
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm2, %xmm0, %xmm1	# stmp_C_ij_40.169, stmp_C_ij_40.169, stmp_C_ij_40.169
-	vunpckhpd	%xmm0, %xmm0, %xmm0	# tmp430, stmp_C_ij_40.169
-	vaddsd	%xmm0, %xmm1, %xmm0	# stmp_C_ij_40.169, stmp_C_ij_40.169, C_ij
+	.loc 1 111 8
+	vmovsd	-8(%rbp), %xmm1	# C_ij, tmp130
+	vaddsd	%xmm0, %xmm1, %xmm0	# _24, tmp130, tmp129
+	vmovsd	%xmm0, -8(%rbp)	# tmp129, C_ij
+# main.c:109:             for (int k=sk; k<sk+_block_size; k++){
+	.loc 1 109 47 discriminator 3
+	addl	$1, -12(%rbp)	#, k
+.L38:
+# main.c:109:             for (int k=sk; k<sk+_block_size; k++){
+	.loc 1 109 32 discriminator 1
+	movl	-44(%rbp), %edx	# sk, tmp131
+	movl	16(%rbp), %eax	# _block_size, tmp132
+	addl	%edx, %eax	# tmp131, _25
+# main.c:109:             for (int k=sk; k<sk+_block_size; k++){
+	.loc 1 109 29 discriminator 1
+	cmpl	%eax, -12(%rbp)	# _25, k
+	jl	.L39	#,
+.LBE50:
 # main.c:113:             C[i][j] = C_ij;
-	vmovsd	%xmm0, (%rcx,%rax)	# C_ij, MEM[(double *)_4 + ivtmp.180_21 * 1]
-# main.c:107:         for (int j=sj; j<sj+BLOCK_SIZE; j++){
-	addq	$8, %rax	#, ivtmp.180
-	cmpq	%rax, 112(%rsp)	# ivtmp.180, %sfp
-	jne	.L99	#,
-# main.c:106:     for (int i=si; i<si+BLOCK_SIZE; i++){
-	addq	$8, -56(%rsp)	#, %sfp
-	movq	-80(%rsp), %rcx	# %sfp, _145
-	movq	-56(%rsp), %rax	# %sfp, ivtmp.192
-	movq	128(%rsp), %rsi	# %sfp, _261
-	cmpq	%rcx, %rax	# _145, ivtmp.192
-	jne	.L98	#,
-	vzeroupper
+	.loc 1 113 14
+	movl	-20(%rbp), %eax	# i, tmp133
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _27
+	movq	-72(%rbp), %rax	# C, tmp134
+	addq	%rdx, %rax	# _27, _28
+	movq	(%rax), %rax	# *_28, _29
+# main.c:113:             C[i][j] = C_ij;
+	.loc 1 113 17
+	movl	-16(%rbp), %edx	# j, tmp135
+	movslq	%edx, %rdx	# tmp135, _30
+	salq	$3, %rdx	#, _31
+	addq	%rdx, %rax	# _31, _32
+# main.c:113:             C[i][j] = C_ij;
+	.loc 1 113 21
+	vmovsd	-8(%rbp), %xmm0	# C_ij, tmp136
+	vmovsd	%xmm0, (%rax)	# tmp136, *_32
+.LBE49:
+# main.c:107:         for (int j=sj; j<sj+_block_size; j++){
+	.loc 1 107 43 discriminator 2
+	addl	$1, -16(%rbp)	#, j
+.L37:
+# main.c:107:         for (int j=sj; j<sj+_block_size; j++){
+	.loc 1 107 28 discriminator 1
+	movl	-40(%rbp), %edx	# sj, tmp137
+	movl	16(%rbp), %eax	# _block_size, tmp138
+	addl	%edx, %eax	# tmp137, _33
+# main.c:107:         for (int j=sj; j<sj+_block_size; j++){
+	.loc 1 107 25 discriminator 1
+	cmpl	%eax, -16(%rbp)	# _33, j
+	jl	.L40	#,
+.LBE48:
+# main.c:106:     for (int i=si; i<si+_block_size; i++){
+	.loc 1 106 39 discriminator 2
+	addl	$1, -20(%rbp)	#, i
+.L36:
+# main.c:106:     for (int i=si; i<si+_block_size; i++){
+	.loc 1 106 24 discriminator 1
+	movl	-36(%rbp), %edx	# si, tmp139
+	movl	16(%rbp), %eax	# _block_size, tmp140
+	addl	%edx, %eax	# tmp139, _34
+# main.c:106:     for (int i=si; i<si+_block_size; i++){
+	.loc 1 106 21 discriminator 1
+	cmpl	%eax, -20(%rbp)	# _34, i
+	jl	.L41	#,
+.LBE47:
 # main.c:116: }
-	leaq	-40(%rbp), %rsp	#,
-	popq	%rbx	#
-	popq	%r12	#
-	popq	%r13	#
-	popq	%r14	#
-	popq	%r15	#
+	.loc 1 116 1
+	nop	
+	nop	
 	popq	%rbp	#
 	.cfi_def_cfa 7, 8
 	ret	
 	.cfi_endproc
-.LFE6648:
+.LFE5045:
 	.size	do_block, .-do_block
-	.p2align 4
 	.globl	blocked_matrix_multiply
 	.type	blocked_matrix_multiply, @function
 blocked_matrix_multiply:
-.LFB6649:
+.LFB5046:
+	.loc 1 123 104
 	.cfi_startproc
 	endbr64	
 	pushq	%rbp	#
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
-	movq	%rsi, %r11	# tmp455, B
-	movl	%ecx, %esi	# tmp457, L
 	movq	%rsp, %rbp	#,
 	.cfi_def_cfa_register 6
-	pushq	%r15	#
-	pushq	%r14	#
-	pushq	%r13	#
-	pushq	%r12	#
-	pushq	%rbx	#
-	andq	$-32, %rsp	#,
-	subq	$200, %rsp	#,
-	.cfi_offset 15, -24
-	.cfi_offset 14, -32
-	.cfi_offset 13, -40
-	.cfi_offset 12, -48
-	.cfi_offset 3, -56
-# main.c:123: void blocked_matrix_multiply(double **A, double **B, double **C, int L, int M, int N) {
-	movq	%rdi, -32(%rsp)	# tmp454, %sfp
-	movq	%rdx, -40(%rsp)	# tmp456, %sfp
-# main.c:125:     for(int sj=0; sj<L; sj+=BLOCK_SIZE) {
-	testl	%ecx, %ecx	# L
-	jle	.L118	#,
-	testl	%r9d, %r9d	# N
-	jle	.L118	#,
-	movl	%r8d, %eax	# tmp458, M
-	testl	%r8d, %r8d	# M
-	jle	.L118	#,
-	subl	$1, %eax	#, tmp333
-	xorl	%ebx, %ebx	# ivtmp.252
-# main.c:125:     for(int sj=0; sj<L; sj+=BLOCK_SIZE) {
-	xorl	%edx, %edx	# sj
-	shrl	$5, %eax	#, tmp334
-	addl	$1, %eax	#,
-	salq	$8, %rax	#, tmp336
-	movq	%rax, 16(%rsp)	# tmp336, %sfp
-.L107:
-	movl	%edx, -60(%rsp)	# sj, %sfp
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	movl	$256, %r12d	#, ivtmp.246
-# main.c:127:         for(int si=0; si<N; si+=BLOCK_SIZE) {
-	xorl	%r10d, %r10d	# si
-	movq	%rbx, %rcx	# ivtmp.252, ivtmp.252
-	leaq	256(%rbx), %rax	#, _131
-	movq	%r12, %rdi	# ivtmp.246, ivtmp.246
-	movq	%rax, -56(%rsp)	# _131, %sfp
-.L114:
-	leaq	-256(%rdi), %rax	#, ivtmp.233
-	movl	%esi, -64(%rsp)	# L, %sfp
-	movq	%r11, %rdx	# B, ivtmp.241
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	xorl	%ebx, %ebx	# ivtmp.240
-	movq	%rax, -48(%rsp)	# ivtmp.233, %sfp
-	movl	%r10d, %r13d	# si, si
-	movq	%r11, -72(%rsp)	# B, %sfp
-	movl	%r9d, -76(%rsp)	# N, %sfp
-.L113:
-	movq	24(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_262], 64, 192>, _100
-	movq	-48(%rsp), %r12	# %sfp, ivtmp.233
-	movq	16(%rdx), %r15	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_262], 64, 128>, _42
-	movq	%rax, 136(%rsp)	# _100, %sfp
-	movq	8(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_262], 64, 64>, _36
-	movq	%rax, 176(%rsp)	# _36, %sfp
-	movq	(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_262], 64, 0>, _32
-	movq	%rax, 184(%rsp)	# _32, %sfp
-	movq	56(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_263], 64, 192>, _44
-	movq	%rax, 168(%rsp)	# _44, %sfp
-	movq	48(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_263], 64, 128>, _50
-	movq	%rax, 160(%rsp)	# _50, %sfp
-	movq	40(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_263], 64, 64>, _55
-	movq	%rax, 152(%rsp)	# _55, %sfp
-	movq	32(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_263], 64, 0>, _60
-	movq	%rax, 144(%rsp)	# _60, %sfp
-	movq	88(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_264], 64, 192>, _174
-	movq	%rax, 88(%rsp)	# _174, %sfp
-	movq	80(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_264], 64, 128>, _170
-	movq	%rax, 96(%rsp)	# _170, %sfp
-	movq	72(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_264], 64, 64>, _166
-	movq	%rax, 104(%rsp)	# _166, %sfp
-	movq	64(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_264], 64, 0>, _162
-	movq	%rax, 112(%rsp)	# _162, %sfp
-	movq	120(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_295], 64, 192>, _209
-	movq	%rax, 56(%rsp)	# _209, %sfp
-	movq	112(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_295], 64, 128>, _205
-	movq	%rax, 64(%rsp)	# _205, %sfp
-	movq	104(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_295], 64, 64>, _201
-	movq	%rax, 72(%rsp)	# _201, %sfp
-	movq	96(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_295], 64, 0>, _197
-	movq	%rax, 80(%rsp)	# _197, %sfp
-	movq	152(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_228], 64, 192>, _244
-	movq	%rdx, -88(%rsp)	# ivtmp.241, %sfp
-	movq	160(%rdx), %r11	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_136], 64, 0>, _267
-	movq	%rax, 24(%rsp)	# _244, %sfp
-	movq	144(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_228], 64, 128>, _240
-	movq	208(%rdx), %r10	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_143], 64, 128>, _310
-	movq	192(%rdx), %r9	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_143], 64, 0>, _302
-	movq	%rax, 32(%rsp)	# _240, %sfp
-	movq	136(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_228], 64, 64>, _236
-	movq	240(%rdx), %rsi	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_137], 64, 128>, _120
-	movq	%rax, 40(%rsp)	# _236, %sfp
-	movq	128(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_228], 64, 0>, _232
-	movq	%rax, 48(%rsp)	# _232, %sfp
-	movq	184(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_136], 64, 192>, _279
-	movq	%rax, -8(%rsp)	# _279, %sfp
-	movq	176(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_136], 64, 128>, _275
-	movq	%rax, (%rsp)	# _275, %sfp
-	movq	168(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_136], 64, 64>, _271
-	movq	%rax, 8(%rsp)	# _271, %sfp
-	movq	216(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_143], 64, 192>, _314
-	movq	%rax, -24(%rsp)	# _314, %sfp
-	movq	200(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_143], 64, 64>, _306
-	movq	%rax, -16(%rsp)	# _306, %sfp
-	movq	248(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_137], 64, 192>, _116
-	movq	%rax, 128(%rsp)	# _116, %sfp
-	movq	232(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_137], 64, 64>, _124
-	movq	%rax, 120(%rsp)	# _124, %sfp
-	movq	224(%rdx), %rax	# BIT_FIELD_REF <MEM <vector(4) long unsigned int> [(double * *)_137], 64, 0>, _128
-.L111:
-# main.c:108: 	    double C_ij = C[i][j];
-	movq	-40(%rsp), %rdx	# %sfp, C
-	movq	%rbx, -96(%rsp)	# ivtmp.240, %sfp
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	movq	%rcx, %r8	# ivtmp.252, ivtmp.221
-# main.c:108: 	    double C_ij = C[i][j];
-	movq	(%rdx,%r12), %rdx	# MEM[(double * *)C_15(D) + ivtmp.233_80 * 1], _22
-	movq	%rdx, 192(%rsp)	# _22, %sfp
-	movq	-32(%rsp), %rdx	# %sfp, A
-	movq	(%rdx,%r12), %r14	# MEM[(double * *)A_13(D) + ivtmp.233_80 * 1], vectp.203
-	movq	192(%rsp), %rdx	# %sfp, _22
-	movq	%r12, 192(%rsp)	# ivtmp.233, %sfp
-	movq	-96(%rsp), %r12	# %sfp, ivtmp.240
-	addq	%rbx, %r14	# ivtmp.240, vectp.203
-	movq	%rdi, %rbx	# ivtmp.246, ivtmp.246
-	movq	%rcx, %rdi	# ivtmp.252, ivtmp.252
-	movl	%r13d, %ecx	# si, si
-	movq	%rbx, %r13	# ivtmp.246, ivtmp.246
-	.p2align 4,,10
-	.p2align 3
-.L108:
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r15,%r8), %xmm1	# MEM[(double *)_133], MEM[(double *)_133]
-	movq	136(%rsp), %rbx	# %sfp, _100
-	vmovsd	(%rdx,%r8), %xmm2	# MEM[(double *)_22 + ivtmp.221_83 * 1], stmp_C_ij_41.210
-	vmovhpd	(%r8,%rbx), %xmm1, %xmm1	# MEM[(double *)_98], MEM[(double *)_133], tmp338
-	movq	184(%rsp), %rbx	# %sfp, _32
-	vmovsd	(%rbx,%r8), %xmm0	# MEM[(double *)_34], MEM[(double *)_34]
-	movq	176(%rsp), %rbx	# %sfp, _36
-	vmovhpd	(%rbx,%r8), %xmm0, %xmm0	# MEM[(double *)_38], MEM[(double *)_34], tmp341
-	movq	160(%rsp), %rbx	# %sfp, _50
-	vinsertf128	$0x1, %xmm1, %ymm0, %ymm0	# tmp338, tmp341, vect__38.208
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	(%r14), %ymm0, %ymm0	# MEM <vector(4) double> [(double *)vectp.203_145], vect__38.208, vect__39.209
-	vaddsd	%xmm0, %xmm2, %xmm2	# tmp345, stmp_C_ij_41.210, stmp_C_ij_41.210
-	vunpckhpd	%xmm0, %xmm0, %xmm1	# tmp345, stmp_C_ij_41.210
-	vextractf128	$0x1, %ymm0, %xmm0	# vect__39.209, tmp347
-	vaddsd	%xmm2, %xmm1, %xmm1	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm2	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-	vunpckhpd	%xmm0, %xmm0, %xmm0	# tmp347, stmp_C_ij_41.210
-	vaddsd	%xmm0, %xmm2, %xmm2	# stmp_C_ij_41.210, stmp_C_ij_41.210, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%rbx,%r8), %xmm0	# MEM[(double *)_48], MEM[(double *)_48]
-	movq	168(%rsp), %rbx	# %sfp, _44
-	vmovhpd	(%rbx,%r8), %xmm0, %xmm0	# MEM[(double *)_40], MEM[(double *)_48], tmp352
-	movq	144(%rsp), %rbx	# %sfp, _60
-	vmovsd	(%rbx,%r8), %xmm1	# MEM[(double *)_57], MEM[(double *)_57]
-	movq	152(%rsp), %rbx	# %sfp, _55
-	vmovhpd	(%rbx,%r8), %xmm1, %xmm1	# MEM[(double *)_53], MEM[(double *)_57], tmp355
-	movq	96(%rsp), %rbx	# %sfp, _170
-	vinsertf128	$0x1, %xmm0, %ymm1, %ymm1	# tmp352, tmp355, vect__38.208
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	32(%r14), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.203_145 + 32B], vect__38.208, vect__39.209
-	vaddsd	%xmm2, %xmm1, %xmm2	# C_ij, stmp_C_ij_41.210, stmp_C_ij_41.210
-	vunpckhpd	%xmm1, %xmm1, %xmm0	# tmp359, stmp_C_ij_41.210
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__39.209, tmp361
-	vaddsd	%xmm2, %xmm0, %xmm2	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm2, %xmm1, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r8,%rbx), %xmm2	# MEM[(double *)_172], MEM[(double *)_172]
-	movq	88(%rsp), %rbx	# %sfp, _174
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp361, stmp_C_ij_41.210
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovhpd	(%r8,%rbx), %xmm2, %xmm2	# MEM[(double *)_176], MEM[(double *)_172], tmp366
-	movq	112(%rsp), %rbx	# %sfp, _162
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r8,%rbx), %xmm1	# MEM[(double *)_164], MEM[(double *)_164]
-	movq	104(%rsp), %rbx	# %sfp, _166
-	vmovhpd	(%r8,%rbx), %xmm1, %xmm1	# MEM[(double *)_168], MEM[(double *)_164], tmp369
-	movq	64(%rsp), %rbx	# %sfp, _205
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp366, tmp369, vect__38.208
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	64(%r14), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.203_145 + 64B], vect__38.208, vect__39.209
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, C_ij, stmp_C_ij_41.210
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp373, stmp_C_ij_41.210
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__39.209, tmp375
-	vaddsd	%xmm2, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r8,%rbx), %xmm2	# MEM[(double *)_207], MEM[(double *)_207]
-	movq	56(%rsp), %rbx	# %sfp, _209
-	vmovhpd	(%r8,%rbx), %xmm2, %xmm2	# MEM[(double *)_211], MEM[(double *)_207], tmp380
-	movq	80(%rsp), %rbx	# %sfp, _197
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp375, stmp_C_ij_41.210
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r8,%rbx), %xmm1	# MEM[(double *)_199], MEM[(double *)_199]
-	movq	72(%rsp), %rbx	# %sfp, _201
-	vmovhpd	(%r8,%rbx), %xmm1, %xmm1	# MEM[(double *)_203], MEM[(double *)_199], tmp383
-	movq	32(%rsp), %rbx	# %sfp, _240
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp380, tmp383, vect__38.208
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	96(%r14), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.203_145 + 96B], vect__38.208, vect__39.209
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, C_ij, stmp_C_ij_41.210
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp387, stmp_C_ij_41.210
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__39.209, tmp389
-	vaddsd	%xmm2, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r8,%rbx), %xmm2	# MEM[(double *)_242], MEM[(double *)_242]
-	movq	24(%rsp), %rbx	# %sfp, _244
-	vmovhpd	(%r8,%rbx), %xmm2, %xmm2	# MEM[(double *)_246], MEM[(double *)_242], tmp394
-	movq	48(%rsp), %rbx	# %sfp, _232
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp389, stmp_C_ij_41.210
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r8,%rbx), %xmm1	# MEM[(double *)_234], MEM[(double *)_234]
-	movq	40(%rsp), %rbx	# %sfp, _236
-	vmovhpd	(%r8,%rbx), %xmm1, %xmm1	# MEM[(double *)_238], MEM[(double *)_234], tmp397
-	movq	(%rsp), %rbx	# %sfp, _275
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp394, tmp397, vect__38.208
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	128(%r14), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.203_145 + 128B], vect__38.208, vect__39.209
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, C_ij, stmp_C_ij_41.210
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp401, stmp_C_ij_41.210
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__39.209, tmp403
-	vaddsd	%xmm2, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r8,%rbx), %xmm2	# MEM[(double *)_277], MEM[(double *)_277]
-	movq	-8(%rsp), %rbx	# %sfp, _279
-	vmovhpd	(%r8,%rbx), %xmm2, %xmm2	# MEM[(double *)_281], MEM[(double *)_277], tmp408
-	movq	8(%rsp), %rbx	# %sfp, _271
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp403, stmp_C_ij_41.210
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r8,%r11), %xmm1	# MEM[(double *)_269], MEM[(double *)_269]
-	vmovhpd	(%r8,%rbx), %xmm1, %xmm1	# MEM[(double *)_273], MEM[(double *)_269], tmp411
-	movq	-24(%rsp), %rbx	# %sfp, _314
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp408, tmp411, vect__38.208
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	160(%r14), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.203_145 + 160B], vect__38.208, vect__39.209
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, C_ij, stmp_C_ij_41.210
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp415, stmp_C_ij_41.210
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__39.209, tmp417
-	vaddsd	%xmm2, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r8,%r10), %xmm2	# MEM[(double *)_312], MEM[(double *)_312]
-	vmovhpd	(%r8,%rbx), %xmm2, %xmm2	# MEM[(double *)_316], MEM[(double *)_312], tmp422
-	movq	-16(%rsp), %rbx	# %sfp, _306
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp417, stmp_C_ij_41.210
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r8,%r9), %xmm1	# MEM[(double *)_304], MEM[(double *)_304]
-	vmovhpd	(%r8,%rbx), %xmm1, %xmm1	# MEM[(double *)_308], MEM[(double *)_304], tmp425
-	movq	128(%rsp), %rbx	# %sfp, _116
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp422, tmp425, vect__38.208
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	192(%r14), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.203_145 + 192B], vect__38.208, vect__39.209
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, C_ij, stmp_C_ij_41.210
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp429, stmp_C_ij_41.210
-	vextractf128	$0x1, %ymm1, %xmm1	# vect__39.209, tmp431
-	vaddsd	%xmm2, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r8,%rsi), %xmm2	# MEM[(double *)_118], MEM[(double *)_118]
-	vmovhpd	(%r8,%rbx), %xmm2, %xmm2	# MEM[(double *)_114], MEM[(double *)_118], tmp436
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-	vunpckhpd	%xmm1, %xmm1, %xmm1	# tmp431, stmp_C_ij_41.210
-	vaddsd	%xmm1, %xmm0, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, C_ij
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmovsd	(%r8,%rax), %xmm1	# MEM[(double *)_126], MEM[(double *)_126]
-	movq	120(%rsp), %rbx	# %sfp, _124
-	vmovhpd	(%r8,%rbx), %xmm1, %xmm1	# MEM[(double *)_122], MEM[(double *)_126], tmp439
-# main.c:107:         for (int j=sj; j<sj+BLOCK_SIZE; j++){
-	movq	-56(%rsp), %rbx	# %sfp, _131
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vinsertf128	$0x1, %xmm2, %ymm1, %ymm1	# tmp436, tmp439, vect__38.208
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vmulpd	224(%r14), %ymm1, %ymm1	# MEM <vector(4) double> [(double *)vectp.203_145 + 224B], vect__38.208, vect__39.209
-	vaddsd	%xmm0, %xmm1, %xmm0	# C_ij, stmp_C_ij_41.210, stmp_C_ij_41.210
-	vunpckhpd	%xmm1, %xmm1, %xmm2	# tmp443, stmp_C_ij_41.210
-	vaddsd	%xmm0, %xmm2, %xmm2	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-	vextractf128	$0x1, %ymm1, %xmm0	# vect__39.209, tmp445
-# main.c:111: 		C_ij += A[i][k] * B[k][j]; 
-	vaddsd	%xmm2, %xmm0, %xmm1	# stmp_C_ij_41.210, stmp_C_ij_41.210, stmp_C_ij_41.210
-	vunpckhpd	%xmm0, %xmm0, %xmm0	# tmp445, stmp_C_ij_41.210
-	vaddsd	%xmm0, %xmm1, %xmm0	# stmp_C_ij_41.210, stmp_C_ij_41.210, C_ij
-# main.c:113:             C[i][j] = C_ij;
-	vmovsd	%xmm0, (%rdx,%r8)	# C_ij, MEM[(double *)_22 + ivtmp.221_83 * 1]
-# main.c:107:         for (int j=sj; j<sj+BLOCK_SIZE; j++){
-	addq	$8, %r8	#, ivtmp.221
-	cmpq	%rbx, %r8	# _131, ivtmp.221
-	jne	.L108	#,
-# main.c:106:     for (int i=si; i<si+BLOCK_SIZE; i++){
-	movq	%r12, %rbx	# ivtmp.240, ivtmp.240
-	movq	192(%rsp), %r12	# %sfp, ivtmp.233
-	movq	%r13, %rdx	# ivtmp.246, ivtmp.246
-	movl	%ecx, %r13d	# si, si
-	movq	%rdi, %rcx	# ivtmp.252, ivtmp.252
-	movq	%rdx, %rdi	# ivtmp.246, ivtmp.246
-	addq	$8, %r12	#, ivtmp.233
-	cmpq	%rdx, %r12	# ivtmp.246, ivtmp.233
-	jne	.L111	#,
-# main.c:129:             for(int sk=0; sk<M; sk+=BLOCK_SIZE){
-	movq	-88(%rsp), %rdx	# %sfp, ivtmp.241
-	movq	16(%rsp), %rax	# %sfp, _260
-	addq	$256, %rbx	#, ivtmp.240
-	addq	$256, %rdx	#, ivtmp.241
-	cmpq	%rax, %rbx	# _260, ivtmp.240
-	jne	.L113	#,
-# main.c:127:         for(int si=0; si<N; si+=BLOCK_SIZE) {
-	movl	%r13d, %r10d	# si, si
-	movl	-76(%rsp), %r9d	# %sfp, N
-	movl	-64(%rsp), %esi	# %sfp, L
-# main.c:127:         for(int si=0; si<N; si+=BLOCK_SIZE) {
-	leaq	256(%r12), %rdi	#, ivtmp.246
-# main.c:127:         for(int si=0; si<N; si+=BLOCK_SIZE) {
-	addl	$32, %r10d	#, si
-	movq	-72(%rsp), %r11	# %sfp, B
-# main.c:127:         for(int si=0; si<N; si+=BLOCK_SIZE) {
-	cmpl	%r10d, %r9d	# si, N
-	jg	.L114	#,
-# main.c:125:     for(int sj=0; sj<L; sj+=BLOCK_SIZE) {
-	movl	-60(%rsp), %edx	# %sfp, sj
-	addl	$32, %edx	#, sj
-# main.c:125:     for(int sj=0; sj<L; sj+=BLOCK_SIZE) {
-	cmpl	%edx, %esi	# sj, L
-	jle	.L117	#,
-	movq	%r8, %rbx	# ivtmp.221, ivtmp.252
-	jmp	.L107	#
-.L117:
-	vzeroupper
-.L118:
+	subq	$56, %rsp	#,
+	movq	%rdi, -24(%rbp)	# A, A
+	movq	%rsi, -32(%rbp)	# B, B
+	movq	%rdx, -40(%rbp)	# C, C
+	movl	%ecx, -44(%rbp)	# L, L
+	movl	%r8d, -48(%rbp)	# M, M
+	movl	%r9d, -52(%rbp)	# N, N
+.LBB51:
+# main.c:125:     for(int sj=0; sj<L; sj+=_block_size) {
+	.loc 1 125 13
+	movl	$0, -12(%rbp)	#, sj
+# main.c:125:     for(int sj=0; sj<L; sj+=_block_size) {
+	.loc 1 125 5
+	jmp	.L43	#
+.L48:
+.LBB52:
+# main.c:127:         for(int si=0; si<N; si+=_block_size) {
+	.loc 1 127 17
+	movl	$0, -8(%rbp)	#, si
+# main.c:127:         for(int si=0; si<N; si+=_block_size) {
+	.loc 1 127 9
+	jmp	.L44	#
+.L47:
+.LBB53:
+# main.c:129:             for(int sk=0; sk<M; sk+=_block_size){
+	.loc 1 129 21
+	movl	$0, -4(%rbp)	#, sk
+# main.c:129:             for(int sk=0; sk<M; sk+=_block_size){
+	.loc 1 129 13
+	jmp	.L45	#
+.L46:
+# main.c:130:                 do_block(si, sj, sk, A, B, C, _block_size);
+	.loc 1 130 17
+	movq	-40(%rbp), %r9	# C, tmp82
+	movq	-32(%rbp), %r8	# B, tmp83
+	movq	-24(%rbp), %rcx	# A, tmp84
+	movl	-4(%rbp), %edx	# sk, tmp85
+	movl	-12(%rbp), %esi	# sj, tmp86
+	movl	-8(%rbp), %eax	# si, tmp87
+	movl	16(%rbp), %edi	# _block_size, tmp88
+	pushq	%rdi	# tmp88
+	movl	%eax, %edi	# tmp87,
+	call	do_block	#
+	addq	$8, %rsp	#,
+# main.c:129:             for(int sk=0; sk<M; sk+=_block_size){
+	.loc 1 129 35 discriminator 3
+	movl	16(%rbp), %eax	# _block_size, tmp89
+	addl	%eax, -4(%rbp)	# tmp89, sk
+.L45:
+# main.c:129:             for(int sk=0; sk<M; sk+=_block_size){
+	.loc 1 129 29 discriminator 1
+	movl	-4(%rbp), %eax	# sk, tmp90
+	cmpl	-48(%rbp), %eax	# M, tmp90
+	jl	.L46	#,
+.LBE53:
+# main.c:127:         for(int si=0; si<N; si+=_block_size) {
+	.loc 1 127 31 discriminator 2
+	movl	16(%rbp), %eax	# _block_size, tmp91
+	addl	%eax, -8(%rbp)	# tmp91, si
+.L44:
+# main.c:127:         for(int si=0; si<N; si+=_block_size) {
+	.loc 1 127 25 discriminator 1
+	movl	-8(%rbp), %eax	# si, tmp92
+	cmpl	-52(%rbp), %eax	# N, tmp92
+	jl	.L47	#,
+.LBE52:
+# main.c:125:     for(int sj=0; sj<L; sj+=_block_size) {
+	.loc 1 125 27 discriminator 2
+	movl	16(%rbp), %eax	# _block_size, tmp93
+	addl	%eax, -12(%rbp)	# tmp93, sj
+.L43:
+# main.c:125:     for(int sj=0; sj<L; sj+=_block_size) {
+	.loc 1 125 21 discriminator 1
+	movl	-12(%rbp), %eax	# sj, tmp94
+	cmpl	-44(%rbp), %eax	# L, tmp94
+	jl	.L48	#,
+.LBE51:
 # main.c:134: }
-	leaq	-40(%rbp), %rsp	#,
-	popq	%rbx	#
-	popq	%r12	#
-	popq	%r13	#
-	popq	%r14	#
-	popq	%r15	#
-	popq	%rbp	#
+	.loc 1 134 1
+	nop	
+	nop	
+	leave	
 	.cfi_def_cfa 7, 8
 	ret	
 	.cfi_endproc
-.LFE6649:
+.LFE5046:
 	.size	blocked_matrix_multiply, .-blocked_matrix_multiply
-	.p2align 4
 	.globl	subword_parallelism_matrix_multiply
 	.type	subword_parallelism_matrix_multiply, @function
 subword_parallelism_matrix_multiply:
-.LFB6650:
+.LFB5047:
+	.loc 1 141 99
 	.cfi_startproc
 	endbr64	
-	movq	%rdx, %r11	# tmp134, C
-	movslq	%ecx, %rdx	# tmp135,
-# main.c:143:     for(int i=0; i<L; i++) {
-	testl	%edx, %edx	# L
-	jle	.L133	#,
-	movl	%r9d, %eax	# tmp137, N
-	testl	%r9d, %r9d	# N
-	jle	.L133	#,
-# main.c:141: void subword_parallelism_matrix_multiply(double **A, double **B, double **C, int L, int M, int N) {
 	pushq	%rbp	#
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
-	movq	%rdi, %r9	# A, ivtmp.276
-	movq	%rsi, %r10	# tmp133, B
 	movq	%rsp, %rbp	#,
 	.cfi_def_cfa_register 6
-	pushq	%r13	#
-	.cfi_offset 13, -24
-	leaq	(%rdi,%rdx,8), %r13	#, _72
-	movslq	%r8d, %rdi	# M, M
-	pushq	%r12	#
-	salq	$3, %rdi	#, _47
-	.cfi_offset 12, -32
-	movl	%r8d, %r12d	# tmp136, M
-	pushq	%rbx	#
-	.cfi_offset 3, -40
-	leal	-1(%rax), %ebx	#, tmp118
-	shrl	$2, %ebx	#, tmp119
-	addl	$1, %ebx	#,
-	salq	$5, %rbx	#, _22
-	.p2align 4,,10
-	.p2align 3
-.L123:
-# main.c:141: void subword_parallelism_matrix_multiply(double **A, double **B, double **C, int L, int M, int N) {
-	xorl	%ecx, %ecx	# ivtmp.270
-	.p2align 4,,10
-	.p2align 3
-.L126:
-# main.c:147:             __m256d c0 = _mm256_load_pd(&C[i][j]);
-	movq	(%r11), %r8	# MEM[(double * *)_74], MEM[(double * *)_74]
-	leaq	(%r8,%rcx), %rax	#, _67
-# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:869:   return *(__m256d *)__P;
-	vmovapd	(%rax), %ymm1	# MEM[(__m256d * {ref-all})_7], c0
-# main.c:149:             for(int k=0; k<M; k++){
-	testl	%r12d, %r12d	# M
-	jle	.L124	#,
-	movq	(%r9), %rsi	# MEM[(double * *)_75], MEM[(double * *)_75]
-	xorl	%eax, %eax	# ivtmp.263
-	.p2align 4,,10
-	.p2align 3
-.L125:
-# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:869:   return *(__m256d *)__P;
-	movq	(%r10,%rax), %rdx	# MEM[(double * *)B_35(D) + ivtmp.263_62 * 1], MEM[(double * *)B_35(D) + ivtmp.263_62 * 1]
-# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:736:   return (__m256d) __builtin_ia32_vbroadcastsd256 (__X);
-	vbroadcastsd	(%rsi,%rax), %ymm0	#* ivtmp.263, tmp124
-# main.c:149:             for(int k=0; k<M; k++){
-	addq	$8, %rax	#, ivtmp.263
-# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:314:   return (__m256d) ((__v4df)__A * (__v4df)__B);
-	vmulpd	(%rdx,%rcx), %ymm0, %ymm0	# MEM[(__m256d * {ref-all})_15], tmp124, tmp128
-# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:143:   return (__m256d) ((__v4df)__A + (__v4df)__B);
-	vaddpd	%ymm0, %ymm1, %ymm1	# tmp128, c0, c0
-# main.c:149:             for(int k=0; k<M; k++){
-	cmpq	%rax, %rdi	# ivtmp.263, _47
-	jne	.L125	#,
-# main.c:156: 	    _mm256_store_pd(&C[i][j], c0);
-	leaq	(%r8,%rcx), %rax	#, _67
-.L124:
-# main.c:145:         for(int j=0; j<N; j+=MM256_STRIDE) {
-	addq	$32, %rcx	#, ivtmp.270
-# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:875:   *(__m256d *)__P = __A;
-	vmovapd	%ymm1, (%rax)	# c0, MEM[(__m256d * {ref-all})prephitmp_68]
-# main.c:145:         for(int j=0; j<N; j+=MM256_STRIDE) {
-	cmpq	%rcx, %rbx	# ivtmp.270, _22
-	jne	.L126	#,
+	andq	$-32, %rsp	#,
+	subq	$168, %rsp	#,
+	movq	%rdi, -80(%rsp)	# A, A
+	movq	%rsi, -88(%rsp)	# B, B
+	movq	%rdx, -96(%rsp)	# C, C
+	movl	%ecx, -100(%rsp)	# L, L
+	movl	%r8d, -104(%rsp)	# M, M
+	movl	%r9d, -108(%rsp)	# N, N
+.LBB54:
 # main.c:143:     for(int i=0; i<L; i++) {
-	addq	$8, %r9	#, ivtmp.276
-	addq	$8, %r11	#, ivtmp.275
-	cmpq	%r13, %r9	# _72, ivtmp.276
-	jne	.L123	#,
-	vzeroupper
+	.loc 1 143 13
+	movl	$0, -68(%rsp)	#, i
+# main.c:143:     for(int i=0; i<L; i++) {
+	.loc 1 143 5
+	jmp	.L50	#
+.L60:
+.LBB55:
+# main.c:145:         for(int j=0; j<N; j+=MM256_STRIDE) {
+	.loc 1 145 17
+	movl	$0, -64(%rsp)	#, j
+# main.c:145:         for(int j=0; j<N; j+=MM256_STRIDE) {
+	.loc 1 145 9
+	jmp	.L51	#
+.L59:
+.LBB56:
+# main.c:147:             __m256d c0 = _mm256_load_pd(&C[i][j]);
+	.loc 1 147 43
+	movl	-68(%rsp), %eax	# i, tmp115
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _2
+	movq	-96(%rsp), %rax	# C, tmp116
+	addq	%rdx, %rax	# _2, _3
+	movq	(%rax), %rax	# *_3, _4
+# main.c:147:             __m256d c0 = _mm256_load_pd(&C[i][j]);
+	.loc 1 147 46
+	movl	-64(%rsp), %edx	# j, tmp117
+	movslq	%edx, %rdx	# tmp117, _5
+	salq	$3, %rdx	#, _6
+# main.c:147:             __m256d c0 = _mm256_load_pd(&C[i][j]);
+	.loc 1 147 41
+	addq	%rdx, %rax	# _6, _7
+	movq	%rax, -56(%rsp)	# _7, __P
+.LBB57:
+.LBB58:
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:869:   return *(__m256d *)__P;
+	.file 2 "/usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h"
+	.loc 2 869 10
+	movq	-56(%rsp), %rax	# __P, tmp118
+	vmovapd	(%rax), %ymm0	# MEM[(__m256d * {ref-all})__P_54], D.31697
+.LBE58:
+.LBE57:
+# main.c:147:             __m256d c0 = _mm256_load_pd(&C[i][j]);
+	.loc 1 147 26
+	vmovapd	%ymm0, -24(%rsp)	# D.31697, c0
+.LBB59:
+# main.c:149:             for(int k=0; k<M; k++){
+	.loc 1 149 21
+	movl	$0, -60(%rsp)	#, k
+# main.c:149:             for(int k=0; k<M; k++){
+	.loc 1 149 13
+	jmp	.L53	#
+.L58:
+# main.c:153:   		                   _mm256_broadcast_sd(&A[i][k])));
+	.loc 1 153 46
+	movl	-68(%rsp), %eax	# i, tmp119
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _9
+	movq	-80(%rsp), %rax	# A, tmp120
+	addq	%rdx, %rax	# _9, _10
+	movq	(%rax), %rax	# *_10, _11
+# main.c:153:   		                   _mm256_broadcast_sd(&A[i][k])));
+	.loc 1 153 49
+	movl	-60(%rsp), %edx	# k, tmp121
+	movslq	%edx, %rdx	# tmp121, _12
+	salq	$3, %rdx	#, _13
+# main.c:153:   		                   _mm256_broadcast_sd(&A[i][k])));
+	.loc 1 153 44
+	addq	%rdx, %rax	# _13, _14
+	movq	%rax, -40(%rsp)	# _14, __X
+.LBB60:
+.LBB61:
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:736:   return (__m256d) __builtin_ia32_vbroadcastsd256 (__X);
+	.loc 2 736 20
+	movq	-40(%rsp), %rax	# __X, tmp122
+	vbroadcastsd	(%rax), %ymm0	#, D.31715
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:736:   return (__m256d) __builtin_ia32_vbroadcastsd256 (__X);
+	.loc 2 736 10
+	nop	
+.LBE61:
+.LBE60:
+# main.c:152:                                    _mm256_mul_pd(_mm256_load_pd(&B[k][j]), 
+	.loc 1 152 67
+	movl	-60(%rsp), %eax	# k, tmp123
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _17
+	movq	-88(%rsp), %rax	# B, tmp124
+	addq	%rdx, %rax	# _17, _18
+	movq	(%rax), %rax	# *_18, _19
+# main.c:152:                                    _mm256_mul_pd(_mm256_load_pd(&B[k][j]), 
+	.loc 1 152 70
+	movl	-64(%rsp), %edx	# j, tmp125
+	movslq	%edx, %rdx	# tmp125, _20
+	salq	$3, %rdx	#, _21
+# main.c:152:                                    _mm256_mul_pd(_mm256_load_pd(&B[k][j]), 
+	.loc 1 152 65
+	addq	%rdx, %rax	# _21, _22
+	movq	%rax, -48(%rsp)	# _22, __P
+.LBB62:
+.LBB63:
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:869:   return *(__m256d *)__P;
+	.loc 2 869 10
+	movq	-48(%rsp), %rax	# __P, tmp126
+	vmovapd	(%rax), %ymm1	# MEM[(__m256d * {ref-all})__P_62], D.31711
+	vmovapd	%ymm1, 72(%rsp)	# D.31711, __A
+	vmovapd	%ymm0, 104(%rsp)	# D.31715, __B
+.LBE63:
+.LBE62:
+.LBB64:
+.LBB65:
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:314:   return (__m256d) ((__v4df)__A * (__v4df)__B);
+	.loc 2 314 10
+	vmovapd	72(%rsp), %ymm0	# __A, tmp127
+	vmulpd	104(%rsp), %ymm0, %ymm0	# __B, tmp127, D.31707
+	vmovapd	-24(%rsp), %ymm1	# c0, tmp128
+	vmovapd	%ymm1, 8(%rsp)	# tmp128, __A
+	vmovapd	%ymm0, 40(%rsp)	# D.31707, __B
+.LBE65:
+.LBE64:
+.LBB66:
+.LBB67:
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:143:   return (__m256d) ((__v4df)__A + (__v4df)__B);
+	.loc 2 143 10
+	vmovapd	8(%rsp), %ymm0	# __A, tmp129
+	vaddpd	40(%rsp), %ymm0, %ymm0	# __B, tmp129, D.31702
+.LBE67:
+.LBE66:
+# main.c:151:                 c0 = _mm256_add_pd(c0,
+	.loc 1 151 22 discriminator 3
+	vmovapd	%ymm0, -24(%rsp)	# D.31702, c0
+# main.c:149:             for(int k=0; k<M; k++){
+	.loc 1 149 32 discriminator 3
+	addl	$1, -60(%rsp)	#, k
+.L53:
+# main.c:149:             for(int k=0; k<M; k++){
+	.loc 1 149 27 discriminator 1
+	movl	-60(%rsp), %eax	# k, tmp130
+	cmpl	-104(%rsp), %eax	# M, tmp130
+	jl	.L58	#,
+.LBE59:
+# main.c:156: 	    _mm256_store_pd(&C[i][j], c0);
+	.loc 1 156 24
+	movl	-68(%rsp), %eax	# i, tmp131
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _26
+	movq	-96(%rsp), %rax	# C, tmp132
+	addq	%rdx, %rax	# _26, _27
+	movq	(%rax), %rax	# *_27, _28
+# main.c:156: 	    _mm256_store_pd(&C[i][j], c0);
+	.loc 1 156 27
+	movl	-64(%rsp), %edx	# j, tmp133
+	movslq	%edx, %rdx	# tmp133, _29
+	salq	$3, %rdx	#, _30
+# main.c:156: 	    _mm256_store_pd(&C[i][j], c0);
+	.loc 1 156 6
+	addq	%rdx, %rax	# _30, _31
+	movq	%rax, -32(%rsp)	# _31, __P
+	vmovapd	-24(%rsp), %ymm0	# c0, tmp134
+	vmovapd	%ymm0, 136(%rsp)	# tmp134, __A
+.LBB68:
+.LBB69:
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:875:   *(__m256d *)__P = __A;
+	.loc 2 875 19
+	movq	-32(%rsp), %rax	# __P, tmp135
+	vmovapd	136(%rsp), %ymm0	# __A, tmp136
+	vmovapd	%ymm0, (%rax)	# tmp136, MEM[(__m256d * {ref-all})__P_66]
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:876: }
+	.loc 2 876 1
+	nop	
+.LBE69:
+.LBE68:
+.LBE56:
+# main.c:145:         for(int j=0; j<N; j+=MM256_STRIDE) {
+	.loc 1 145 28 discriminator 2
+	addl	$4, -64(%rsp)	#, j
+.L51:
+# main.c:145:         for(int j=0; j<N; j+=MM256_STRIDE) {
+	.loc 1 145 23 discriminator 1
+	movl	-64(%rsp), %eax	# j, tmp137
+	cmpl	-108(%rsp), %eax	# N, tmp137
+	jl	.L59	#,
+.LBE55:
+# main.c:143:     for(int i=0; i<L; i++) {
+	.loc 1 143 24 discriminator 2
+	addl	$1, -68(%rsp)	#, i
+.L50:
+# main.c:143:     for(int i=0; i<L; i++) {
+	.loc 1 143 19 discriminator 1
+	movl	-68(%rsp), %eax	# i, tmp138
+	cmpl	-100(%rsp), %eax	# L, tmp138
+	jl	.L60	#,
+.LBE54:
 # main.c:159: }
-	popq	%rbx	#
-	popq	%r12	#
-	popq	%r13	#
-	popq	%rbp	#
+	.loc 1 159 1
+	nop	
+	nop	
+	leave	
 	.cfi_def_cfa 7, 8
 	ret	
-.L133:
-	.cfi_restore 3
-	.cfi_restore 6
-	.cfi_restore 12
-	.cfi_restore 13
+	.cfi_endproc
+.LFE5047:
+	.size	subword_parallelism_matrix_multiply, .-subword_parallelism_matrix_multiply
+	.globl	do_block_custom
+	.type	do_block_custom, @function
+do_block_custom:
+.LFB5048:
+	.loc 1 161 98
+	.cfi_startproc
+	endbr64	
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
+	andq	$-32, %rsp	#,
+	subq	$168, %rsp	#,
+	movl	%edi, -76(%rsp)	# si, si
+	movl	%esi, -80(%rsp)	# sj, sj
+	movl	%edx, -84(%rsp)	# sk, sk
+	movq	%rcx, -96(%rsp)	# A, A
+	movq	%r8, -104(%rsp)	# B, B
+	movq	%r9, -112(%rsp)	# C, C
+.LBB70:
+# main.c:162:      for (int i=si; i<si+block_size; i++){
+	.loc 1 162 15
+	movl	-76(%rsp), %eax	# si, tmp118
+	movl	%eax, -68(%rsp)	# tmp118, i
+# main.c:162:      for (int i=si; i<si+block_size; i++){
+	.loc 1 162 6
+	jmp	.L62	#
+.L72:
+.LBB71:
+# main.c:163:         for (int j=sj; j<sj+block_size; j+=MM256_STRIDE){
+	.loc 1 163 18
+	movl	-80(%rsp), %eax	# sj, tmp119
+	movl	%eax, -64(%rsp)	# tmp119, j
+# main.c:163:         for (int j=sj; j<sj+block_size; j+=MM256_STRIDE){
+	.loc 1 163 9
+	jmp	.L63	#
+.L71:
+.LBB72:
+# main.c:164:             __m256d c0 = _mm256_load_pd(&C[i][j]);
+	.loc 1 164 43
+	movl	-68(%rsp), %eax	# i, tmp120
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _2
+	movq	-112(%rsp), %rax	# C, tmp121
+	addq	%rdx, %rax	# _2, _3
+	movq	(%rax), %rax	# *_3, _4
+# main.c:164:             __m256d c0 = _mm256_load_pd(&C[i][j]);
+	.loc 1 164 46
+	movl	-64(%rsp), %edx	# j, tmp122
+	movslq	%edx, %rdx	# tmp122, _5
+	salq	$3, %rdx	#, _6
+# main.c:164:             __m256d c0 = _mm256_load_pd(&C[i][j]);
+	.loc 1 164 41
+	addq	%rdx, %rax	# _6, _7
+	movq	%rax, -56(%rsp)	# _7, __P
+.LBB73:
+.LBB74:
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:869:   return *(__m256d *)__P;
+	.loc 2 869 10
+	movq	-56(%rsp), %rax	# __P, tmp123
+	vmovapd	(%rax), %ymm0	# MEM[(__m256d * {ref-all})__P_58], D.31721
+.LBE74:
+.LBE73:
+# main.c:164:             __m256d c0 = _mm256_load_pd(&C[i][j]);
+	.loc 1 164 26
+	vmovapd	%ymm0, -24(%rsp)	# D.31721, c0
+.LBB75:
+# main.c:165:             for (int k=sk; k<sk+block_size; k++){
+	.loc 1 165 22
+	movl	-84(%rsp), %eax	# sk, tmp124
+	movl	%eax, -60(%rsp)	# tmp124, k
+# main.c:165:             for (int k=sk; k<sk+block_size; k++){
+	.loc 1 165 13
+	jmp	.L65	#
+.L70:
+# main.c:169:   		                   _mm256_broadcast_sd(&A[i][k])));
+	.loc 1 169 46
+	movl	-68(%rsp), %eax	# i, tmp125
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _9
+	movq	-96(%rsp), %rax	# A, tmp126
+	addq	%rdx, %rax	# _9, _10
+	movq	(%rax), %rax	# *_10, _11
+# main.c:169:   		                   _mm256_broadcast_sd(&A[i][k])));
+	.loc 1 169 49
+	movl	-60(%rsp), %edx	# k, tmp127
+	movslq	%edx, %rdx	# tmp127, _12
+	salq	$3, %rdx	#, _13
+# main.c:169:   		                   _mm256_broadcast_sd(&A[i][k])));
+	.loc 1 169 44
+	addq	%rdx, %rax	# _13, _14
+	movq	%rax, -40(%rsp)	# _14, __X
+.LBB76:
+.LBB77:
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:736:   return (__m256d) __builtin_ia32_vbroadcastsd256 (__X);
+	.loc 2 736 20
+	movq	-40(%rsp), %rax	# __X, tmp128
+	vbroadcastsd	(%rax), %ymm0	#, D.31739
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:736:   return (__m256d) __builtin_ia32_vbroadcastsd256 (__X);
+	.loc 2 736 10
+	nop	
+.LBE77:
+.LBE76:
+# main.c:168:                                    _mm256_mul_pd(_mm256_load_pd(&B[k][j]), 
+	.loc 1 168 67
+	movl	-60(%rsp), %eax	# k, tmp129
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _17
+	movq	-104(%rsp), %rax	# B, tmp130
+	addq	%rdx, %rax	# _17, _18
+	movq	(%rax), %rax	# *_18, _19
+# main.c:168:                                    _mm256_mul_pd(_mm256_load_pd(&B[k][j]), 
+	.loc 1 168 70
+	movl	-64(%rsp), %edx	# j, tmp131
+	movslq	%edx, %rdx	# tmp131, _20
+	salq	$3, %rdx	#, _21
+# main.c:168:                                    _mm256_mul_pd(_mm256_load_pd(&B[k][j]), 
+	.loc 1 168 65
+	addq	%rdx, %rax	# _21, _22
+	movq	%rax, -48(%rsp)	# _22, __P
+.LBB78:
+.LBB79:
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:869:   return *(__m256d *)__P;
+	.loc 2 869 10
+	movq	-48(%rsp), %rax	# __P, tmp132
+	vmovapd	(%rax), %ymm1	# MEM[(__m256d * {ref-all})__P_66], D.31735
+	vmovapd	%ymm1, 72(%rsp)	# D.31735, __A
+	vmovapd	%ymm0, 104(%rsp)	# D.31739, __B
+.LBE79:
+.LBE78:
+.LBB80:
+.LBB81:
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:314:   return (__m256d) ((__v4df)__A * (__v4df)__B);
+	.loc 2 314 10
+	vmovapd	72(%rsp), %ymm0	# __A, tmp133
+	vmulpd	104(%rsp), %ymm0, %ymm0	# __B, tmp133, D.31731
+	vmovapd	-24(%rsp), %ymm1	# c0, tmp134
+	vmovapd	%ymm1, 8(%rsp)	# tmp134, __A
+	vmovapd	%ymm0, 40(%rsp)	# D.31731, __B
+.LBE81:
+.LBE80:
+.LBB82:
+.LBB83:
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:143:   return (__m256d) ((__v4df)__A + (__v4df)__B);
+	.loc 2 143 10
+	vmovapd	8(%rsp), %ymm0	# __A, tmp135
+	vaddpd	40(%rsp), %ymm0, %ymm0	# __B, tmp135, D.31726
+.LBE83:
+.LBE82:
+# main.c:167:                 c0 = _mm256_add_pd(c0,
+	.loc 1 167 22 discriminator 3
+	vmovapd	%ymm0, -24(%rsp)	# D.31726, c0
+# main.c:165:             for (int k=sk; k<sk+block_size; k++){
+	.loc 1 165 46 discriminator 3
+	addl	$1, -60(%rsp)	#, k
+.L65:
+# main.c:165:             for (int k=sk; k<sk+block_size; k++){
+	.loc 1 165 32 discriminator 1
+	movl	-84(%rsp), %edx	# sk, tmp136
+	movl	16(%rbp), %eax	# block_size, tmp137
+	addl	%edx, %eax	# tmp136, _25
+# main.c:165:             for (int k=sk; k<sk+block_size; k++){
+	.loc 1 165 29 discriminator 1
+	cmpl	%eax, -60(%rsp)	# _25, k
+	jl	.L70	#,
+.LBE75:
+# main.c:171:              _mm256_store_pd(&C[i][j], c0);
+	.loc 1 171 32
+	movl	-68(%rsp), %eax	# i, tmp138
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _27
+	movq	-112(%rsp), %rax	# C, tmp139
+	addq	%rdx, %rax	# _27, _28
+	movq	(%rax), %rax	# *_28, _29
+# main.c:171:              _mm256_store_pd(&C[i][j], c0);
+	.loc 1 171 35
+	movl	-64(%rsp), %edx	# j, tmp140
+	movslq	%edx, %rdx	# tmp140, _30
+	salq	$3, %rdx	#, _31
+# main.c:171:              _mm256_store_pd(&C[i][j], c0);
+	.loc 1 171 14
+	addq	%rdx, %rax	# _31, _32
+	movq	%rax, -32(%rsp)	# _32, __P
+	vmovapd	-24(%rsp), %ymm0	# c0, tmp141
+	vmovapd	%ymm0, 136(%rsp)	# tmp141, __A
+.LBB84:
+.LBB85:
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:875:   *(__m256d *)__P = __A;
+	.loc 2 875 19
+	movq	-32(%rsp), %rax	# __P, tmp142
+	vmovapd	136(%rsp), %ymm0	# __A, tmp143
+	vmovapd	%ymm0, (%rax)	# tmp143, MEM[(__m256d * {ref-all})__P_70]
+# /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:876: }
+	.loc 2 876 1
+	nop	
+.LBE85:
+.LBE84:
+.LBE72:
+# main.c:163:         for (int j=sj; j<sj+block_size; j+=MM256_STRIDE){
+	.loc 1 163 42 discriminator 2
+	addl	$4, -64(%rsp)	#, j
+.L63:
+# main.c:163:         for (int j=sj; j<sj+block_size; j+=MM256_STRIDE){
+	.loc 1 163 28 discriminator 1
+	movl	-80(%rsp), %edx	# sj, tmp144
+	movl	16(%rbp), %eax	# block_size, tmp145
+	addl	%edx, %eax	# tmp144, _33
+# main.c:163:         for (int j=sj; j<sj+block_size; j+=MM256_STRIDE){
+	.loc 1 163 25 discriminator 1
+	cmpl	%eax, -64(%rsp)	# _33, j
+	jl	.L71	#,
+.LBE71:
+# main.c:162:      for (int i=si; i<si+block_size; i++){
+	.loc 1 162 39 discriminator 2
+	addl	$1, -68(%rsp)	#, i
+.L62:
+# main.c:162:      for (int i=si; i<si+block_size; i++){
+	.loc 1 162 25 discriminator 1
+	movl	-76(%rsp), %edx	# si, tmp146
+	movl	16(%rbp), %eax	# block_size, tmp147
+	addl	%edx, %eax	# tmp146, _34
+# main.c:162:      for (int i=si; i<si+block_size; i++){
+	.loc 1 162 22 discriminator 1
+	cmpl	%eax, -68(%rsp)	# _34, i
+	jl	.L72	#,
+.LBE70:
+# main.c:174: }
+	.loc 1 174 1
+	nop	
+	nop	
+	leave	
+	.cfi_def_cfa 7, 8
 	ret	
 	.cfi_endproc
-.LFE6650:
-	.size	subword_parallelism_matrix_multiply, .-subword_parallelism_matrix_multiply
-	.p2align 4
+.LFE5048:
+	.size	do_block_custom, .-do_block_custom
+	.globl	custom_matrix_multiply
+	.type	custom_matrix_multiply, @function
+custom_matrix_multiply:
+.LFB5049:
+	.loc 1 176 120
+	.cfi_startproc
+	endbr64	
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
+	subq	$96, %rsp	#,
+	movq	%rdi, -56(%rbp)	# A, A
+	movq	%rsi, -64(%rbp)	# B, B
+	movq	%rdx, -72(%rbp)	# C, C
+	movl	%ecx, -76(%rbp)	# L, L
+	movl	%r8d, -80(%rbp)	# M, M
+	movl	%r9d, -84(%rbp)	# N, N
+# main.c:176: void custom_matrix_multiply(double **A, double **B, double **C, int L, int M, int N, int block_size, int thread_count) {
+	.loc 1 176 120
+	movq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp92
+	movq	%rax, -8(%rbp)	# tmp92, D.31750
+	xorl	%eax, %eax	# tmp92
+# main.c:177:     omp_set_num_threads(thread_count);
+	.loc 1 177 5
+	movl	24(%rbp), %eax	# thread_count, tmp82
+	movl	%eax, %edi	# tmp82,
+	call	omp_set_num_threads@PLT	#
+.LBB86:
+# main.c:178:     #pragma omp parallel for
+	.loc 1 178 13
+	movl	16(%rbp), %eax	# block_size, tmp83
+	movl	%eax, -12(%rbp)	# tmp83, .omp_data_o.11.block_size
+	movl	-84(%rbp), %eax	# N, tmp84
+	movl	%eax, -16(%rbp)	# tmp84, .omp_data_o.11.N
+	movl	-80(%rbp), %eax	# M, tmp85
+	movl	%eax, -20(%rbp)	# tmp85, .omp_data_o.11.M
+	movl	-76(%rbp), %eax	# L, tmp86
+	movl	%eax, -24(%rbp)	# tmp86, .omp_data_o.11.L
+	movq	-72(%rbp), %rax	# C, tmp87
+	movq	%rax, -32(%rbp)	# tmp87, .omp_data_o.11.C
+	movq	-64(%rbp), %rax	# B, tmp88
+	movq	%rax, -40(%rbp)	# tmp88, .omp_data_o.11.B
+	movq	-56(%rbp), %rax	# A, tmp89
+	movq	%rax, -48(%rbp)	# tmp89, .omp_data_o.11.A
+	leaq	-48(%rbp), %rax	#, tmp90
+	movl	$0, %ecx	#,
+	movl	$0, %edx	#,
+	movq	%rax, %rsi	# tmp90,
+	leaq	custom_matrix_multiply._omp_fn.0(%rip), %rax	#, tmp91
+	movq	%rax, %rdi	# tmp91,
+	call	GOMP_parallel@PLT	#
+.LBE86:
+# main.c:189: }
+	.loc 1 189 1
+	nop	
+	movq	-8(%rbp), %rax	# D.31750, tmp93
+	subq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp93
+	je	.L74	#,
+	call	__stack_chk_fail@PLT	#
+.L74:
+	leave	
+	.cfi_def_cfa 7, 8
+	ret	
+	.cfi_endproc
+.LFE5049:
+	.size	custom_matrix_multiply, .-custom_matrix_multiply
 	.globl	free_matrices
 	.type	free_matrices, @function
 free_matrices:
-.LFB6651:
+.LFB5050:
+	.loc 1 197 77
 	.cfi_startproc
 	endbr64	
-	pushq	%r15	#
-	.cfi_def_cfa_offset 16
-	.cfi_offset 15, -16
-	pushq	%r14	#
-	.cfi_def_cfa_offset 24
-	.cfi_offset 14, -24
-	pushq	%r13	#
-	.cfi_def_cfa_offset 32
-	.cfi_offset 13, -32
-	movq	%rdi, %r13	# tmp110, A
-	pushq	%r12	#
-	.cfi_def_cfa_offset 40
-	.cfi_offset 12, -40
-	movq	%rsi, %r12	# tmp111, B
 	pushq	%rbp	#
-	.cfi_def_cfa_offset 48
-	.cfi_offset 6, -48
-	movslq	%r8d, %rbp	# tmp114,
-	pushq	%rbx	#
-	.cfi_def_cfa_offset 56
-	.cfi_offset 3, -56
-	subq	$24, %rsp	#,
-	.cfi_def_cfa_offset 80
-# main.c:167: void free_matrices(double **A, double **B, double **C, int L, int M, int N) {
-	movq	%rdx, 8(%rsp)	# C, %sfp
-# main.c:168:     for(int i=0; i<L; i++) {
-	testl	%ecx, %ecx	# L
-	jle	.L137	#,
-	movslq	%ecx, %rcx	# L, L
-	movq	%rdi, %r14	# A, ivtmp.291
-	movq	%rdx, %rbx	# C, ivtmp.292
-	leaq	(%rdi,%rcx,8), %r15	#, _52
-	.p2align 4,,10
-	.p2align 3
-.L138:
-# main.c:169:         free(A[i]);
-	movq	(%r14), %rdi	# MEM[(double * *)_47], MEM[(double * *)_47]
-# main.c:168:     for(int i=0; i<L; i++) {
-	addq	$8, %r14	#, ivtmp.291
-	addq	$8, %rbx	#, ivtmp.292
-# main.c:169:         free(A[i]);
-	call	free@PLT	#
-# main.c:170:         free(C[i]);
-	movq	-8(%rbx), %rdi	# MEM[(double * *)_48], MEM[(double * *)_48]
-	call	free@PLT	#
-# main.c:168:     for(int i=0; i<L; i++) {
-	cmpq	%r15, %r14	# _52, ivtmp.291
-	jne	.L138	#,
-.L137:
-# main.c:172:     for(int i=0; i<M; i++) {
-	testl	%ebp, %ebp	# M
-	jle	.L139	#,
-	movq	%r12, %rbx	# B, ivtmp.286
-	leaq	(%r12,%rbp,8), %rbp	#, _29
-	.p2align 4,,10
-	.p2align 3
-.L140:
-# main.c:173:         free(B[i]);
-	movq	(%rbx), %rdi	# MEM[(double * *)_39], MEM[(double * *)_39]
-# main.c:172:     for(int i=0; i<M; i++) {
-	addq	$8, %rbx	#, ivtmp.286
-# main.c:173:         free(B[i]);
-	call	free@PLT	#
-# main.c:172:     for(int i=0; i<M; i++) {
-	cmpq	%rbx, %rbp	# ivtmp.286, _29
-	jne	.L140	#,
-.L139:
-# main.c:175:     free(A);
-	movq	%r13, %rdi	# A,
-	call	free@PLT	#
-# main.c:176:     free(B);
-	movq	%r12, %rdi	# B,
-	call	free@PLT	#
-# main.c:177:     free(C);
-	movq	8(%rsp), %rdi	# %sfp,
-# main.c:178: }
-	addq	$24, %rsp	#,
-	.cfi_def_cfa_offset 56
-	popq	%rbx	#
-	.cfi_def_cfa_offset 48
-	popq	%rbp	#
-	.cfi_def_cfa_offset 40
-	popq	%r12	#
-	.cfi_def_cfa_offset 32
-	popq	%r13	#
-	.cfi_def_cfa_offset 24
-	popq	%r14	#
 	.cfi_def_cfa_offset 16
-	popq	%r15	#
-	.cfi_def_cfa_offset 8
-# main.c:177:     free(C);
-	jmp	free@PLT	#
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
+	subq	$64, %rsp	#,
+	movq	%rdi, -24(%rbp)	# A, A
+	movq	%rsi, -32(%rbp)	# B, B
+	movq	%rdx, -40(%rbp)	# C, C
+	movl	%ecx, -44(%rbp)	# L, L
+	movl	%r8d, -48(%rbp)	# M, M
+	movl	%r9d, -52(%rbp)	# N, N
+.LBB87:
+# main.c:198:     for(int i=0; i<L; i++) {
+	.loc 1 198 13
+	movl	$0, -8(%rbp)	#, i
+# main.c:198:     for(int i=0; i<L; i++) {
+	.loc 1 198 5
+	jmp	.L76	#
+.L77:
+# main.c:199:         free(A[i]);
+	.loc 1 199 15
+	movl	-8(%rbp), %eax	# i, tmp94
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _2
+	movq	-24(%rbp), %rax	# A, tmp95
+	addq	%rdx, %rax	# _2, _3
+# main.c:199:         free(A[i]);
+	.loc 1 199 9
+	movq	(%rax), %rax	# *_3, _4
+	movq	%rax, %rdi	# _4,
+	call	free@PLT	#
+# main.c:200:         free(C[i]);
+	.loc 1 200 15
+	movl	-8(%rbp), %eax	# i, tmp96
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _6
+	movq	-40(%rbp), %rax	# C, tmp97
+	addq	%rdx, %rax	# _6, _7
+# main.c:200:         free(C[i]);
+	.loc 1 200 9
+	movq	(%rax), %rax	# *_7, _8
+	movq	%rax, %rdi	# _8,
+	call	free@PLT	#
+# main.c:198:     for(int i=0; i<L; i++) {
+	.loc 1 198 24 discriminator 3
+	addl	$1, -8(%rbp)	#, i
+.L76:
+# main.c:198:     for(int i=0; i<L; i++) {
+	.loc 1 198 19 discriminator 1
+	movl	-8(%rbp), %eax	# i, tmp98
+	cmpl	-44(%rbp), %eax	# L, tmp98
+	jl	.L77	#,
+.LBE87:
+.LBB88:
+# main.c:202:     for(int i=0; i<M; i++) {
+	.loc 1 202 13
+	movl	$0, -4(%rbp)	#, i
+# main.c:202:     for(int i=0; i<M; i++) {
+	.loc 1 202 5
+	jmp	.L78	#
+.L79:
+# main.c:203:         free(B[i]);
+	.loc 1 203 15
+	movl	-4(%rbp), %eax	# i, tmp99
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _10
+	movq	-32(%rbp), %rax	# B, tmp100
+	addq	%rdx, %rax	# _10, _11
+# main.c:203:         free(B[i]);
+	.loc 1 203 9
+	movq	(%rax), %rax	# *_11, _12
+	movq	%rax, %rdi	# _12,
+	call	free@PLT	#
+# main.c:202:     for(int i=0; i<M; i++) {
+	.loc 1 202 24 discriminator 3
+	addl	$1, -4(%rbp)	#, i
+.L78:
+# main.c:202:     for(int i=0; i<M; i++) {
+	.loc 1 202 19 discriminator 1
+	movl	-4(%rbp), %eax	# i, tmp101
+	cmpl	-48(%rbp), %eax	# M, tmp101
+	jl	.L79	#,
+.LBE88:
+# main.c:205:     free(A);
+	.loc 1 205 5
+	movq	-24(%rbp), %rax	# A, tmp102
+	movq	%rax, %rdi	# tmp102,
+	call	free@PLT	#
+# main.c:206:     free(B);
+	.loc 1 206 5
+	movq	-32(%rbp), %rax	# B, tmp103
+	movq	%rax, %rdi	# tmp103,
+	call	free@PLT	#
+# main.c:207:     free(C);
+	.loc 1 207 5
+	movq	-40(%rbp), %rax	# C, tmp104
+	movq	%rax, %rdi	# tmp104,
+	call	free@PLT	#
+# main.c:208: }
+	.loc 1 208 1
+	nop	
+	leave	
+	.cfi_def_cfa 7, 8
+	ret	
 	.cfi_endproc
-.LFE6651:
+.LFE5050:
 	.size	free_matrices, .-free_matrices
-	.section	.rodata.str1.8,"aMS",@progbits,1
+	.section	.rodata
 	.align 8
 .LC3:
 	.string	"ERROR: incorrect number of arguments"
-	.section	.rodata.str1.1
 .LC4:
 	.string	"ERROR: invalid arguments"
-	.section	.rodata.str1.8
 	.align 8
 .LC5:
 	.string	"ERROR: cannot allocate memory for matrix A"
@@ -1644,639 +1622,4392 @@ free_matrices:
 .LC6:
 	.string	"ERROR: cannot allocate memory for matrix B"
 	.align 8
-.LC8:
-	.string	"ERROR: cannot allocate memory for matrix C"
-	.align 8
 .LC9:
+	.string	"ERROR: cannot allocate memory for matrix C"
+.LC10:
+	.string	"\nMATRIX A:"
+.LC11:
+	.string	"\nMATRIX B:"
+.LC12:
+	.string	"\nMATRIX C (init to zero):"
+.LC13:
+	.string	"\nOutput C:"
+	.align 8
+.LC14:
+	.string	"\nBaseline Output C from matrix_multiply():"
+	.align 8
+.LC15:
 	.string	"L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld, UNROLL: %u\n"
 	.align 8
-.LC10:
+.LC16:
 	.string	"L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld, THREADS: %u\n"
 	.align 8
-.LC11:
+.LC17:
+	.string	"L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld, BLOCK SIZE: %u\n"
+	.align 8
+.LC18:
 	.string	"L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld\n"
-	.section	.text.startup,"ax",@progbits
-	.p2align 4
+	.text
 	.globl	main
 	.type	main, @function
 main:
-.LFB6652:
+.LFB5051:
+	.loc 1 210 33
 	.cfi_startproc
 	endbr64	
-	pushq	%r15	#
-	.cfi_def_cfa_offset 16
-	.cfi_offset 15, -16
-	pushq	%r14	#
-	.cfi_def_cfa_offset 24
-	.cfi_offset 14, -24
-	pushq	%r13	#
-	.cfi_def_cfa_offset 32
-	.cfi_offset 13, -32
-	movq	%rsi, %r13	# tmp292, argv
-	pushq	%r12	#
-	.cfi_def_cfa_offset 40
-	.cfi_offset 12, -40
 	pushq	%rbp	#
-	.cfi_def_cfa_offset 48
-	.cfi_offset 6, -48
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
 	pushq	%rbx	#
-	.cfi_def_cfa_offset 56
-	.cfi_offset 3, -56
-	subq	$168, %rsp	#,
-	.cfi_def_cfa_offset 224
-# main.c:180: int main(int argc, char **argv) {
-	movq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp312
-	movq	%rax, 152(%rsp)	# tmp312, D.41342
-	xorl	%eax, %eax	# tmp312
-# main.c:190:     if(argc > 7) {
-	cmpl	$7, %edi	#, tmp291
-	jg	.L231	#,
-# /usr/include/stdlib.h:483:   return (int) strtol (__nptr, (char **) NULL, 10);
-	movq	8(%rsi), %rdi	# MEM[(char * *)argv_83(D) + 8B], MEM[(char * *)argv_83(D) + 8B]
-	movl	$10, %edx	#,
-	xorl	%esi, %esi	#
-	call	strtol@PLT	#
-	movq	16(%r13), %rdi	# MEM[(char * *)argv_83(D) + 16B], MEM[(char * *)argv_83(D) + 16B]
-	xorl	%esi, %esi	#
-	movl	$10, %edx	#,
-# /usr/include/stdlib.h:483:   return (int) strtol (__nptr, (char **) NULL, 10);
-	movq	%rax, 8(%rsp)	# _130, %sfp
-	movl	%eax, %r15d	# _130, _131
-# /usr/include/stdlib.h:483:   return (int) strtol (__nptr, (char **) NULL, 10);
-	call	strtol@PLT	#
-	movq	24(%r13), %rdi	# MEM[(char * *)argv_83(D) + 24B], MEM[(char * *)argv_83(D) + 24B]
-	xorl	%esi, %esi	#
-	movl	$10, %edx	#,
-	movq	%rax, %rbp	# tmp294, _128
-	movq	%rax, 24(%rsp)	# _128, %sfp
-# /usr/include/stdlib.h:483:   return (int) strtol (__nptr, (char **) NULL, 10);
-	movl	%eax, 80(%rsp)	# tmp352, %sfp
-# /usr/include/stdlib.h:483:   return (int) strtol (__nptr, (char **) NULL, 10);
-	call	strtol@PLT	#
-	movq	32(%r13), %rdi	# MEM[(char * *)argv_83(D) + 32B], MEM[(char * *)argv_83(D) + 32B]
-	xorl	%esi, %esi	#
-	movl	$10, %edx	#,
-	movq	%rax, 16(%rsp)	# _126, %sfp
-	movq	%rax, %r14	# tmp295, _126
-# /usr/include/stdlib.h:483:   return (int) strtol (__nptr, (char **) NULL, 10);
-	movl	%eax, 76(%rsp)	# tmp353, %sfp
-# /usr/include/stdlib.h:483:   return (int) strtol (__nptr, (char **) NULL, 10);
-	call	strtol@PLT	#
-	movq	40(%r13), %rdi	# MEM[(char * *)argv_83(D) + 40B], MEM[(char * *)argv_83(D) + 40B]
-	xorl	%esi, %esi	#
-	movl	$10, %edx	#,
-	movq	%rax, %rbx	# tmp296, _125
-	call	strtol@PLT	#
-	movq	48(%r13), %rdi	# MEM[(char * *)argv_83(D) + 48B], MEM[(char * *)argv_83(D) + 48B]
-	movl	$10, %edx	#,
-	xorl	%esi, %esi	#
-	movq	%rax, 32(%rsp)	# tmp297, %sfp
-	call	strtol@PLT	#
-# main.c:201:     srand(seed);
-	movl	%ebx, %edi	# _125, _125
-# /usr/include/stdlib.h:483:   return (int) strtol (__nptr, (char **) NULL, 10);
-	movq	%rax, 88(%rsp)	# _121, %sfp
-# /usr/include/stdlib.h:483:   return (int) strtol (__nptr, (char **) NULL, 10);
-	movl	%eax, %r12d	# _121, _122
-# main.c:201:     srand(seed);
+	subq	$184, %rsp	#,
+	.cfi_offset 3, -24
+	movl	%edi, -180(%rbp)	# argc, argc
+	movq	%rsi, -192(%rbp)	# argv, argv
+# main.c:210: int main(int argc, char **argv) {
+	.loc 1 210 33
+	movq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp355
+	movq	%rax, -24(%rbp)	# tmp355, D.31751
+	xorl	%eax, %eax	# tmp355
+# main.c:220:     if(argc > 8) {
+	.loc 1 220 7
+	cmpl	$8, -180(%rbp)	#, argc
+	jle	.L81	#,
+# main.c:221:         printf("ERROR: incorrect number of arguments\n");
+	.loc 1 221 9
+	leaq	.LC3(%rip), %rax	#, tmp184
+	movq	%rax, %rdi	# tmp184,
+	call	puts@PLT	#
+# main.c:222:         print_help_and_exit(argv);
+	.loc 1 222 9
+	movq	-192(%rbp), %rax	# argv, tmp185
+	movq	%rax, %rdi	# tmp185,
+	call	print_help_and_exit	#
+.L81:
+# main.c:225:     L = atoi(argv[1]);
+	.loc 1 225 18
+	movq	-192(%rbp), %rax	# argv, tmp186
+	addq	$8, %rax	#, _1
+# main.c:225:     L = atoi(argv[1]);
+	.loc 1 225 9
+	movq	(%rax), %rax	# *_1, _2
+	movq	%rax, %rdi	# _2,
+	call	atoi@PLT	#
+	movl	%eax, -124(%rbp)	# tmp187, L
+# main.c:226:     M = atoi(argv[2]);
+	.loc 1 226 18
+	movq	-192(%rbp), %rax	# argv, tmp188
+	addq	$16, %rax	#, _3
+# main.c:226:     M = atoi(argv[2]);
+	.loc 1 226 9
+	movq	(%rax), %rax	# *_3, _4
+	movq	%rax, %rdi	# _4,
+	call	atoi@PLT	#
+	movl	%eax, -120(%rbp)	# tmp189, M
+# main.c:227:     N = atoi(argv[3]);
+	.loc 1 227 18
+	movq	-192(%rbp), %rax	# argv, tmp190
+	addq	$24, %rax	#, _5
+# main.c:227:     N = atoi(argv[3]);
+	.loc 1 227 9
+	movq	(%rax), %rax	# *_5, _6
+	movq	%rax, %rdi	# _6,
+	call	atoi@PLT	#
+	movl	%eax, -116(%rbp)	# tmp191, N
+# main.c:228:     seed = atoi(argv[4]);
+	.loc 1 228 21
+	movq	-192(%rbp), %rax	# argv, tmp192
+	addq	$32, %rax	#, _7
+# main.c:228:     seed = atoi(argv[4]);
+	.loc 1 228 12
+	movq	(%rax), %rax	# *_7, _8
+	movq	%rax, %rdi	# _8,
+	call	atoi@PLT	#
+	movl	%eax, -112(%rbp)	# tmp193, seed
+# main.c:229:     mode = atoi(argv[5]);
+	.loc 1 229 21
+	movq	-192(%rbp), %rax	# argv, tmp194
+	addq	$40, %rax	#, _9
+# main.c:229:     mode = atoi(argv[5]);
+	.loc 1 229 12
+	movq	(%rax), %rax	# *_9, _10
+	movq	%rax, %rdi	# _10,
+	call	atoi@PLT	#
+	movl	%eax, -108(%rbp)	# tmp195, mode
+# main.c:230:     if (mode != 1 && mode != 5)
+	.loc 1 230 8
+	cmpl	$1, -108(%rbp)	#, mode
+	je	.L82	#,
+# main.c:230:     if (mode != 1 && mode != 5)
+	.loc 1 230 19 discriminator 1
+	cmpl	$5, -108(%rbp)	#, mode
+	je	.L82	#,
+# main.c:231:         ADDIT_ARG = atoi(argv[6]);
+	.loc 1 231 30
+	movq	-192(%rbp), %rax	# argv, tmp196
+	addq	$48, %rax	#, _11
+# main.c:231:         ADDIT_ARG = atoi(argv[6]);
+	.loc 1 231 21
+	movq	(%rax), %rax	# *_11, _12
+	movq	%rax, %rdi	# _12,
+	call	atoi@PLT	#
+	movl	%eax, -172(%rbp)	# tmp197, ADDIT_ARG
+.L82:
+# main.c:232:     if (mode == 6)
+	.loc 1 232 8
+	cmpl	$6, -108(%rbp)	#, mode
+	jne	.L83	#,
+# main.c:233:         ADDIT_ARG2 = atoi(argv[7]);
+	.loc 1 233 31
+	movq	-192(%rbp), %rax	# argv, tmp198
+	addq	$56, %rax	#, _13
+# main.c:233:         ADDIT_ARG2 = atoi(argv[7]);
+	.loc 1 233 22
+	movq	(%rax), %rax	# *_13, _14
+	movq	%rax, %rdi	# _14,
+	call	atoi@PLT	#
+	movl	%eax, -168(%rbp)	# tmp199, ADDIT_ARG2
+.L83:
+# main.c:234:     srand(seed);
+	.loc 1 234 5
+	movl	-112(%rbp), %eax	# seed, seed.14_15
+	movl	%eax, %edi	# seed.14_15,
 	call	srand@PLT	#
-# main.c:203:     if( !L || !M || !N ) {
-	movl	8(%rsp), %eax	# %sfp,
-	testl	%eax, %eax	#
-	sete	%al	#, tmp212
-# main.c:203:     if( !L || !M || !N ) {
-	testl	%ebp, %ebp	# _128
-	sete	%dl	#, tmp214
-# main.c:203:     if( !L || !M || !N ) {
-	orb	%dl, %al	# tmp214, tmp313
-	jne	.L192	#,
-	testl	%r14d, %r14d	# _126
-	je	.L192	#,
-# main.c:209:     if (mode == 3)
-	cmpl	$3, 32(%rsp)	#, %sfp
-	je	.L232	#,
-# main.c:212:         omp_set_num_threads(OMP_THREADS);
+# main.c:236:     if( !L || !M || !N ) {
+	.loc 1 236 7
+	cmpl	$0, -124(%rbp)	#, L
+	je	.L84	#,
+# main.c:236:     if( !L || !M || !N ) {
+	.loc 1 236 12 discriminator 1
+	cmpl	$0, -120(%rbp)	#, M
+	je	.L84	#,
+# main.c:236:     if( !L || !M || !N ) {
+	.loc 1 236 18 discriminator 2
+	cmpl	$0, -116(%rbp)	#, N
+	jne	.L85	#,
+.L84:
+# main.c:237:         printf("ERROR: invalid arguments\n");
+	.loc 1 237 9
+	leaq	.LC4(%rip), %rax	#, tmp200
+	movq	%rax, %rdi	# tmp200,
+	call	puts@PLT	#
+# main.c:238:         print_help_and_exit(argv);
+	.loc 1 238 9
+	movq	-192(%rbp), %rax	# argv, tmp201
+	movq	%rax, %rdi	# tmp201,
+	call	print_help_and_exit	#
+.L85:
+# main.c:242:     if (mode == 3)
+	.loc 1 242 8
+	cmpl	$3, -108(%rbp)	#, mode
+	jne	.L86	#,
+# main.c:243:         omp_set_num_threads(ADDIT_ARG);
+	.loc 1 243 9
+	movl	-172(%rbp), %eax	# ADDIT_ARG, tmp202
+	movl	%eax, %edi	# tmp202,
+	call	omp_set_num_threads@PLT	#
+	jmp	.L87	#
+.L86:
+# main.c:245:         omp_set_num_threads(OMP_THREADS);
+	.loc 1 245 9
 	movl	$4, %edi	#,
 	call	omp_set_num_threads@PLT	#
-.L149:
-# main.c:218:     A = aligned_alloc(MEM_ALIGN, L * sizeof(double *));
-	movq	8(%rsp), %rbx	# %sfp, _130
-	movl	$32, %edi	#,
-	movslq	%ebx, %rax	# _130, _131
-	salq	$3, %rax	#, _14
-	movq	%rax, %rsi	# _14,
-	movq	%rax, 56(%rsp)	# _14, %sfp
-	call	aligned_alloc@PLT	#
-	movq	%rax, 40(%rsp)	# A, %sfp
-# main.c:219:     if(A == NULL) {
-	testq	%rax, %rax	# A
-	je	.L150	#,
-# main.c:232:     B = aligned_alloc(MEM_ALIGN, M * sizeof(double *));
-	movslq	24(%rsp), %r12	# %sfp, _129
-	salq	$3, %r12	#, _237
-# main.c:223:     for(int i=0; i<L; i++) {
-	testl	%ebx, %ebx	# _130
-	jle	.L156	#,
-	movq	%rax, %rcx	# A, A
-	movq	%rax, %r13	# A, ivtmp.337
-	movq	8(%rsp), %rax	# %sfp, _130
-	subl	$1, %eax	#, tmp225
-	leaq	8(%rcx,%rax,8), %rbx	#, _272
-	.p2align 4,,10
-	.p2align 3
-.L155:
-# main.c:224:         A[i] = aligned_alloc(MEM_ALIGN, M * sizeof(double));
-	movq	%r12, %rsi	# _237,
+.L87:
+# main.c:251:     A = aligned_alloc(MEM_ALIGN, L * sizeof(double *));
+	.loc 1 251 9
+	movl	-124(%rbp), %eax	# L, tmp203
+	cltq
+	salq	$3, %rax	#, _17
+	movq	%rax, %rsi	# _17,
 	movl	$32, %edi	#,
 	call	aligned_alloc@PLT	#
-# main.c:224:         A[i] = aligned_alloc(MEM_ALIGN, M * sizeof(double));
-	movq	%rax, 0(%r13)	# tmp228, MEM[(double * *)_265]
-# main.c:225:         if(A[i] == NULL) {
-	testq	%rax, %rax	# tmp228
-	je	.L150	#,
-# main.c:223:     for(int i=0; i<L; i++) {
-	addq	$8, %r13	#, ivtmp.337
-	cmpq	%rbx, %r13	# _272, ivtmp.337
-	jne	.L155	#,
-.L156:
-# main.c:232:     B = aligned_alloc(MEM_ALIGN, M * sizeof(double *));
-	movq	%r12, %rsi	# _237,
+	movq	%rax, -104(%rbp)	# tmp204, A
+# main.c:252:     if(A == NULL) {
+	.loc 1 252 7
+	cmpq	$0, -104(%rbp)	#, A
+	jne	.L88	#,
+# main.c:253:         printf("ERROR: cannot allocate memory for matrix A\n");
+	.loc 1 253 9
+	leaq	.LC5(%rip), %rax	#, tmp205
+	movq	%rax, %rdi	# tmp205,
+	call	puts@PLT	#
+# main.c:254:         return 0;
+	.loc 1 254 16
+	movl	$0, %eax	#, _113
+	jmp	.L127	#
+.L88:
+.LBB89:
+# main.c:256:     for(int i=0; i<L; i++) {
+	.loc 1 256 13
+	movl	$0, -164(%rbp)	#, i
+# main.c:256:     for(int i=0; i<L; i++) {
+	.loc 1 256 5
+	jmp	.L90	#
+.L92:
+# main.c:257:         A[i] = aligned_alloc(MEM_ALIGN, M * sizeof(double));
+	.loc 1 257 16
+	movl	-120(%rbp), %eax	# M, tmp206
+	cltq
+	salq	$3, %rax	#, _19
+# main.c:257:         A[i] = aligned_alloc(MEM_ALIGN, M * sizeof(double));
+	.loc 1 257 10
+	movl	-164(%rbp), %edx	# i, tmp207
+	movslq	%edx, %rdx	# tmp207, _20
+	leaq	0(,%rdx,8), %rcx	#, _21
+	movq	-104(%rbp), %rdx	# A, tmp208
+	leaq	(%rcx,%rdx), %rbx	#, _22
+# main.c:257:         A[i] = aligned_alloc(MEM_ALIGN, M * sizeof(double));
+	.loc 1 257 16
+	movq	%rax, %rsi	# _19,
 	movl	$32, %edi	#,
 	call	aligned_alloc@PLT	#
-	movq	%rax, 48(%rsp)	# B, %sfp
-# main.c:233:     if(B == NULL) {
-	testq	%rax, %rax	# B
-	je	.L152	#,
-# main.c:237:     for(int i=0; i<M; i++) {
-	movl	24(%rsp), %eax	# %sfp,
-	testl	%eax, %eax	#
-	jle	.L233	#,
-# main.c:238:         B[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
-	movslq	16(%rsp), %rax	# %sfp, _127
-	movl	24(%rsp), %ecx	# %sfp, tmp361
-	movq	%rax, 64(%rsp)	# _127, %sfp
-	leal	-1(%rcx), %r12d	#,
-	leaq	0(,%rax,8), %r13	#, _24
-	movq	48(%rsp), %rax	# %sfp, B
-	movq	%r12, %rbp	#,
-	addq	$1, %r12	#, tmp287
-	movq	%rax, %r14	# B, ivtmp.332
-	leaq	(%rax,%r12,8), %rbx	#, _261
-	.p2align 4,,10
-	.p2align 3
-.L159:
-	movq	%r13, %rsi	# _24,
+# main.c:257:         A[i] = aligned_alloc(MEM_ALIGN, M * sizeof(double));
+	.loc 1 257 14 discriminator 1
+	movq	%rax, (%rbx)	# _23, *_22
+# main.c:258:         if(A[i] == NULL) {
+	.loc 1 258 13
+	movl	-164(%rbp), %eax	# i, tmp210
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _25
+	movq	-104(%rbp), %rax	# A, tmp211
+	addq	%rdx, %rax	# _25, _26
+	movq	(%rax), %rax	# *_26, _27
+# main.c:258:         if(A[i] == NULL) {
+	.loc 1 258 11
+	testq	%rax, %rax	# _27
+	jne	.L91	#,
+# main.c:259:             printf("ERROR: cannot allocate memory for matrix A\n");
+	.loc 1 259 13
+	leaq	.LC5(%rip), %rax	#, tmp212
+	movq	%rax, %rdi	# tmp212,
+	call	puts@PLT	#
+# main.c:260:             return 0;
+	.loc 1 260 20
+	movl	$0, %eax	#, _113
+	jmp	.L127	#
+.L91:
+# main.c:256:     for(int i=0; i<L; i++) {
+	.loc 1 256 24 discriminator 2
+	addl	$1, -164(%rbp)	#, i
+.L90:
+# main.c:256:     for(int i=0; i<L; i++) {
+	.loc 1 256 19 discriminator 1
+	movl	-164(%rbp), %eax	# i, tmp213
+	cmpl	-124(%rbp), %eax	# L, tmp213
+	jl	.L92	#,
+.LBE89:
+# main.c:265:     B = aligned_alloc(MEM_ALIGN, M * sizeof(double *));
+	.loc 1 265 9
+	movl	-120(%rbp), %eax	# M, tmp214
+	cltq
+	salq	$3, %rax	#, _29
+	movq	%rax, %rsi	# _29,
 	movl	$32, %edi	#,
 	call	aligned_alloc@PLT	#
-# main.c:238:         B[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
-	movq	%rax, (%r14)	# tmp234, MEM[(double * *)_254]
-# main.c:239:         if(B[i] == NULL) {
-	testq	%rax, %rax	# tmp234
-	je	.L152	#,
-# main.c:237:     for(int i=0; i<M; i++) {
-	addq	$8, %r14	#, ivtmp.332
-	cmpq	%rbx, %r14	# _261, ivtmp.332
-	jne	.L159	#,
-# main.c:245:     for(int i=0; i<L; i++)
-	movl	8(%rsp), %r14d	# %sfp,
-	testl	%r14d, %r14d	#
-	jle	.L165	#,
-	movl	%ebp, 84(%rsp)	# tmp289, %sfp
-	movq	40(%rsp), %rbx	# %sfp, ivtmp.328
-	salq	$3, %r12	#, _21
-# main.c:245:     for(int i=0; i<L; i++)
-	xorl	%r14d, %r14d	# i
-	vmovsd	.LC2(%rip), %xmm7	#, tmp290
-	vmovsd	%xmm7, (%rsp)	# tmp290, %sfp
-	.p2align 4,,10
-	.p2align 3
-.L163:
-# main.c:180: int main(int argc, char **argv) {
-	xorl	%r13d, %r13d	# ivtmp.323
-	.p2align 4,,10
-	.p2align 3
-.L166:
-# main.c:247:             A[i][j] = drand(MIN, MAX);
-	movq	(%rbx), %rbp	# MEM[(double * *)_250], _35
-# main.c:32:     double random_double = (double) rand() / RAND_MAX; 
-	call	rand@PLT	#
-# main.c:32:     double random_double = (double) rand() / RAND_MAX; 
-	vxorpd	%xmm1, %xmm1, %xmm1	# tmp365
-# main.c:33:     random_double = (random_double * (max - min)) + min;
-	vxorpd	%xmm3, %xmm3, %xmm3	# tmp367
-# main.c:32:     double random_double = (double) rand() / RAND_MAX; 
-	vcvtsi2sdl	%eax, %xmm1, %xmm0	# tmp303, tmp365, tmp310
-# main.c:32:     double random_double = (double) rand() / RAND_MAX; 
-	vdivsd	(%rsp), %xmm0, %xmm0	# %sfp, tmp237, random_double
-# main.c:33:     random_double = (random_double * (max - min)) + min;
-	vaddsd	%xmm3, %xmm0, %xmm0	# tmp367, random_double, random_double
-# main.c:247:             A[i][j] = drand(MIN, MAX);
-	addq	%r13, %rbp	# ivtmp.323, _35
-# main.c:246:         for(int j=0; j<M; j++)
-	addq	$8, %r13	#, ivtmp.323
-# main.c:247:             A[i][j] = drand(MIN, MAX);
-	vmovsd	%xmm0, 0(%rbp)	# random_double, *_35
-# main.c:246:         for(int j=0; j<M; j++)
-	cmpq	%r13, %r12	# ivtmp.323, _21
-	jne	.L166	#,
-# main.c:245:     for(int i=0; i<L; i++)
-	addl	$1, %r14d	#, i
-# main.c:245:     for(int i=0; i<L; i++)
-	addq	$8, %rbx	#, ivtmp.328
-	cmpl	%r15d, %r14d	# _131, i
-	jl	.L163	#,
-	movl	84(%rsp), %ebp	# %sfp, tmp289
-.L165:
-	movq	16(%rsp), %rdx	# %sfp, _126
-	testl	%edx, %edx	# _126
-	jle	.L167	#,
-	movq	48(%rsp), %rcx	# %sfp, B
-	movl	%ebp, %eax	# tmp289, tmp242
-	vmovsd	.LC2(%rip), %xmm7	#, tmp290
-	leaq	8(%rcx,%rax,8), %r12	#, _150
-	leal	-1(%rdx), %eax	#, tmp246
-	movq	%rcx, %r14	# B, ivtmp.319
-	vmovsd	%xmm7, (%rsp)	# tmp290, %sfp
-	leaq	8(,%rax,8), %rbx	#, _50
-	.p2align 4,,10
-	.p2align 3
-.L168:
-# main.c:245:     for(int i=0; i<L; i++)
-	xorl	%ebp, %ebp	# ivtmp.314
-	.p2align 4,,10
-	.p2align 3
-.L169:
-# main.c:251:             B[i][j] = drand(MIN, MAX);
-	movq	(%r14), %r13	# MEM[(double * *)_154], _42
-# main.c:32:     double random_double = (double) rand() / RAND_MAX; 
-	call	rand@PLT	#
-# main.c:32:     double random_double = (double) rand() / RAND_MAX; 
-	vxorpd	%xmm4, %xmm4, %xmm4	# tmp372
-# main.c:33:     random_double = (random_double * (max - min)) + min;
-	vxorpd	%xmm6, %xmm6, %xmm6	# tmp374
-# main.c:32:     double random_double = (double) rand() / RAND_MAX; 
-	vcvtsi2sdl	%eax, %xmm4, %xmm0	# tmp304, tmp372, tmp311
-# main.c:32:     double random_double = (double) rand() / RAND_MAX; 
-	vdivsd	(%rsp), %xmm0, %xmm0	# %sfp, tmp249, random_double
-# main.c:33:     random_double = (random_double * (max - min)) + min;
-	vaddsd	%xmm6, %xmm0, %xmm0	# tmp374, random_double, random_double
-# main.c:251:             B[i][j] = drand(MIN, MAX);
-	addq	%rbp, %r13	# ivtmp.314, _42
-# main.c:250:         for(int j=0; j<N; j++)
-	addq	$8, %rbp	#, ivtmp.314
-# main.c:251:             B[i][j] = drand(MIN, MAX);
-	vmovsd	%xmm0, 0(%r13)	# random_double, *_42
-# main.c:250:         for(int j=0; j<N; j++)
-	cmpq	%rbp, %rbx	# ivtmp.314, _50
-	jne	.L169	#,
-# main.c:249:     for(int i=0; i<M; i++)
-	addq	$8, %r14	#, ivtmp.319
-	cmpq	%r14, %r12	# ivtmp.319, _150
-	jne	.L168	#,
-.L167:
-# main.c:254:     C = aligned_alloc(MEM_ALIGN, L * sizeof(double *));
-	movq	56(%rsp), %rsi	# %sfp,
+	movq	%rax, -96(%rbp)	# tmp215, B
+# main.c:266:     if(B == NULL) {
+	.loc 1 266 7
+	cmpq	$0, -96(%rbp)	#, B
+	jne	.L93	#,
+# main.c:267:         printf("ERROR: cannot allocate memory for matrix B\n");
+	.loc 1 267 9
+	leaq	.LC6(%rip), %rax	#, tmp216
+	movq	%rax, %rdi	# tmp216,
+	call	puts@PLT	#
+# main.c:268:         return 0;
+	.loc 1 268 16
+	movl	$0, %eax	#, _113
+	jmp	.L127	#
+.L93:
+.LBB90:
+# main.c:270:     for(int i=0; i<M; i++) {
+	.loc 1 270 13
+	movl	$0, -160(%rbp)	#, i
+# main.c:270:     for(int i=0; i<M; i++) {
+	.loc 1 270 5
+	jmp	.L94	#
+.L96:
+# main.c:271:         B[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
+	.loc 1 271 16
+	movl	-116(%rbp), %eax	# N, tmp217
+	cltq
+	salq	$3, %rax	#, _31
+# main.c:271:         B[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
+	.loc 1 271 10
+	movl	-160(%rbp), %edx	# i, tmp218
+	movslq	%edx, %rdx	# tmp218, _32
+	leaq	0(,%rdx,8), %rcx	#, _33
+	movq	-96(%rbp), %rdx	# B, tmp219
+	leaq	(%rcx,%rdx), %rbx	#, _34
+# main.c:271:         B[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
+	.loc 1 271 16
+	movq	%rax, %rsi	# _31,
 	movl	$32, %edi	#,
 	call	aligned_alloc@PLT	#
-	movq	%rax, %rbp	# tmp305, C
-# main.c:255:     if(C == NULL) {
-	testq	%rax, %rax	# C
-	je	.L174	#,
-# main.c:259:     for(int i=0; i<L; i++) {
-	movl	8(%rsp), %r13d	# %sfp,
-	testl	%r13d, %r13d	#
-	jle	.L190	#,
-.L172:
-	movq	8(%rsp), %rax	# %sfp, _130
-# main.c:260:         C[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
-	movq	64(%rsp), %r13	# %sfp, _127
-# main.c:267:             C[i][j] = 0.0;    
-	movl	%r15d, (%rsp)	# _131, %sfp
-	movq	%rbp, %rbx	# C, ivtmp.309
-	movl	76(%rsp), %r15d	# %sfp, _127
-	subl	$1, %eax	#, tmp257
-# main.c:260:         C[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
-	salq	$3, %r13	#, _127
-	leaq	8(%rbp,%rax,8), %r12	#, _173
-# main.c:267:             C[i][j] = 0.0;    
-	movq	16(%rsp), %rax	# %sfp, _126
-	subl	$1, %eax	#, tmp261
-	leaq	8(,%rax,8), %r14	#, _182
-	.p2align 4,,10
-	.p2align 3
-.L176:
-# main.c:260:         C[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
+# main.c:271:         B[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
+	.loc 1 271 14 discriminator 1
+	movq	%rax, (%rbx)	# _35, *_34
+# main.c:272:         if(B[i] == NULL) {
+	.loc 1 272 13
+	movl	-160(%rbp), %eax	# i, tmp221
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _37
+	movq	-96(%rbp), %rax	# B, tmp222
+	addq	%rdx, %rax	# _37, _38
+	movq	(%rax), %rax	# *_38, _39
+# main.c:272:         if(B[i] == NULL) {
+	.loc 1 272 11
+	testq	%rax, %rax	# _39
+	jne	.L95	#,
+# main.c:273:             printf("ERROR: cannot allocate memory for matrix B\n");
+	.loc 1 273 13
+	leaq	.LC6(%rip), %rax	#, tmp223
+	movq	%rax, %rdi	# tmp223,
+	call	puts@PLT	#
+# main.c:274:             return 0;
+	.loc 1 274 20
+	movl	$0, %eax	#, _113
+	jmp	.L127	#
+.L95:
+# main.c:270:     for(int i=0; i<M; i++) {
+	.loc 1 270 24 discriminator 2
+	addl	$1, -160(%rbp)	#, i
+.L94:
+# main.c:270:     for(int i=0; i<M; i++) {
+	.loc 1 270 19 discriminator 1
+	movl	-160(%rbp), %eax	# i, tmp224
+	cmpl	-120(%rbp), %eax	# M, tmp224
+	jl	.L96	#,
+.LBE90:
+.LBB91:
+# main.c:278:     for(int i=0; i<L; i++)
+	.loc 1 278 13
+	movl	$0, -156(%rbp)	#, i
+# main.c:278:     for(int i=0; i<L; i++)
+	.loc 1 278 5
+	jmp	.L97	#
+.L100:
+.LBB92:
+# main.c:279:         for(int j=0; j<M; j++)
+	.loc 1 279 17
+	movl	$0, -152(%rbp)	#, j
+# main.c:279:         for(int j=0; j<M; j++)
+	.loc 1 279 9
+	jmp	.L98	#
+.L99:
+# main.c:280:             A[i][j] = drand(MIN, MAX);
+	.loc 1 280 14
+	movl	-156(%rbp), %eax	# i, tmp225
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _41
+	movq	-104(%rbp), %rax	# A, tmp226
+	addq	%rdx, %rax	# _41, _42
+	movq	(%rax), %rax	# *_42, _43
+# main.c:280:             A[i][j] = drand(MIN, MAX);
+	.loc 1 280 17
+	movl	-152(%rbp), %edx	# j, tmp227
+	movslq	%edx, %rdx	# tmp227, _44
+	salq	$3, %rdx	#, _45
+	leaq	(%rax,%rdx), %rbx	#, _46
+# main.c:280:             A[i][j] = drand(MIN, MAX);
+	.loc 1 280 23
+	vmovsd	.LC7(%rip), %xmm0	#, tmp228
+	vmovsd	%xmm0, %xmm0, %xmm1	# tmp228,
+	movq	.LC8(%rip), %rax	#, tmp229
+	vmovq	%rax, %xmm0	# tmp229,
+	call	drand	#
+	vmovq	%xmm0, %rax	#, _47
+# main.c:280:             A[i][j] = drand(MIN, MAX);
+	.loc 1 280 21 discriminator 1
+	movq	%rax, (%rbx)	# _47, *_46
+# main.c:279:         for(int j=0; j<M; j++)
+	.loc 1 279 28 discriminator 3
+	addl	$1, -152(%rbp)	#, j
+.L98:
+# main.c:279:         for(int j=0; j<M; j++)
+	.loc 1 279 23 discriminator 1
+	movl	-152(%rbp), %eax	# j, tmp230
+	cmpl	-120(%rbp), %eax	# M, tmp230
+	jl	.L99	#,
+.LBE92:
+# main.c:278:     for(int i=0; i<L; i++)
+	.loc 1 278 24 discriminator 2
+	addl	$1, -156(%rbp)	#, i
+.L97:
+# main.c:278:     for(int i=0; i<L; i++)
+	.loc 1 278 19 discriminator 1
+	movl	-156(%rbp), %eax	# i, tmp231
+	cmpl	-124(%rbp), %eax	# L, tmp231
+	jl	.L100	#,
+.LBE91:
+.LBB93:
+# main.c:282:     for(int i=0; i<M; i++)
+	.loc 1 282 13
+	movl	$0, -148(%rbp)	#, i
+# main.c:282:     for(int i=0; i<M; i++)
+	.loc 1 282 5
+	jmp	.L101	#
+.L104:
+.LBB94:
+# main.c:283:         for(int j=0; j<N; j++)
+	.loc 1 283 17
+	movl	$0, -144(%rbp)	#, j
+# main.c:283:         for(int j=0; j<N; j++)
+	.loc 1 283 9
+	jmp	.L102	#
+.L103:
+# main.c:284:             B[i][j] = drand(MIN, MAX);
+	.loc 1 284 14
+	movl	-148(%rbp), %eax	# i, tmp232
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _49
+	movq	-96(%rbp), %rax	# B, tmp233
+	addq	%rdx, %rax	# _49, _50
+	movq	(%rax), %rax	# *_50, _51
+# main.c:284:             B[i][j] = drand(MIN, MAX);
+	.loc 1 284 17
+	movl	-144(%rbp), %edx	# j, tmp234
+	movslq	%edx, %rdx	# tmp234, _52
+	salq	$3, %rdx	#, _53
+	leaq	(%rax,%rdx), %rbx	#, _54
+# main.c:284:             B[i][j] = drand(MIN, MAX);
+	.loc 1 284 23
+	vmovsd	.LC7(%rip), %xmm0	#, tmp235
+	vmovsd	%xmm0, %xmm0, %xmm1	# tmp235,
+	movq	.LC8(%rip), %rax	#, tmp236
+	vmovq	%rax, %xmm0	# tmp236,
+	call	drand	#
+	vmovq	%xmm0, %rax	#, _55
+# main.c:284:             B[i][j] = drand(MIN, MAX);
+	.loc 1 284 21 discriminator 1
+	movq	%rax, (%rbx)	# _55, *_54
+# main.c:283:         for(int j=0; j<N; j++)
+	.loc 1 283 28 discriminator 3
+	addl	$1, -144(%rbp)	#, j
+.L102:
+# main.c:283:         for(int j=0; j<N; j++)
+	.loc 1 283 23 discriminator 1
+	movl	-144(%rbp), %eax	# j, tmp237
+	cmpl	-116(%rbp), %eax	# N, tmp237
+	jl	.L103	#,
+.LBE94:
+# main.c:282:     for(int i=0; i<M; i++)
+	.loc 1 282 24 discriminator 2
+	addl	$1, -148(%rbp)	#, i
+.L101:
+# main.c:282:     for(int i=0; i<M; i++)
+	.loc 1 282 19 discriminator 1
+	movl	-148(%rbp), %eax	# i, tmp238
+	cmpl	-120(%rbp), %eax	# M, tmp238
+	jl	.L104	#,
+.LBE93:
+# main.c:287:     C = aligned_alloc(MEM_ALIGN, L * sizeof(double *));
+	.loc 1 287 9
+	movl	-124(%rbp), %eax	# L, tmp239
+	cltq
+	salq	$3, %rax	#, _57
+	movq	%rax, %rsi	# _57,
 	movl	$32, %edi	#,
-	movq	%r13, %rsi	# _44,
 	call	aligned_alloc@PLT	#
-# main.c:260:         C[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
-	movq	%rax, (%rbx)	# tmp263, MEM[(double * *)_72]
-# main.c:260:         C[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
-	movq	%rax, %rdi	# tmp306, tmp263
-# main.c:261:         if(C[i] == NULL) {
-	testq	%rax, %rax	# tmp263
-	je	.L174	#,
-# main.c:266:         for(int j=0; j<N; j++){
-	testl	%r15d, %r15d	# _127
-	jle	.L177	#,
-# main.c:267:             C[i][j] = 0.0;    
-	movq	%r14, %rdx	# _182,
-	xorl	%esi, %esi	#
-	call	memset@PLT	#
-.L177:
-# main.c:259:     for(int i=0; i<L; i++) {
-	addq	$8, %rbx	#, ivtmp.309
-	cmpq	%r12, %rbx	# _173, ivtmp.309
-	jne	.L176	#,
-	movl	(%rsp), %r15d	# %sfp, _131
-.L190:
-# main.c:285:     gettimeofday(&start, NULL);
-	xorl	%esi, %esi	#
-	leaq	96(%rsp), %rdi	#, tmp268
+	movq	%rax, -88(%rbp)	# tmp240, C
+# main.c:288:     if(C == NULL) {
+	.loc 1 288 7
+	cmpq	$0, -88(%rbp)	#, C
+	jne	.L105	#,
+# main.c:289:         printf("ERROR: cannot allocate memory for matrix C\n");
+	.loc 1 289 9
+	leaq	.LC9(%rip), %rax	#, tmp241
+	movq	%rax, %rdi	# tmp241,
+	call	puts@PLT	#
+# main.c:290:         return 0;
+	.loc 1 290 16
+	movl	$0, %eax	#, _113
+	jmp	.L127	#
+.L105:
+.LBB95:
+# main.c:292:     for(int i=0; i<L; i++) {
+	.loc 1 292 13
+	movl	$0, -140(%rbp)	#, i
+# main.c:292:     for(int i=0; i<L; i++) {
+	.loc 1 292 5
+	jmp	.L106	#
+.L110:
+# main.c:293:         C[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
+	.loc 1 293 16
+	movl	-116(%rbp), %eax	# N, tmp242
+	cltq
+	salq	$3, %rax	#, _59
+# main.c:293:         C[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
+	.loc 1 293 10
+	movl	-140(%rbp), %edx	# i, tmp243
+	movslq	%edx, %rdx	# tmp243, _60
+	leaq	0(,%rdx,8), %rcx	#, _61
+	movq	-88(%rbp), %rdx	# C, tmp244
+	leaq	(%rcx,%rdx), %rbx	#, _62
+# main.c:293:         C[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
+	.loc 1 293 16
+	movq	%rax, %rsi	# _59,
+	movl	$32, %edi	#,
+	call	aligned_alloc@PLT	#
+# main.c:293:         C[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
+	.loc 1 293 14 discriminator 1
+	movq	%rax, (%rbx)	# _63, *_62
+# main.c:294:         if(C[i] == NULL) {
+	.loc 1 294 13
+	movl	-140(%rbp), %eax	# i, tmp246
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _65
+	movq	-88(%rbp), %rax	# C, tmp247
+	addq	%rdx, %rax	# _65, _66
+	movq	(%rax), %rax	# *_66, _67
+# main.c:294:         if(C[i] == NULL) {
+	.loc 1 294 11
+	testq	%rax, %rax	# _67
+	jne	.L107	#,
+# main.c:295:             printf("ERROR: cannot allocate memory for matrix C\n");
+	.loc 1 295 13
+	leaq	.LC9(%rip), %rax	#, tmp248
+	movq	%rax, %rdi	# tmp248,
+	call	puts@PLT	#
+# main.c:296:             return 0;
+	.loc 1 296 20
+	movl	$0, %eax	#, _113
+	jmp	.L127	#
+.L107:
+.LBB96:
+# main.c:299:         for(int j=0; j<N; j++){
+	.loc 1 299 17
+	movl	$0, -136(%rbp)	#, j
+# main.c:299:         for(int j=0; j<N; j++){
+	.loc 1 299 9
+	jmp	.L108	#
+.L109:
+# main.c:300:             C[i][j] = 0.0;    
+	.loc 1 300 14
+	movl	-140(%rbp), %eax	# i, tmp249
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _69
+	movq	-88(%rbp), %rax	# C, tmp250
+	addq	%rdx, %rax	# _69, _70
+	movq	(%rax), %rax	# *_70, _71
+# main.c:300:             C[i][j] = 0.0;    
+	.loc 1 300 17
+	movl	-136(%rbp), %edx	# j, tmp251
+	movslq	%edx, %rdx	# tmp251, _72
+	salq	$3, %rdx	#, _73
+	addq	%rdx, %rax	# _73, _74
+# main.c:300:             C[i][j] = 0.0;    
+	.loc 1 300 21
+	vxorpd	%xmm0, %xmm0, %xmm0	# tmp252
+	vmovsd	%xmm0, (%rax)	# tmp252, *_74
+# main.c:299:         for(int j=0; j<N; j++){
+	.loc 1 299 28 discriminator 3
+	addl	$1, -136(%rbp)	#, j
+.L108:
+# main.c:299:         for(int j=0; j<N; j++){
+	.loc 1 299 23 discriminator 1
+	movl	-136(%rbp), %eax	# j, tmp253
+	cmpl	-116(%rbp), %eax	# N, tmp253
+	jl	.L109	#,
+.LBE96:
+# main.c:292:     for(int i=0; i<L; i++) {
+	.loc 1 292 24 discriminator 2
+	addl	$1, -140(%rbp)	#, i
+.L106:
+# main.c:292:     for(int i=0; i<L; i++) {
+	.loc 1 292 19 discriminator 1
+	movl	-140(%rbp), %eax	# i, tmp254
+	cmpl	-124(%rbp), %eax	# L, tmp254
+	jl	.L110	#,
+.LBE95:
+# main.c:305:         printf("\nMATRIX A:\n");
+	.loc 1 305 9
+	leaq	.LC10(%rip), %rax	#, tmp255
+	movq	%rax, %rdi	# tmp255,
+	call	puts@PLT	#
+# main.c:306:         print_matrix(A, L, M);
+	.loc 1 306 9
+	movl	-120(%rbp), %edx	# M, tmp256
+	movl	-124(%rbp), %ecx	# L, tmp257
+	movq	-104(%rbp), %rax	# A, tmp258
+	movl	%ecx, %esi	# tmp257,
+	movq	%rax, %rdi	# tmp258,
+	call	print_matrix	#
+# main.c:308:         printf("\nMATRIX B:\n");
+	.loc 1 308 9
+	leaq	.LC11(%rip), %rax	#, tmp259
+	movq	%rax, %rdi	# tmp259,
+	call	puts@PLT	#
+# main.c:309:         print_matrix(B, M, N);
+	.loc 1 309 9
+	movl	-116(%rbp), %edx	# N, tmp260
+	movl	-120(%rbp), %ecx	# M, tmp261
+	movq	-96(%rbp), %rax	# B, tmp262
+	movl	%ecx, %esi	# tmp261,
+	movq	%rax, %rdi	# tmp262,
+	call	print_matrix	#
+# main.c:311:         printf("\nMATRIX C (init to zero):\n");
+	.loc 1 311 9
+	leaq	.LC12(%rip), %rax	#, tmp263
+	movq	%rax, %rdi	# tmp263,
+	call	puts@PLT	#
+# main.c:312:         print_matrix(C, L, N);
+	.loc 1 312 9
+	movl	-116(%rbp), %edx	# N, tmp264
+	movl	-124(%rbp), %ecx	# L, tmp265
+	movq	-88(%rbp), %rax	# C, tmp266
+	movl	%ecx, %esi	# tmp265,
+	movq	%rax, %rdi	# tmp266,
+	call	print_matrix	#
+# main.c:318:     gettimeofday(&start, NULL);
+	.loc 1 318 5
+	leaq	-80(%rbp), %rax	#, tmp267
+	movl	$0, %esi	#,
+	movq	%rax, %rdi	# tmp267,
 	call	gettimeofday@PLT	#
-# main.c:288:     if (mode == 1 || mode == 0)
-	cmpl	$1, 32(%rsp)	#, %sfp
-	jbe	.L234	#,
-# main.c:290:     else if (mode == 2)
-	cmpl	$2, 32(%rsp)	#, %sfp
-	je	.L235	#,
-# main.c:292:     else if (mode == 3)
-	cmpl	$3, 32(%rsp)	#, %sfp
-	je	.L236	#,
-# main.c:294:     else if (mode == 4)
-	cmpl	$4, 32(%rsp)	#, %sfp
-	je	.L237	#,
-# main.c:296:     else if (mode == 5)
-	cmpl	$5, 32(%rsp)	#, %sfp
-	je	.L238	#,
-.L179:
-# main.c:299:     gettimeofday(&stop, NULL);
-	leaq	112(%rsp), %rdi	#, tmp281
-	xorl	%esi, %esi	#
-	call	gettimeofday@PLT	#
-# main.c:300:     timersub(&stop, &start, &total);
-	movq	112(%rsp), %r9	# MEM[(struct timeval *)_226].tv_sec, MEM[(struct timeval *)_226].tv_sec
-	movq	120(%rsp), %rax	# MEM[(struct timeval *)_226].tv_usec, MEM[(struct timeval *)_226].tv_usec
-	subq	96(%rsp), %r9	# start.tv_sec, _65
-	subq	104(%rsp), %rax	# start.tv_usec, _73
-	js	.L239	#,
-.L189:
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	pushq	%rdx	#
-	.cfi_def_cfa_offset 232
-	leaq	.LC11(%rip), %rsi	#, tmp279
-	movl	%r15d, %edx	# _131,
-	movl	$2, %edi	#,
-	pushq	%rax	# _73
-	.cfi_def_cfa_offset 240
-	movl	32(%rsp), %r8d	# %sfp,
-	xorl	%eax, %eax	#
-	movl	96(%rsp), %ecx	# %sfp,
-	call	__printf_chk@PLT	#
-	popq	%rcx	#
-	.cfi_def_cfa_offset 232
-	popq	%rsi	#
-	.cfi_def_cfa_offset 224
-.L187:
-# main.c:332:     free_matrices(A, B, C, L, M, N);
-	movl	16(%rsp), %r9d	# %sfp,
-	movl	24(%rsp), %r8d	# %sfp,
-	movl	%r15d, %ecx	# _131,
-	movq	%rbp, %rdx	# C,
-	movq	48(%rsp), %rsi	# %sfp,
-	movq	40(%rsp), %rdi	# %sfp,
-	call	free_matrices	#
-.L154:
-# main.c:335: }
-	movq	152(%rsp), %rax	# D.41342, tmp314
-	subq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp314
-	jne	.L240	#,
-	addq	$168, %rsp	#,
-	.cfi_remember_state
-	.cfi_def_cfa_offset 56
-	xorl	%eax, %eax	#
-	popq	%rbx	#
-	.cfi_def_cfa_offset 48
-	popq	%rbp	#
-	.cfi_def_cfa_offset 40
-	popq	%r12	#
-	.cfi_def_cfa_offset 32
-	popq	%r13	#
-	.cfi_def_cfa_offset 24
-	popq	%r14	#
-	.cfi_def_cfa_offset 16
-	popq	%r15	#
-	.cfi_def_cfa_offset 8
-	ret	
-.L232:
-	.cfi_restore_state
-# main.c:210:         omp_set_num_threads(ADDIT_ARG);
-	movl	%r12d, %edi	# _122,
-	call	omp_set_num_threads@PLT	#
-	jmp	.L149	#
-.L234:
-# main.c:289:         matrix_multiply(A, B, C, L, M, N);
-	movl	16(%rsp), %r9d	# %sfp,
-	movl	24(%rsp), %r8d	# %sfp,
-	movl	%r15d, %ecx	# _131,
-	movq	%rbp, %rdx	# C,
-	movq	48(%rsp), %rsi	# %sfp,
-	movq	40(%rsp), %rdi	# %sfp,
+# main.c:321:     if (mode == 1 || mode == 0)
+	.loc 1 321 8
+	cmpl	$1, -108(%rbp)	#, mode
+	je	.L111	#,
+# main.c:321:     if (mode == 1 || mode == 0)
+	.loc 1 321 19 discriminator 1
+	cmpl	$0, -108(%rbp)	#, mode
+	jne	.L112	#,
+.L111:
+# main.c:322:         matrix_multiply(A, B, C, L, M, N);
+	.loc 1 322 9
+	movl	-116(%rbp), %r8d	# N, tmp268
+	movl	-120(%rbp), %edi	# M, tmp269
+	movl	-124(%rbp), %ecx	# L, tmp270
+	movq	-88(%rbp), %rdx	# C, tmp271
+	movq	-96(%rbp), %rsi	# B, tmp272
+	movq	-104(%rbp), %rax	# A, tmp273
+	movl	%r8d, %r9d	# tmp268,
+	movl	%edi, %r8d	# tmp269,
+	movq	%rax, %rdi	# tmp273,
 	call	matrix_multiply	#
-	jmp	.L179	#
-.L236:
-# main.c:91:     #pragma omp parallel for
-	movl	16(%rsp), %eax	# %sfp, tmp379
-	leaq	112(%rsp), %rbx	#, tmp272
-	xorl	%ecx, %ecx	#
-	xorl	%edx, %edx	#
-	movq	%rbx, %rsi	# tmp272,
-	leaq	multicore_matrix_multiply._omp_fn.0(%rip), %rdi	#, tmp273
-	movq	%rbp, 128(%rsp)	# C, MEM[(struct .omp_data_s.3 *)_226].C
-	movl	%eax, 144(%rsp)	# tmp379, MEM[(struct .omp_data_s.3 *)_226].N
-	movl	24(%rsp), %eax	# %sfp, tmp380
-	movl	%eax, 140(%rsp)	# tmp380, MEM[(struct .omp_data_s.3 *)_226].M
-	movl	8(%rsp), %eax	# %sfp, tmp381
-	movl	%eax, 136(%rsp)	# tmp381, MEM[(struct .omp_data_s.3 *)_226].L
-	movq	48(%rsp), %rax	# %sfp, B
-	movq	%rax, 120(%rsp)	# B, MEM[(struct .omp_data_s.3 *)_226].B
-	movq	40(%rsp), %rax	# %sfp, A
-	movq	%rax, 112(%rsp)	# A, MEM[(struct .omp_data_s.3 *)_226].A
-	call	GOMP_parallel@PLT	#
-# main.c:299:     gettimeofday(&stop, NULL);
-	xorl	%esi, %esi	#
-	movq	%rbx, %rdi	# tmp272,
-	call	gettimeofday@PLT	#
-# main.c:300:     timersub(&stop, &start, &total);
-	movq	112(%rsp), %r9	# MEM[(struct timeval *)_226].tv_sec, MEM[(struct timeval *)_226].tv_sec
-	movq	120(%rsp), %rax	# MEM[(struct timeval *)_226].tv_usec, MEM[(struct timeval *)_226].tv_usec
-	subq	96(%rsp), %r9	# start.tv_sec, _208
-	subq	104(%rsp), %rax	# start.tv_usec, _211
-	jns	.L185	#,
-# main.c:300:     timersub(&stop, &start, &total);
-	subq	$1, %r9	#, _208
-	addq	$1000000, %rax	#, _211
-.L185:
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	movl	88(%rsp), %ecx	# %sfp, tmp385
-	movl	$2, %edi	#,
-	movl	%r15d, %edx	# _131,
-	leaq	.LC10(%rip), %rsi	#, tmp278
-	pushq	%rcx	# tmp385
-	.cfi_def_cfa_offset 232
-	pushq	%rax	# _211
-	.cfi_def_cfa_offset 240
-	movl	32(%rsp), %r8d	# %sfp,
-	xorl	%eax, %eax	#
-	movl	96(%rsp), %ecx	# %sfp,
-	call	__printf_chk@PLT	#
-	popq	%rdi	#
-	.cfi_def_cfa_offset 232
-	popq	%r8	#
-	.cfi_def_cfa_offset 224
-	jmp	.L187	#
-.L235:
-# main.c:291:         unrolled_matrix_multiply(A, B, C, L, M, N, ADDIT_ARG);
-	pushq	%r11	#
-	.cfi_def_cfa_offset 232
-	movl	96(%rsp), %eax	# %sfp, tmp378
-	movl	%r15d, %ecx	# _131,
-	movq	%rbp, %rdx	# C,
-	pushq	%rax	# tmp378
-	.cfi_def_cfa_offset 240
-	movl	32(%rsp), %r9d	# %sfp,
-	movl	40(%rsp), %r8d	# %sfp,
-	movq	64(%rsp), %rsi	# %sfp,
-	movq	56(%rsp), %rdi	# %sfp,
+	jmp	.L113	#
+.L112:
+# main.c:323:     else if (mode == 2)
+	.loc 1 323 13
+	cmpl	$2, -108(%rbp)	#, mode
+	jne	.L114	#,
+# main.c:324:         unrolled_matrix_multiply(A, B, C, L, M, N, ADDIT_ARG);
+	.loc 1 324 9
+	movl	-116(%rbp), %r9d	# N, tmp274
+	movl	-120(%rbp), %r8d	# M, tmp275
+	movl	-124(%rbp), %ecx	# L, tmp276
+	movq	-88(%rbp), %rdx	# C, tmp277
+	movq	-96(%rbp), %rsi	# B, tmp278
+	movq	-104(%rbp), %rax	# A, tmp279
+	subq	$8, %rsp	#,
+	movl	-172(%rbp), %edi	# ADDIT_ARG, tmp280
+	pushq	%rdi	# tmp280
+	movq	%rax, %rdi	# tmp279,
 	call	unrolled_matrix_multiply	#
-# main.c:299:     gettimeofday(&stop, NULL);
-	leaq	128(%rsp), %rdi	#, tmp269
-	xorl	%esi, %esi	#
-	call	gettimeofday@PLT	#
-# main.c:300:     timersub(&stop, &start, &total);
-	movq	128(%rsp), %r9	# MEM[(struct timeval *)_226].tv_sec, MEM[(struct timeval *)_226].tv_sec
-	movq	136(%rsp), %rax	# MEM[(struct timeval *)_226].tv_usec, MEM[(struct timeval *)_226].tv_usec
-	subq	112(%rsp), %r9	# start.tv_sec, total$tv_sec
-	popq	%rbx	#
-	.cfi_def_cfa_offset 232
-	popq	%r12	#
-	.cfi_def_cfa_offset 224
-	subq	104(%rsp), %rax	# start.tv_usec, total$tv_usec
-	jns	.L182	#,
-# main.c:300:     timersub(&stop, &start, &total);
-	subq	$1, %r9	#, total$tv_sec
-	addq	$1000000, %rax	#, total$tv_usec
-.L182:
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	movl	88(%rsp), %ecx	# %sfp, tmp384
-	movl	%r15d, %edx	# _131,
-	movl	$2, %edi	#,
-	leaq	.LC9(%rip), %rsi	#, tmp277
-	pushq	%rcx	# tmp384
-	.cfi_def_cfa_offset 232
-	pushq	%rax	# total$tv_usec
-	.cfi_def_cfa_offset 240
-	movl	32(%rsp), %r8d	# %sfp,
-	xorl	%eax, %eax	#
-	movl	96(%rsp), %ecx	# %sfp,
-	call	__printf_chk@PLT	#
-	popq	%r9	#
-	.cfi_def_cfa_offset 232
-	popq	%r10	#
-	.cfi_def_cfa_offset 224
-	jmp	.L187	#
-.L237:
-# main.c:295:         blocked_matrix_multiply(A, B, C, L, M, N);
-	movl	16(%rsp), %r9d	# %sfp,
-	movl	24(%rsp), %r8d	# %sfp,
-	movl	%r15d, %ecx	# _131,
-	movq	%rbp, %rdx	# C,
-	movq	48(%rsp), %rsi	# %sfp,
-	movq	40(%rsp), %rdi	# %sfp,
+	addq	$16, %rsp	#,
+	jmp	.L113	#
+.L114:
+# main.c:325:     else if (mode == 3)
+	.loc 1 325 13
+	cmpl	$3, -108(%rbp)	#, mode
+	jne	.L115	#,
+# main.c:326:         multicore_matrix_multiply(A, B, C, L, M, N);
+	.loc 1 326 9
+	movl	-116(%rbp), %r8d	# N, tmp281
+	movl	-120(%rbp), %edi	# M, tmp282
+	movl	-124(%rbp), %ecx	# L, tmp283
+	movq	-88(%rbp), %rdx	# C, tmp284
+	movq	-96(%rbp), %rsi	# B, tmp285
+	movq	-104(%rbp), %rax	# A, tmp286
+	movl	%r8d, %r9d	# tmp281,
+	movl	%edi, %r8d	# tmp282,
+	movq	%rax, %rdi	# tmp286,
+	call	multicore_matrix_multiply	#
+	jmp	.L113	#
+.L115:
+# main.c:327:     else if (mode == 4)
+	.loc 1 327 13
+	cmpl	$4, -108(%rbp)	#, mode
+	jne	.L116	#,
+# main.c:328:         blocked_matrix_multiply(A, B, C, L, M, N, ADDIT_ARG);
+	.loc 1 328 9
+	movl	-116(%rbp), %r9d	# N, tmp287
+	movl	-120(%rbp), %r8d	# M, tmp288
+	movl	-124(%rbp), %ecx	# L, tmp289
+	movq	-88(%rbp), %rdx	# C, tmp290
+	movq	-96(%rbp), %rsi	# B, tmp291
+	movq	-104(%rbp), %rax	# A, tmp292
+	subq	$8, %rsp	#,
+	movl	-172(%rbp), %edi	# ADDIT_ARG, tmp293
+	pushq	%rdi	# tmp293
+	movq	%rax, %rdi	# tmp292,
 	call	blocked_matrix_multiply	#
-	jmp	.L179	#
-.L239:
-# main.c:300:     timersub(&stop, &start, &total);
-	subq	$1, %r9	#, _65
-	addq	$1000000, %rax	#, _73
-	jmp	.L189	#
-.L238:
-# main.c:297:         subword_parallelism_matrix_multiply(A, B, C, L, M, N);
-	movl	16(%rsp), %r9d	# %sfp,
-	movl	24(%rsp), %r8d	# %sfp,
-	movl	%r15d, %ecx	# _131,
-	movq	%rbp, %rdx	# C,
-	movq	48(%rsp), %rsi	# %sfp,
-	movq	40(%rsp), %rdi	# %sfp,
+	addq	$16, %rsp	#,
+	jmp	.L113	#
+.L116:
+# main.c:329:     else if (mode == 5)
+	.loc 1 329 13
+	cmpl	$5, -108(%rbp)	#, mode
+	jne	.L117	#,
+# main.c:330:         subword_parallelism_matrix_multiply(A, B, C, L, M, N);
+	.loc 1 330 9
+	movl	-116(%rbp), %r8d	# N, tmp294
+	movl	-120(%rbp), %edi	# M, tmp295
+	movl	-124(%rbp), %ecx	# L, tmp296
+	movq	-88(%rbp), %rdx	# C, tmp297
+	movq	-96(%rbp), %rsi	# B, tmp298
+	movq	-104(%rbp), %rax	# A, tmp299
+	movl	%r8d, %r9d	# tmp294,
+	movl	%edi, %r8d	# tmp295,
+	movq	%rax, %rdi	# tmp299,
 	call	subword_parallelism_matrix_multiply	#
-	jmp	.L179	#
-.L233:
-# main.c:245:     for(int i=0; i<L; i++)
-	cmpl	$0, 8(%rsp)	#, %sfp
-	jle	.L241	#,
-# main.c:254:     C = aligned_alloc(MEM_ALIGN, L * sizeof(double *));
-	movq	56(%rsp), %rsi	# %sfp,
-	movl	$32, %edi	#,
-	call	aligned_alloc@PLT	#
-	movq	%rax, %rbp	# tmp308, C
-# main.c:255:     if(C == NULL) {
-	testq	%rax, %rax	# C
-	je	.L174	#,
-	movslq	16(%rsp), %rax	# %sfp, _127
-	movq	%rax, 64(%rsp)	# _127, %sfp
-	jmp	.L172	#
-.L192:
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	leaq	.LC4(%rip), %rdi	#, tmp218
+	jmp	.L113	#
+.L117:
+# main.c:331:     else if (mode == 6)
+	.loc 1 331 13
+	cmpl	$6, -108(%rbp)	#, mode
+	jne	.L113	#,
+# main.c:332:         custom_matrix_multiply(A, B, C, L, M, N, ADDIT_ARG, ADDIT_ARG2);
+	.loc 1 332 9
+	movl	-116(%rbp), %r9d	# N, tmp300
+	movl	-120(%rbp), %r8d	# M, tmp301
+	movl	-124(%rbp), %ecx	# L, tmp302
+	movq	-88(%rbp), %rdx	# C, tmp303
+	movq	-96(%rbp), %rsi	# B, tmp304
+	movq	-104(%rbp), %rax	# A, tmp305
+	movl	-168(%rbp), %edi	# ADDIT_ARG2, tmp306
+	pushq	%rdi	# tmp306
+	movl	-172(%rbp), %edi	# ADDIT_ARG, tmp307
+	pushq	%rdi	# tmp307
+	movq	%rax, %rdi	# tmp305,
+	call	custom_matrix_multiply	#
+	addq	$16, %rsp	#,
+.L113:
+# main.c:334:     gettimeofday(&stop, NULL);
+	.loc 1 334 5
+	leaq	-64(%rbp), %rax	#, tmp308
+	movl	$0, %esi	#,
+	movq	%rax, %rdi	# tmp308,
+	call	gettimeofday@PLT	#
+# main.c:335:     timersub(&stop, &start, &total);
+	.loc 1 335 5
+	movq	-64(%rbp), %rdx	# stop.tv_sec, _75
+	movq	-80(%rbp), %rax	# start.tv_sec, _76
+	subq	%rax, %rdx	# _76, _77
+	movq	%rdx, -48(%rbp)	# _77, total.tv_sec
+	movq	-56(%rbp), %rdx	# stop.tv_usec, _78
+	movq	-72(%rbp), %rax	# start.tv_usec, _79
+	subq	%rax, %rdx	# _79, _80
+	movq	%rdx, -40(%rbp)	# _80, total.tv_usec
+	movq	-40(%rbp), %rax	# total.tv_usec, _81
+	testq	%rax, %rax	# _81
+	jns	.L118	#,
+# main.c:335:     timersub(&stop, &start, &total);
+	.loc 1 335 5 is_stmt 0 discriminator 1
+	movq	-48(%rbp), %rax	# total.tv_sec, _82
+	subq	$1, %rax	#, _83
+	movq	%rax, -48(%rbp)	# _83, total.tv_sec
+	movq	-40(%rbp), %rax	# total.tv_usec, _84
+	addq	$1000000, %rax	#, _85
+	movq	%rax, -40(%rbp)	# _85, total.tv_usec
+.L118:
+# main.c:341:         printf("\nOutput C:\n");
+	.loc 1 341 9 is_stmt 1
+	leaq	.LC13(%rip), %rax	#, tmp309
+	movq	%rax, %rdi	# tmp309,
 	call	puts@PLT	#
-# main.c:205:         print_help_and_exit(argv);
-	movq	%r13, %rdi	# argv,
-	call	print_help_and_exit	#
-.L231:
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	leaq	.LC3(%rip), %rdi	#, tmp203
+# main.c:342:         print_matrix(C, L, N);
+	.loc 1 342 9
+	movl	-116(%rbp), %edx	# N, tmp310
+	movl	-124(%rbp), %ecx	# L, tmp311
+	movq	-88(%rbp), %rax	# C, tmp312
+	movl	%ecx, %esi	# tmp311,
+	movq	%rax, %rdi	# tmp312,
+	call	print_matrix	#
+.LBB97:
+# main.c:347:         for(int i=0; i<L; i++){
+	.loc 1 347 17
+	movl	$0, -132(%rbp)	#, i
+# main.c:347:         for(int i=0; i<L; i++){
+	.loc 1 347 9
+	jmp	.L119	#
+.L122:
+.LBB98:
+# main.c:348:             for(int j=0; j<N; j++){
+	.loc 1 348 21
+	movl	$0, -128(%rbp)	#, j
+# main.c:348:             for(int j=0; j<N; j++){
+	.loc 1 348 13
+	jmp	.L120	#
+.L121:
+# main.c:349:                 C[i][j] = 0.0;    
+	.loc 1 349 18
+	movl	-132(%rbp), %eax	# i, tmp313
+	cltq
+	leaq	0(,%rax,8), %rdx	#, _87
+	movq	-88(%rbp), %rax	# C, tmp314
+	addq	%rdx, %rax	# _87, _88
+	movq	(%rax), %rax	# *_88, _89
+# main.c:349:                 C[i][j] = 0.0;    
+	.loc 1 349 21
+	movl	-128(%rbp), %edx	# j, tmp315
+	movslq	%edx, %rdx	# tmp315, _90
+	salq	$3, %rdx	#, _91
+	addq	%rdx, %rax	# _91, _92
+# main.c:349:                 C[i][j] = 0.0;    
+	.loc 1 349 25
+	vxorpd	%xmm0, %xmm0, %xmm0	# tmp316
+	vmovsd	%xmm0, (%rax)	# tmp316, *_92
+# main.c:348:             for(int j=0; j<N; j++){
+	.loc 1 348 32 discriminator 3
+	addl	$1, -128(%rbp)	#, j
+.L120:
+# main.c:348:             for(int j=0; j<N; j++){
+	.loc 1 348 27 discriminator 1
+	movl	-128(%rbp), %eax	# j, tmp317
+	cmpl	-116(%rbp), %eax	# N, tmp317
+	jl	.L121	#,
+.LBE98:
+# main.c:347:         for(int i=0; i<L; i++){
+	.loc 1 347 28 discriminator 2
+	addl	$1, -132(%rbp)	#, i
+.L119:
+# main.c:347:         for(int i=0; i<L; i++){
+	.loc 1 347 23 discriminator 1
+	movl	-132(%rbp), %eax	# i, tmp318
+	cmpl	-124(%rbp), %eax	# L, tmp318
+	jl	.L122	#,
+.LBE97:
+# main.c:352:         matrix_multiply(A, B, C, L, M, N);
+	.loc 1 352 9
+	movl	-116(%rbp), %r8d	# N, tmp319
+	movl	-120(%rbp), %edi	# M, tmp320
+	movl	-124(%rbp), %ecx	# L, tmp321
+	movq	-88(%rbp), %rdx	# C, tmp322
+	movq	-96(%rbp), %rsi	# B, tmp323
+	movq	-104(%rbp), %rax	# A, tmp324
+	movl	%r8d, %r9d	# tmp319,
+	movl	%edi, %r8d	# tmp320,
+	movq	%rax, %rdi	# tmp324,
+	call	matrix_multiply	#
+# main.c:353:         printf("\nBaseline Output C from matrix_multiply():\n");
+	.loc 1 353 9
+	leaq	.LC14(%rip), %rax	#, tmp325
+	movq	%rax, %rdi	# tmp325,
 	call	puts@PLT	#
-# main.c:192:         print_help_and_exit(argv);
-	movq	%r13, %rdi	# argv,
-	call	print_help_and_exit	#
-.L150:
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	leaq	.LC5(%rip), %rdi	#, tmp223
-	call	puts@PLT	#
-# main.c:221:         return 0;
-	jmp	.L154	#
-.L241:
-# main.c:254:     C = aligned_alloc(MEM_ALIGN, L * sizeof(double *));
-	movq	56(%rsp), %rsi	# %sfp,
-	movl	$32, %edi	#,
-	call	aligned_alloc@PLT	#
-	movq	%rax, %rbp	# tmp307, C
-# main.c:255:     if(C == NULL) {
-	testq	%rax, %rax	# C
-	jne	.L190	#,
-.L174:
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	leaq	.LC8(%rip), %rdi	#, tmp254
-	call	puts@PLT	#
-# main.c:257:         return 0;
-	jmp	.L154	#
-.L152:
-# /usr/include/x86_64-linux-gnu/bits/stdio2.h:86:   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-	leaq	.LC6(%rip), %rdi	#, tmp229
-	call	puts@PLT	#
-# main.c:235:         return 0;
-	jmp	.L154	#
-.L240:
-# main.c:335: }
+# main.c:354:         print_matrix(C, L, N);
+	.loc 1 354 9
+	movl	-116(%rbp), %edx	# N, tmp326
+	movl	-124(%rbp), %ecx	# L, tmp327
+	movq	-88(%rbp), %rax	# C, tmp328
+	movl	%ecx, %esi	# tmp327,
+	movq	%rax, %rdi	# tmp328,
+	call	print_matrix	#
+# main.c:355:         printf("\n");
+	.loc 1 355 9
+	movl	$10, %edi	#,
+	call	putchar@PLT	#
+# main.c:359:     if (mode == 2)
+	.loc 1 359 8
+	cmpl	$2, -108(%rbp)	#, mode
+	jne	.L123	#,
+# main.c:360:         printf("L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld, UNROLL: %u\n", L, M, N, total.tv_sec, total.tv_usec, ADDIT_ARG);
+	.loc 1 360 9
+	movq	-40(%rbp), %r8	# total.tv_usec, _93
+	movq	-48(%rbp), %rdi	# total.tv_sec, _94
+	movl	-116(%rbp), %ecx	# N, tmp329
+	movl	-120(%rbp), %edx	# M, tmp330
+	movl	-124(%rbp), %eax	# L, tmp331
+	subq	$8, %rsp	#,
+	movl	-172(%rbp), %esi	# ADDIT_ARG, tmp332
+	pushq	%rsi	# tmp332
+	movq	%r8, %r9	# _93,
+	movq	%rdi, %r8	# _94,
+	movl	%eax, %esi	# tmp331,
+	leaq	.LC15(%rip), %rax	#, tmp333
+	movq	%rax, %rdi	# tmp333,
+	movl	$0, %eax	#,
+	call	printf@PLT	#
+	addq	$16, %rsp	#,
+	jmp	.L124	#
+.L123:
+# main.c:361:     else if (mode == 3)
+	.loc 1 361 13
+	cmpl	$3, -108(%rbp)	#, mode
+	jne	.L125	#,
+# main.c:362:         printf("L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld, THREADS: %u\n", L, M, N, total.tv_sec, total.tv_usec, ADDIT_ARG);
+	.loc 1 362 9
+	movq	-40(%rbp), %r8	# total.tv_usec, _95
+	movq	-48(%rbp), %rdi	# total.tv_sec, _96
+	movl	-116(%rbp), %ecx	# N, tmp334
+	movl	-120(%rbp), %edx	# M, tmp335
+	movl	-124(%rbp), %eax	# L, tmp336
+	subq	$8, %rsp	#,
+	movl	-172(%rbp), %esi	# ADDIT_ARG, tmp337
+	pushq	%rsi	# tmp337
+	movq	%r8, %r9	# _95,
+	movq	%rdi, %r8	# _96,
+	movl	%eax, %esi	# tmp336,
+	leaq	.LC16(%rip), %rax	#, tmp338
+	movq	%rax, %rdi	# tmp338,
+	movl	$0, %eax	#,
+	call	printf@PLT	#
+	addq	$16, %rsp	#,
+	jmp	.L124	#
+.L125:
+# main.c:363:     else if (mode == 4)
+	.loc 1 363 13
+	cmpl	$4, -108(%rbp)	#, mode
+	jne	.L126	#,
+# main.c:364:         printf("L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld, BLOCK SIZE: %u\n", L, M, N, total.tv_sec, total.tv_usec, ADDIT_ARG);
+	.loc 1 364 9
+	movq	-40(%rbp), %r8	# total.tv_usec, _97
+	movq	-48(%rbp), %rdi	# total.tv_sec, _98
+	movl	-116(%rbp), %ecx	# N, tmp339
+	movl	-120(%rbp), %edx	# M, tmp340
+	movl	-124(%rbp), %eax	# L, tmp341
+	subq	$8, %rsp	#,
+	movl	-172(%rbp), %esi	# ADDIT_ARG, tmp342
+	pushq	%rsi	# tmp342
+	movq	%r8, %r9	# _97,
+	movq	%rdi, %r8	# _98,
+	movl	%eax, %esi	# tmp341,
+	leaq	.LC17(%rip), %rax	#, tmp343
+	movq	%rax, %rdi	# tmp343,
+	movl	$0, %eax	#,
+	call	printf@PLT	#
+	addq	$16, %rsp	#,
+	jmp	.L124	#
+.L126:
+# main.c:366:         printf("L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld\n", L, M, N, total.tv_sec, total.tv_usec);
+	.loc 1 366 9
+	movq	-40(%rbp), %rdi	# total.tv_usec, _99
+	movq	-48(%rbp), %rsi	# total.tv_sec, _100
+	movl	-116(%rbp), %ecx	# N, tmp344
+	movl	-120(%rbp), %edx	# M, tmp345
+	movl	-124(%rbp), %eax	# L, tmp346
+	movq	%rdi, %r9	# _99,
+	movq	%rsi, %r8	# _100,
+	movl	%eax, %esi	# tmp346,
+	leaq	.LC18(%rip), %rax	#, tmp347
+	movq	%rax, %rdi	# tmp347,
+	movl	$0, %eax	#,
+	call	printf@PLT	#
+.L124:
+# main.c:369:     free_matrices(A, B, C, L, M, N);
+	.loc 1 369 5
+	movl	-116(%rbp), %r8d	# N, tmp348
+	movl	-120(%rbp), %edi	# M, tmp349
+	movl	-124(%rbp), %ecx	# L, tmp350
+	movq	-88(%rbp), %rdx	# C, tmp351
+	movq	-96(%rbp), %rsi	# B, tmp352
+	movq	-104(%rbp), %rax	# A, tmp353
+	movl	%r8d, %r9d	# tmp348,
+	movl	%edi, %r8d	# tmp349,
+	movq	%rax, %rdi	# tmp353,
+	call	free_matrices	#
+# main.c:371:     return 0;
+	.loc 1 371 12
+	movl	$0, %eax	#, _113
+.L127:
+# main.c:372: }
+	.loc 1 372 1
+	movq	-24(%rbp), %rdx	# D.31751, tmp356
+	subq	%fs:40, %rdx	# MEM[(<address-space-1> long unsigned int *)40B], tmp356
+	je	.L128	#,
 	call	__stack_chk_fail@PLT	#
+.L128:
+	movq	-8(%rbp), %rbx	#,
+	leave	
+	.cfi_def_cfa 7, 8
+	ret	
 	.cfi_endproc
-.LFE6652:
+.LFE5051:
 	.size	main, .-main
-	.section	.rodata.cst8,"aM",@progbits,8
+	.type	multicore_matrix_multiply._omp_fn.0, @function
+multicore_matrix_multiply._omp_fn.0:
+.LFB5052:
+	.loc 1 91 13
+	.cfi_startproc
+	endbr64	
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
+	pushq	%r12	#
+	pushq	%rbx	#
+	subq	$64, %rsp	#,
+	.cfi_offset 12, -24
+	.cfi_offset 3, -32
+	movq	%rdi, -72(%rbp)	# .omp_data_i, .omp_data_i
+# main.c:91:     #pragma omp parallel for
+	.loc 1 91 13 discriminator 1
+	movq	-72(%rbp), %rax	# .omp_data_i, tmp123
+	movl	32(%rax), %eax	# .omp_data_i_11(D)->N, tmp124
+	movl	%eax, -52(%rbp)	# tmp124, N
+	movq	-72(%rbp), %rax	# .omp_data_i, tmp125
+	movl	28(%rax), %eax	# .omp_data_i_11(D)->M, tmp126
+	movl	%eax, -48(%rbp)	# tmp126, M
+	movq	-72(%rbp), %rax	# .omp_data_i, tmp127
+	movl	24(%rax), %eax	# .omp_data_i_11(D)->L, tmp128
+	movl	%eax, -44(%rbp)	# tmp128, L
+	movq	-72(%rbp), %rax	# .omp_data_i, tmp129
+	movq	16(%rax), %rax	# .omp_data_i_11(D)->C, tmp130
+	movq	%rax, -40(%rbp)	# tmp130, C
+	movq	-72(%rbp), %rax	# .omp_data_i, tmp131
+	movq	8(%rax), %rax	# .omp_data_i_11(D)->B, tmp132
+	movq	%rax, -32(%rbp)	# tmp132, B
+	movq	-72(%rbp), %rax	# .omp_data_i, tmp133
+	movq	(%rax), %rax	# .omp_data_i_11(D)->A, tmp134
+	movq	%rax, -24(%rbp)	# tmp134, A
+.LBB99:
+.LBB100:
+	movl	-44(%rbp), %ebx	# L, L.4_18
+	call	omp_get_num_threads@PLT	#
+	movl	%eax, %r12d	#, _19
+	call	omp_get_thread_num@PLT	#
+	movl	%eax, %esi	#, _20
+	movl	%ebx, %eax	# L.4_18, tmp135
+	cltd
+	idivl	%r12d	# _19
+	movl	%eax, %ecx	# tmp135, q.6_1
+	movl	%ebx, %eax	# L.4_18, L.4_18
+	cltd
+	idivl	%r12d	# _19
+	movl	%edx, %eax	# tmp137, tt.7_2
+	cmpl	%eax, %esi	# tt.7_2, _20
+	jl	.L130	#,
+.L137:
+	imull	%ecx, %esi	# q.6_1, _20
+	movl	%esi, %edx	# _20, _25
+	addl	%edx, %eax	# _25, _26
+	leal	(%rax,%rcx), %edx	#, _27
+	cmpl	%edx, %eax	# _27, _26
+	jge	.L138	#,
+	movl	%eax, -64(%rbp)	# _26, i
+.L133:
+.LBB101:
+# main.c:95:         for(int j=0; j<N; j++) {
+	.loc 1 95 17
+	movl	$0, -60(%rbp)	#, j
+# main.c:95:         for(int j=0; j<N; j++) {
+	.loc 1 95 9
+	nop	
+.L135:
+# main.c:95:         for(int j=0; j<N; j++) {
+	.loc 1 95 23 discriminator 1
+	movl	-60(%rbp), %eax	# j, tmp139
+	cmpl	-52(%rbp), %eax	# N, tmp139
+	jl	.L132	#,
+	addl	$1, -64(%rbp)	#, i
+	cmpl	%edx, -64(%rbp)	# _27, i
+	jl	.L133	#,
+.LBE101:
+.LBE100:
+.LBE99:
+# main.c:91:     #pragma omp parallel for
+	.loc 1 91 13
+	jmp	.L138	#
+.L132:
+.LBB106:
+.LBB105:
+.LBB104:
+.LBB102:
+# main.c:97:             for(int k=0; k<M; k++){
+	.loc 1 97 21
+	movl	$0, -56(%rbp)	#, k
+# main.c:97:             for(int k=0; k<M; k++){
+	.loc 1 97 13
+	nop	
+.L136:
+# main.c:97:             for(int k=0; k<M; k++){
+	.loc 1 97 27 discriminator 1
+	movl	-56(%rbp), %eax	# k, tmp140
+	cmpl	-48(%rbp), %eax	# M, tmp140
+	jl	.L134	#,
+.LBE102:
+# main.c:95:         for(int j=0; j<N; j++) {
+	.loc 1 95 28 discriminator 2
+	addl	$1, -60(%rbp)	#, j
+	jmp	.L135	#
+.L134:
+.LBB103:
+# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 98 18
+	movl	-64(%rbp), %eax	# i, tmp141
+	cltq
+	leaq	0(,%rax,8), %rcx	#, _34
+	movq	-40(%rbp), %rax	# C, tmp142
+	addq	%rcx, %rax	# _34, _35
+	movq	(%rax), %rax	# *_35, _36
+# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 98 21
+	movl	-60(%rbp), %ecx	# j, tmp143
+	movslq	%ecx, %rcx	# tmp143, _37
+	salq	$3, %rcx	#, _38
+	addq	%rcx, %rax	# _38, _39
+	vmovsd	(%rax), %xmm1	# *_39, _40
+# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 98 29
+	movl	-64(%rbp), %eax	# i, tmp144
+	cltq
+	leaq	0(,%rax,8), %rcx	#, _42
+	movq	-24(%rbp), %rax	# A, tmp145
+	addq	%rcx, %rax	# _42, _43
+	movq	(%rax), %rax	# *_43, _44
+# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 98 32
+	movl	-56(%rbp), %ecx	# k, tmp146
+	movslq	%ecx, %rcx	# tmp146, _45
+	salq	$3, %rcx	#, _46
+	addq	%rcx, %rax	# _46, _47
+	vmovsd	(%rax), %xmm2	# *_47, _48
+# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 98 39
+	movl	-56(%rbp), %eax	# k, tmp147
+	cltq
+	leaq	0(,%rax,8), %rcx	#, _50
+	movq	-32(%rbp), %rax	# B, tmp148
+	addq	%rcx, %rax	# _50, _51
+	movq	(%rax), %rax	# *_51, _52
+# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 98 42
+	movl	-60(%rbp), %ecx	# j, tmp149
+	movslq	%ecx, %rcx	# tmp149, _53
+	salq	$3, %rcx	#, _54
+	addq	%rcx, %rax	# _54, _55
+	vmovsd	(%rax), %xmm0	# *_55, _56
+# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 98 36
+	vmulsd	%xmm0, %xmm2, %xmm0	# _56, _48, _57
+# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 98 18
+	movl	-64(%rbp), %eax	# i, tmp150
+	cltq
+	leaq	0(,%rax,8), %rcx	#, _59
+	movq	-40(%rbp), %rax	# C, tmp151
+	addq	%rcx, %rax	# _59, _60
+	movq	(%rax), %rax	# *_60, _61
+# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 98 21
+	movl	-60(%rbp), %ecx	# j, tmp152
+	movslq	%ecx, %rcx	# tmp152, _62
+	salq	$3, %rcx	#, _63
+	addq	%rcx, %rax	# _63, _64
+# main.c:98:                 C[i][j] += A[i][k] * B[k][j];
+	.loc 1 98 25
+	vaddsd	%xmm0, %xmm1, %xmm0	# _57, _40, _65
+	vmovsd	%xmm0, (%rax)	# _65, *_64
+# main.c:97:             for(int k=0; k<M; k++){
+	.loc 1 97 32 discriminator 3
+	addl	$1, -56(%rbp)	#, k
+	jmp	.L136	#
+.L130:
+	movl	$0, %eax	#, tt.7_2
+	addl	$1, %ecx	#, q.6_1
+	jmp	.L137	#
+.L138:
+.LBE103:
+.LBE104:
+.LBE105:
+.LBE106:
+# main.c:91:     #pragma omp parallel for
+	.loc 1 91 13
+	nop	
+	addq	$64, %rsp	#,
+	popq	%rbx	#
+	popq	%r12	#
+	popq	%rbp	#
+	.cfi_def_cfa 7, 8
+	ret	
+	.cfi_endproc
+.LFE5052:
+	.size	multicore_matrix_multiply._omp_fn.0, .-multicore_matrix_multiply._omp_fn.0
+	.type	custom_matrix_multiply._omp_fn.0, @function
+custom_matrix_multiply._omp_fn.0:
+.LFB5053:
+	.loc 1 178 13
+	.cfi_startproc
+	endbr64	
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
+	pushq	%r13	#
+	pushq	%r12	#
+	pushq	%rbx	#
+	subq	$88, %rsp	#,
+	.cfi_offset 13, -24
+	.cfi_offset 12, -32
+	.cfi_offset 3, -40
+	movq	%rdi, -104(%rbp)	# .omp_data_i, .omp_data_i
+# main.c:178:     #pragma omp parallel for
+	.loc 1 178 13 discriminator 1
+	movq	-104(%rbp), %rax	# .omp_data_i, tmp95
+	movl	36(%rax), %eax	# .omp_data_i_11(D)->block_size, tmp96
+	movl	%eax, -72(%rbp)	# tmp96, block_size
+	movq	-104(%rbp), %rax	# .omp_data_i, tmp97
+	movl	32(%rax), %eax	# .omp_data_i_11(D)->N, tmp98
+	movl	%eax, -68(%rbp)	# tmp98, N
+	movq	-104(%rbp), %rax	# .omp_data_i, tmp99
+	movl	28(%rax), %eax	# .omp_data_i_11(D)->M, tmp100
+	movl	%eax, -64(%rbp)	# tmp100, M
+	movq	-104(%rbp), %rax	# .omp_data_i, tmp101
+	movl	24(%rax), %eax	# .omp_data_i_11(D)->L, tmp102
+	movl	%eax, -60(%rbp)	# tmp102, L
+	movq	-104(%rbp), %rax	# .omp_data_i, tmp103
+	movq	16(%rax), %rax	# .omp_data_i_11(D)->C, tmp104
+	movq	%rax, -56(%rbp)	# tmp104, C
+	movq	-104(%rbp), %rax	# .omp_data_i, tmp105
+	movq	8(%rax), %rax	# .omp_data_i_11(D)->B, tmp106
+	movq	%rax, -48(%rbp)	# tmp106, B
+	movq	-104(%rbp), %rax	# .omp_data_i, tmp107
+	movq	(%rax), %rax	# .omp_data_i_11(D)->A, tmp108
+	movq	%rax, -40(%rbp)	# tmp108, A
+.LBB107:
+.LBB108:
+	movl	-60(%rbp), %r13d	# L, L.9_19
+	movl	-72(%rbp), %ebx	# block_size, block_size.10_20
+	call	omp_get_num_threads@PLT	#
+	movl	%eax, %r12d	#, _21
+	call	omp_get_thread_num@PLT	#
+	movl	%eax, %edi	#, _22
+	leal	-1(%rbx), %eax	#, _23
+	addl	%r13d, %eax	# L.9_19, _24
+	cltd
+	idivl	%ebx	# block_size.10_20
+	movl	%eax, %esi	# tmp109, _25
+	movl	%esi, %eax	# _25, tmp111
+	cltd
+	idivl	%r12d	# _21
+	movl	%eax, %ecx	# tmp111, q.12_1
+	movl	%esi, %eax	# _25, _25
+	cltd
+	idivl	%r12d	# _21
+	movl	%edx, %eax	# tmp113, tt.13_2
+	cmpl	%eax, %edi	# tt.13_2, _22
+	jl	.L140	#,
+.L147:
+	imull	%ecx, %edi	# q.12_1, _22
+	movl	%edi, %edx	# _22, _30
+	addl	%edx, %eax	# _30, _31
+	leal	(%rax,%rcx), %edx	#, _32
+	cmpl	%edx, %eax	# _32, _31
+	jge	.L148	#,
+	imull	%ebx, %eax	# block_size.10_20, tmp115
+	movl	%eax, -84(%rbp)	# tmp115, sj
+	imull	%ebx, %edx	# block_size.10_20, _32
+	movl	%edx, %r12d	# _32, _34
+.L143:
+.LBB109:
+# main.c:182:         for(int si=0; si<N; si+= block_size) {
+	.loc 1 182 17
+	movl	$0, -80(%rbp)	#, si
+# main.c:182:         for(int si=0; si<N; si+= block_size) {
+	.loc 1 182 9
+	nop	
+.L145:
+# main.c:182:         for(int si=0; si<N; si+= block_size) {
+	.loc 1 182 25 discriminator 1
+	movl	-80(%rbp), %eax	# si, tmp116
+	cmpl	-68(%rbp), %eax	# N, tmp116
+	jl	.L142	#,
+	addl	%ebx, -84(%rbp)	# block_size.10_20, sj
+	cmpl	%r12d, -84(%rbp)	# _34, sj
+	jl	.L143	#,
+.LBE109:
+.LBE108:
+.LBE107:
+# main.c:178:     #pragma omp parallel for
+	.loc 1 178 13
+	jmp	.L148	#
+.L142:
+.LBB114:
+.LBB113:
+.LBB112:
+.LBB110:
+# main.c:184:             for(int sk=0; sk<M; sk+= block_size){
+	.loc 1 184 21
+	movl	$0, -76(%rbp)	#, sk
+# main.c:184:             for(int sk=0; sk<M; sk+= block_size){
+	.loc 1 184 13
+	nop	
+.L146:
+# main.c:184:             for(int sk=0; sk<M; sk+= block_size){
+	.loc 1 184 29 discriminator 1
+	movl	-76(%rbp), %eax	# sk, tmp117
+	cmpl	-64(%rbp), %eax	# M, tmp117
+	jl	.L144	#,
+.LBE110:
+# main.c:182:         for(int si=0; si<N; si+= block_size) {
+	.loc 1 182 31 discriminator 2
+	movl	-72(%rbp), %eax	# block_size, tmp118
+	addl	%eax, -80(%rbp)	# tmp118, si
+	jmp	.L145	#
+.L144:
+.LBB111:
+# main.c:185:                 do_block_custom(si, sj, sk, A, B, C, block_size);
+	.loc 1 185 17
+	movq	-56(%rbp), %r9	# C, tmp119
+	movq	-48(%rbp), %r8	# B, tmp120
+	movq	-40(%rbp), %rcx	# A, tmp121
+	movl	-76(%rbp), %edx	# sk, tmp122
+	movl	-84(%rbp), %esi	# sj, tmp123
+	movl	-80(%rbp), %eax	# si, tmp124
+	subq	$8, %rsp	#,
+	movl	-72(%rbp), %edi	# block_size, tmp125
+	pushq	%rdi	# tmp125
+	movl	%eax, %edi	# tmp124,
+	call	do_block_custom	#
+	addq	$16, %rsp	#,
+# main.c:184:             for(int sk=0; sk<M; sk+= block_size){
+	.loc 1 184 35 discriminator 3
+	movl	-72(%rbp), %eax	# block_size, tmp126
+	addl	%eax, -76(%rbp)	# tmp126, sk
+	jmp	.L146	#
+.L140:
+	movl	$0, %eax	#, tt.13_2
+	addl	$1, %ecx	#, q.12_1
+	jmp	.L147	#
+.L148:
+.LBE111:
+.LBE112:
+.LBE113:
+.LBE114:
+# main.c:178:     #pragma omp parallel for
+	.loc 1 178 13
+	nop	
+	leaq	-24(%rbp), %rsp	#,
+	popq	%rbx	#
+	popq	%r12	#
+	popq	%r13	#
+	popq	%rbp	#
+	.cfi_def_cfa 7, 8
+	ret	
+	.cfi_endproc
+.LFE5053:
+	.size	custom_matrix_multiply._omp_fn.0, .-custom_matrix_multiply._omp_fn.0
+	.section	.rodata
 	.align 8
 .LC2:
 	.long	-4194304
 	.long	1105199103
+	.align 8
+.LC7:
+	.long	0
+	.long	1072693248
+	.align 8
+.LC8:
+	.long	0
+	.long	0
+	.text
+.Letext0:
+	.file 3 "/usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h"
+	.file 4 "/usr/include/x86_64-linux-gnu/bits/types.h"
+	.file 5 "/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h"
+	.file 6 "/usr/include/x86_64-linux-gnu/sys/time.h"
+	.file 7 "/usr/include/stdlib.h"
+	.file 8 "/usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h"
+	.file 9 "/usr/include/stdio.h"
+	.section	.debug_info,"",@progbits
+.Ldebug_info0:
+	.long	0x1132
+	.value	0x5
+	.byte	0x1
+	.byte	0x8
+	.long	.Ldebug_abbrev0
+	.uleb128 0x23
+	.long	.LASF70
+	.byte	0x1d
+	.long	.LASF0
+	.long	.LASF1
+	.quad	.Ltext0
+	.quad	.Letext0-.Ltext0
+	.long	.Ldebug_line0
+	.uleb128 0x11
+	.long	.LASF9
+	.byte	0x3
+	.byte	0xd6
+	.byte	0x17
+	.long	0x3a
+	.uleb128 0x5
+	.byte	0x8
+	.byte	0x7
+	.long	.LASF2
+	.uleb128 0x5
+	.byte	0x4
+	.byte	0x7
+	.long	.LASF3
+	.uleb128 0x24
+	.byte	0x8
+	.uleb128 0x12
+	.long	0x48
+	.uleb128 0x5
+	.byte	0x1
+	.byte	0x8
+	.long	.LASF4
+	.uleb128 0x5
+	.byte	0x2
+	.byte	0x7
+	.long	.LASF5
+	.uleb128 0x5
+	.byte	0x1
+	.byte	0x6
+	.long	.LASF6
+	.uleb128 0x5
+	.byte	0x2
+	.byte	0x5
+	.long	.LASF7
+	.uleb128 0x25
+	.byte	0x4
+	.byte	0x5
+	.string	"int"
+	.uleb128 0x5
+	.byte	0x8
+	.byte	0x5
+	.long	.LASF8
+	.uleb128 0x11
+	.long	.LASF10
+	.byte	0x4
+	.byte	0xa0
+	.byte	0x1a
+	.long	0x72
+	.uleb128 0x11
+	.long	.LASF11
+	.byte	0x4
+	.byte	0xa2
+	.byte	0x1f
+	.long	0x72
+	.uleb128 0xd
+	.long	0x96
+	.uleb128 0x5
+	.byte	0x1
+	.byte	0x6
+	.long	.LASF12
+	.uleb128 0x17
+	.long	0x96
+	.uleb128 0xd
+	.long	0x9d
+	.uleb128 0x5
+	.byte	0x8
+	.byte	0x5
+	.long	.LASF13
+	.uleb128 0x26
+	.long	.LASF71
+	.byte	0x10
+	.byte	0x5
+	.byte	0x8
+	.byte	0x8
+	.long	0xd6
+	.uleb128 0x15
+	.long	.LASF14
+	.byte	0x5
+	.byte	0xe
+	.byte	0xc
+	.long	0x79
+	.byte	0
+	.uleb128 0x15
+	.long	.LASF15
+	.byte	0x5
+	.byte	0xf
+	.byte	0x11
+	.long	0x85
+	.byte	0x8
+	.byte	0
+	.uleb128 0x5
+	.byte	0x8
+	.byte	0x7
+	.long	.LASF16
+	.uleb128 0x5
+	.byte	0x10
+	.byte	0x4
+	.long	.LASF17
+	.uleb128 0x5
+	.byte	0x4
+	.byte	0x4
+	.long	.LASF18
+	.uleb128 0x5
+	.byte	0x8
+	.byte	0x4
+	.long	.LASF19
+	.uleb128 0x17
+	.long	0xeb
+	.uleb128 0x11
+	.long	.LASF20
+	.byte	0x2
+	.byte	0x29
+	.byte	0x10
+	.long	0x103
+	.uleb128 0x18
+	.long	0xeb
+	.long	0x10e
+	.uleb128 0x19
+	.byte	0
+	.uleb128 0x11
+	.long	.LASF21
+	.byte	0x2
+	.byte	0x3b
+	.byte	0x10
+	.long	0x11a
+	.uleb128 0x18
+	.long	0xeb
+	.long	0x125
+	.uleb128 0x19
+	.byte	0
+	.uleb128 0x5
+	.byte	0x2
+	.byte	0x4
+	.long	.LASF22
+	.uleb128 0x5
+	.byte	0x2
+	.byte	0x4
+	.long	.LASF23
+	.uleb128 0x1a
+	.long	.LASF24
+	.byte	0x6
+	.byte	0x43
+	.long	0x6b
+	.long	0x14d
+	.uleb128 0x9
+	.long	0x152
+	.uleb128 0x9
+	.long	0x4a
+	.byte	0
+	.uleb128 0xd
+	.long	0xae
+	.uleb128 0x12
+	.long	0x14d
+	.uleb128 0x1b
+	.long	.LASF25
+	.byte	0x7
+	.value	0x2d4
+	.byte	0xe
+	.long	0x48
+	.long	0x173
+	.uleb128 0x9
+	.long	0x2e
+	.uleb128 0x9
+	.long	0x2e
+	.byte	0
+	.uleb128 0x1c
+	.long	.LASF27
+	.value	0x23f
+	.long	0x184
+	.uleb128 0x9
+	.long	0x41
+	.byte	0
+	.uleb128 0x1a
+	.long	.LASF26
+	.byte	0x7
+	.byte	0x69
+	.long	0x6b
+	.long	0x199
+	.uleb128 0x9
+	.long	0xa2
+	.byte	0
+	.uleb128 0x1c
+	.long	.LASF28
+	.value	0x2af
+	.long	0x1aa
+	.uleb128 0x9
+	.long	0x48
+	.byte	0
+	.uleb128 0x27
+	.long	.LASF29
+	.byte	0x8
+	.byte	0xd5
+	.byte	0xd
+	.long	0x1bc
+	.uleb128 0x9
+	.long	0x6b
+	.byte	0
+	.uleb128 0xe
+	.long	.LASF32
+	.byte	0xb0
+	.quad	.LFB5049
+	.quad	.LFE5049-.LFB5049
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0x2fb
+	.uleb128 0x1
+	.string	"A"
+	.byte	0xb0
+	.byte	0x26
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -72
+	.uleb128 0x1
+	.string	"B"
+	.byte	0xb0
+	.byte	0x32
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -80
+	.uleb128 0x1
+	.string	"C"
+	.byte	0xb0
+	.byte	0x3e
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -88
+	.uleb128 0x1
+	.string	"L"
+	.byte	0xb0
+	.byte	0x45
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -92
+	.uleb128 0x1
+	.string	"M"
+	.byte	0xb0
+	.byte	0x4c
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -96
+	.uleb128 0x1
+	.string	"N"
+	.byte	0xb0
+	.byte	0x53
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -100
+	.uleb128 0x7
+	.long	.LASF30
+	.byte	0xb0
+	.byte	0x5a
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 0
+	.uleb128 0x7
+	.long	.LASF31
+	.byte	0xb0
+	.byte	0x6a
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 8
+	.uleb128 0x1d
+	.long	.LASF34
+	.quad	.LFB5053
+	.quad	.LFE5053-.LFB5053
+	.uleb128 0x1
+	.byte	0x9c
+	.uleb128 0x1e
+	.long	0x359
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -120
+	.uleb128 0x2
+	.string	"A"
+	.byte	0xb0
+	.byte	0x26
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -56
+	.uleb128 0x2
+	.string	"B"
+	.byte	0xb0
+	.byte	0x32
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -64
+	.uleb128 0x2
+	.string	"C"
+	.byte	0xb0
+	.byte	0x3e
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -72
+	.uleb128 0x2
+	.string	"L"
+	.byte	0xb0
+	.byte	0x45
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -76
+	.uleb128 0x2
+	.string	"M"
+	.byte	0xb0
+	.byte	0x4c
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -80
+	.uleb128 0x2
+	.string	"N"
+	.byte	0xb0
+	.byte	0x53
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -84
+	.uleb128 0x8
+	.long	.LASF30
+	.byte	0xb0
+	.byte	0x5a
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -88
+	.uleb128 0xf
+	.long	.LLRL2
+	.uleb128 0x2
+	.string	"sj"
+	.byte	0xb4
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -100
+	.uleb128 0xf
+	.long	.LLRL2
+	.uleb128 0x2
+	.string	"si"
+	.byte	0xb6
+	.byte	0x11
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -96
+	.uleb128 0xf
+	.long	.LLRL3
+	.uleb128 0x2
+	.string	"sk"
+	.byte	0xb8
+	.byte	0x15
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -92
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.uleb128 0xd
+	.long	0x300
+	.uleb128 0xd
+	.long	0xeb
+	.uleb128 0x1f
+	.long	0x354
+	.uleb128 0x6
+	.string	"A"
+	.byte	0xb0
+	.byte	0x26
+	.long	0x2fb
+	.byte	0
+	.uleb128 0x6
+	.string	"B"
+	.byte	0xb0
+	.byte	0x32
+	.long	0x2fb
+	.byte	0x8
+	.uleb128 0x6
+	.string	"C"
+	.byte	0xb0
+	.byte	0x3e
+	.long	0x2fb
+	.byte	0x10
+	.uleb128 0x6
+	.string	"L"
+	.byte	0xb0
+	.byte	0x45
+	.long	0x6b
+	.byte	0x18
+	.uleb128 0x6
+	.string	"M"
+	.byte	0xb0
+	.byte	0x4c
+	.long	0x6b
+	.byte	0x1c
+	.uleb128 0x6
+	.string	"N"
+	.byte	0xb0
+	.byte	0x53
+	.long	0x6b
+	.byte	0x20
+	.uleb128 0x15
+	.long	.LASF30
+	.byte	0x1
+	.byte	0xb0
+	.byte	0x5a
+	.long	0x6b
+	.byte	0x24
+	.byte	0
+	.uleb128 0x20
+	.long	0x305
+	.uleb128 0x12
+	.long	0x354
+	.uleb128 0xe
+	.long	.LASF33
+	.byte	0x5a
+	.quad	.LFB5044
+	.quad	.LFE5044-.LFB5044
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0x46c
+	.uleb128 0x1
+	.string	"A"
+	.byte	0x5a
+	.byte	0x29
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -72
+	.uleb128 0x1
+	.string	"B"
+	.byte	0x5a
+	.byte	0x35
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -80
+	.uleb128 0x1
+	.string	"C"
+	.byte	0x5a
+	.byte	0x41
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -88
+	.uleb128 0x1
+	.string	"L"
+	.byte	0x5a
+	.byte	0x48
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -92
+	.uleb128 0x1
+	.string	"M"
+	.byte	0x5a
+	.byte	0x4f
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -96
+	.uleb128 0x1
+	.string	"N"
+	.byte	0x5a
+	.byte	0x56
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -100
+	.uleb128 0x1d
+	.long	.LASF35
+	.quad	.LFB5052
+	.quad	.LFE5052-.LFB5052
+	.uleb128 0x1
+	.byte	0x9c
+	.uleb128 0x1e
+	.long	0x4b3
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -88
+	.uleb128 0x2
+	.string	"A"
+	.byte	0x5a
+	.byte	0x29
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -40
+	.uleb128 0x2
+	.string	"B"
+	.byte	0x5a
+	.byte	0x35
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -48
+	.uleb128 0x2
+	.string	"C"
+	.byte	0x5a
+	.byte	0x41
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -56
+	.uleb128 0x2
+	.string	"L"
+	.byte	0x5a
+	.byte	0x48
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -60
+	.uleb128 0x2
+	.string	"M"
+	.byte	0x5a
+	.byte	0x4f
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -64
+	.uleb128 0x2
+	.string	"N"
+	.byte	0x5a
+	.byte	0x56
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -68
+	.uleb128 0xf
+	.long	.LLRL0
+	.uleb128 0x2
+	.string	"i"
+	.byte	0x5d
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -80
+	.uleb128 0xf
+	.long	.LLRL0
+	.uleb128 0x2
+	.string	"j"
+	.byte	0x5f
+	.byte	0x11
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -76
+	.uleb128 0xf
+	.long	.LLRL1
+	.uleb128 0x2
+	.string	"k"
+	.byte	0x61
+	.byte	0x15
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -72
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.uleb128 0x1f
+	.long	0x4ae
+	.uleb128 0x6
+	.string	"A"
+	.byte	0x5a
+	.byte	0x29
+	.long	0x2fb
+	.byte	0
+	.uleb128 0x6
+	.string	"B"
+	.byte	0x5a
+	.byte	0x35
+	.long	0x2fb
+	.byte	0x8
+	.uleb128 0x6
+	.string	"C"
+	.byte	0x5a
+	.byte	0x41
+	.long	0x2fb
+	.byte	0x10
+	.uleb128 0x6
+	.string	"L"
+	.byte	0x5a
+	.byte	0x48
+	.long	0x6b
+	.byte	0x18
+	.uleb128 0x6
+	.string	"M"
+	.byte	0x5a
+	.byte	0x4f
+	.long	0x6b
+	.byte	0x1c
+	.uleb128 0x6
+	.string	"N"
+	.byte	0x5a
+	.byte	0x56
+	.long	0x6b
+	.byte	0x20
+	.byte	0
+	.uleb128 0x20
+	.long	0x46c
+	.uleb128 0x12
+	.long	0x4ae
+	.uleb128 0x28
+	.long	.LASF72
+	.byte	0x7
+	.value	0x23d
+	.byte	0xc
+	.long	0x6b
+	.uleb128 0x29
+	.long	.LASF36
+	.byte	0x7
+	.value	0x2f4
+	.byte	0xd
+	.long	0x4d8
+	.uleb128 0x9
+	.long	0x6b
+	.byte	0
+	.uleb128 0x1b
+	.long	.LASF37
+	.byte	0x9
+	.value	0x16b
+	.byte	0xc
+	.long	0x6b
+	.long	0x4f0
+	.uleb128 0x9
+	.long	0xa2
+	.uleb128 0x2a
+	.byte	0
+	.uleb128 0x21
+	.long	.LASF58
+	.byte	0xd2
+	.byte	0x5
+	.long	0x6b
+	.quad	.LFB5051
+	.quad	.LFE5051-.LFB5051
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0x73a
+	.uleb128 0x7
+	.long	.LASF38
+	.byte	0xd2
+	.byte	0xe
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -196
+	.uleb128 0x7
+	.long	.LASF39
+	.byte	0xd2
+	.byte	0x1b
+	.long	0x73a
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -208
+	.uleb128 0x2
+	.string	"L"
+	.byte	0xd7
+	.byte	0x9
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -140
+	.uleb128 0x2
+	.string	"M"
+	.byte	0xd7
+	.byte	0xc
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -136
+	.uleb128 0x2
+	.string	"N"
+	.byte	0xd7
+	.byte	0xf
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -132
+	.uleb128 0x8
+	.long	.LASF40
+	.byte	0xd7
+	.byte	0x12
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -128
+	.uleb128 0x8
+	.long	.LASF41
+	.byte	0xd7
+	.byte	0x18
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -188
+	.uleb128 0x8
+	.long	.LASF42
+	.byte	0xd7
+	.byte	0x23
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -184
+	.uleb128 0x8
+	.long	.LASF43
+	.byte	0xd8
+	.byte	0x9
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -124
+	.uleb128 0x2
+	.string	"A"
+	.byte	0xd9
+	.byte	0xe
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -120
+	.uleb128 0x2
+	.string	"B"
+	.byte	0xd9
+	.byte	0x13
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -112
+	.uleb128 0x2
+	.string	"C"
+	.byte	0xd9
+	.byte	0x18
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -104
+	.uleb128 0x8
+	.long	.LASF44
+	.byte	0xda
+	.byte	0x14
+	.long	0xae
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -96
+	.uleb128 0x8
+	.long	.LASF45
+	.byte	0xda
+	.byte	0x1b
+	.long	0xae
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -80
+	.uleb128 0x8
+	.long	.LASF46
+	.byte	0xda
+	.byte	0x21
+	.long	0xae
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -64
+	.uleb128 0xa
+	.quad	.LBB89
+	.quad	.LBE89-.LBB89
+	.long	0x609
+	.uleb128 0xb
+	.string	"i"
+	.value	0x100
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -180
+	.byte	0
+	.uleb128 0xa
+	.quad	.LBB90
+	.quad	.LBE90-.LBB90
+	.long	0x62d
+	.uleb128 0xb
+	.string	"i"
+	.value	0x10e
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -176
+	.byte	0
+	.uleb128 0xa
+	.quad	.LBB91
+	.quad	.LBE91-.LBB91
+	.long	0x671
+	.uleb128 0xb
+	.string	"i"
+	.value	0x116
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -172
+	.uleb128 0x3
+	.quad	.LBB92
+	.quad	.LBE92-.LBB92
+	.uleb128 0xb
+	.string	"j"
+	.value	0x117
+	.byte	0x11
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -168
+	.byte	0
+	.byte	0
+	.uleb128 0xa
+	.quad	.LBB93
+	.quad	.LBE93-.LBB93
+	.long	0x6b5
+	.uleb128 0xb
+	.string	"i"
+	.value	0x11a
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -164
+	.uleb128 0x3
+	.quad	.LBB94
+	.quad	.LBE94-.LBB94
+	.uleb128 0xb
+	.string	"j"
+	.value	0x11b
+	.byte	0x11
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -160
+	.byte	0
+	.byte	0
+	.uleb128 0xa
+	.quad	.LBB95
+	.quad	.LBE95-.LBB95
+	.long	0x6f9
+	.uleb128 0xb
+	.string	"i"
+	.value	0x124
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -156
+	.uleb128 0x3
+	.quad	.LBB96
+	.quad	.LBE96-.LBB96
+	.uleb128 0xb
+	.string	"j"
+	.value	0x12b
+	.byte	0x11
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -152
+	.byte	0
+	.byte	0
+	.uleb128 0x3
+	.quad	.LBB97
+	.quad	.LBE97-.LBB97
+	.uleb128 0xb
+	.string	"i"
+	.value	0x15b
+	.byte	0x11
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -148
+	.uleb128 0x3
+	.quad	.LBB98
+	.quad	.LBE98-.LBB98
+	.uleb128 0xb
+	.string	"j"
+	.value	0x15c
+	.byte	0x15
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -144
+	.byte	0
+	.byte	0
+	.byte	0
+	.uleb128 0xd
+	.long	0x91
+	.uleb128 0xe
+	.long	.LASF47
+	.byte	0xc5
+	.quad	.LFB5050
+	.quad	.LFE5050-.LFB5050
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0x7e5
+	.uleb128 0x1
+	.string	"A"
+	.byte	0xc5
+	.byte	0x1d
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -40
+	.uleb128 0x1
+	.string	"B"
+	.byte	0xc5
+	.byte	0x29
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -48
+	.uleb128 0x1
+	.string	"C"
+	.byte	0xc5
+	.byte	0x35
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -56
+	.uleb128 0x1
+	.string	"L"
+	.byte	0xc5
+	.byte	0x3c
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -60
+	.uleb128 0x1
+	.string	"M"
+	.byte	0xc5
+	.byte	0x43
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -64
+	.uleb128 0x1
+	.string	"N"
+	.byte	0xc5
+	.byte	0x4a
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -68
+	.uleb128 0xa
+	.quad	.LBB87
+	.quad	.LBE87-.LBB87
+	.long	0x7c6
+	.uleb128 0x2
+	.string	"i"
+	.byte	0xc6
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -24
+	.byte	0
+	.uleb128 0x3
+	.quad	.LBB88
+	.quad	.LBE88-.LBB88
+	.uleb128 0x2
+	.string	"i"
+	.byte	0xca
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -20
+	.byte	0
+	.byte	0
+	.uleb128 0x13
+	.long	.LASF48
+	.byte	0xa1
+	.quad	.LFB5048
+	.quad	.LFE5048-.LFB5048
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0x9ca
+	.uleb128 0x1
+	.string	"si"
+	.byte	0xa1
+	.byte	0x1a
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -76
+	.uleb128 0x1
+	.string	"sj"
+	.byte	0xa1
+	.byte	0x22
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -80
+	.uleb128 0x1
+	.string	"sk"
+	.byte	0xa1
+	.byte	0x2a
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -84
+	.uleb128 0x1
+	.string	"A"
+	.byte	0xa1
+	.byte	0x37
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -96
+	.uleb128 0x1
+	.string	"B"
+	.byte	0xa1
+	.byte	0x43
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -104
+	.uleb128 0x1
+	.string	"C"
+	.byte	0xa1
+	.byte	0x4f
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -112
+	.uleb128 0x7
+	.long	.LASF30
+	.byte	0xa1
+	.byte	0x56
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 0
+	.uleb128 0x3
+	.quad	.LBB70
+	.quad	.LBE70-.LBB70
+	.uleb128 0x2
+	.string	"i"
+	.byte	0xa2
+	.byte	0xf
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -68
+	.uleb128 0x3
+	.quad	.LBB71
+	.quad	.LBE71-.LBB71
+	.uleb128 0x2
+	.string	"j"
+	.byte	0xa3
+	.byte	0x12
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -64
+	.uleb128 0x3
+	.quad	.LBB72
+	.quad	.LBE72-.LBB72
+	.uleb128 0x2
+	.string	"c0"
+	.byte	0xa4
+	.byte	0x15
+	.long	0x10e
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -24
+	.uleb128 0xa
+	.quad	.LBB75
+	.quad	.LBE75-.LBB75
+	.long	0x979
+	.uleb128 0x2
+	.string	"k"
+	.byte	0xa5
+	.byte	0x16
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -60
+	.uleb128 0xc
+	.long	0x10cd
+	.quad	.LBB76
+	.quad	.LBE76-.LBB76
+	.byte	0xa7
+	.byte	0x16
+	.long	0x8fe
+	.uleb128 0x4
+	.long	0x10dc
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -40
+	.byte	0
+	.uleb128 0xc
+	.long	0x10ac
+	.quad	.LBB78
+	.quad	.LBE78-.LBB78
+	.byte	0xa7
+	.byte	0x16
+	.long	0x922
+	.uleb128 0x4
+	.long	0x10bb
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -48
+	.byte	0
+	.uleb128 0xc
+	.long	0x10e9
+	.quad	.LBB80
+	.quad	.LBE80-.LBB80
+	.byte	0xa7
+	.byte	0x16
+	.long	0x950
+	.uleb128 0x4
+	.long	0x1104
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 104
+	.uleb128 0x4
+	.long	0x10f8
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 72
+	.byte	0
+	.uleb128 0x14
+	.long	0x1111
+	.quad	.LBB82
+	.quad	.LBE82-.LBB82
+	.byte	0xa7
+	.byte	0x16
+	.uleb128 0x4
+	.long	0x1129
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 40
+	.uleb128 0x4
+	.long	0x111e
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 8
+	.byte	0
+	.byte	0
+	.uleb128 0xc
+	.long	0x10ac
+	.quad	.LBB73
+	.quad	.LBE73-.LBB73
+	.byte	0xa4
+	.byte	0x1a
+	.long	0x99d
+	.uleb128 0x4
+	.long	0x10bb
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -56
+	.byte	0
+	.uleb128 0x14
+	.long	0x1085
+	.quad	.LBB84
+	.quad	.LBE84-.LBB84
+	.byte	0xab
+	.byte	0xe
+	.uleb128 0x4
+	.long	0x109f
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 136
+	.uleb128 0x4
+	.long	0x1093
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -32
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.uleb128 0x13
+	.long	.LASF49
+	.byte	0x8d
+	.quad	.LFB5047
+	.quad	.LFE5047-.LFB5047
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0xb9e
+	.uleb128 0x1
+	.string	"A"
+	.byte	0x8d
+	.byte	0x33
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -80
+	.uleb128 0x1
+	.string	"B"
+	.byte	0x8d
+	.byte	0x3f
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -88
+	.uleb128 0x1
+	.string	"C"
+	.byte	0x8d
+	.byte	0x4b
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -96
+	.uleb128 0x1
+	.string	"L"
+	.byte	0x8d
+	.byte	0x52
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -100
+	.uleb128 0x1
+	.string	"M"
+	.byte	0x8d
+	.byte	0x59
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -104
+	.uleb128 0x1
+	.string	"N"
+	.byte	0x8d
+	.byte	0x60
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -108
+	.uleb128 0x3
+	.quad	.LBB54
+	.quad	.LBE54-.LBB54
+	.uleb128 0x2
+	.string	"i"
+	.byte	0x8f
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 -68
+	.uleb128 0x3
+	.quad	.LBB55
+	.quad	.LBE55-.LBB55
+	.uleb128 0x2
+	.string	"j"
+	.byte	0x91
+	.byte	0x11
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -64
+	.uleb128 0x3
+	.quad	.LBB56
+	.quad	.LBE56-.LBB56
+	.uleb128 0x2
+	.string	"c0"
+	.byte	0x93
+	.byte	0x15
+	.long	0x10e
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -24
+	.uleb128 0xa
+	.quad	.LBB59
+	.quad	.LBE59-.LBB59
+	.long	0xb4d
+	.uleb128 0x2
+	.string	"k"
+	.byte	0x95
+	.byte	0x15
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -60
+	.uleb128 0xc
+	.long	0x10cd
+	.quad	.LBB60
+	.quad	.LBE60-.LBB60
+	.byte	0x97
+	.byte	0x16
+	.long	0xad2
+	.uleb128 0x4
+	.long	0x10dc
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -40
+	.byte	0
+	.uleb128 0xc
+	.long	0x10ac
+	.quad	.LBB62
+	.quad	.LBE62-.LBB62
+	.byte	0x97
+	.byte	0x16
+	.long	0xaf6
+	.uleb128 0x4
+	.long	0x10bb
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -48
+	.byte	0
+	.uleb128 0xc
+	.long	0x10e9
+	.quad	.LBB64
+	.quad	.LBE64-.LBB64
+	.byte	0x97
+	.byte	0x16
+	.long	0xb24
+	.uleb128 0x4
+	.long	0x1104
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 104
+	.uleb128 0x4
+	.long	0x10f8
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 72
+	.byte	0
+	.uleb128 0x14
+	.long	0x1111
+	.quad	.LBB66
+	.quad	.LBE66-.LBB66
+	.byte	0x97
+	.byte	0x16
+	.uleb128 0x4
+	.long	0x1129
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 40
+	.uleb128 0x4
+	.long	0x111e
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 8
+	.byte	0
+	.byte	0
+	.uleb128 0xc
+	.long	0x10ac
+	.quad	.LBB57
+	.quad	.LBE57-.LBB57
+	.byte	0x93
+	.byte	0x1a
+	.long	0xb71
+	.uleb128 0x4
+	.long	0x10bb
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -56
+	.byte	0
+	.uleb128 0x14
+	.long	0x1085
+	.quad	.LBB68
+	.quad	.LBE68-.LBB68
+	.byte	0x9c
+	.byte	0x6
+	.uleb128 0x4
+	.long	0x109f
+	.uleb128 0x3
+	.byte	0x77
+	.sleb128 136
+	.uleb128 0x4
+	.long	0x1093
+	.uleb128 0x2
+	.byte	0x77
+	.sleb128 -32
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.uleb128 0xe
+	.long	.LASF50
+	.byte	0x7b
+	.quad	.LFB5046
+	.quad	.LFE5046-.LFB5046
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0xc6f
+	.uleb128 0x1
+	.string	"A"
+	.byte	0x7b
+	.byte	0x27
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -40
+	.uleb128 0x1
+	.string	"B"
+	.byte	0x7b
+	.byte	0x33
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -48
+	.uleb128 0x1
+	.string	"C"
+	.byte	0x7b
+	.byte	0x3f
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -56
+	.uleb128 0x1
+	.string	"L"
+	.byte	0x7b
+	.byte	0x46
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -60
+	.uleb128 0x1
+	.string	"M"
+	.byte	0x7b
+	.byte	0x4d
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -64
+	.uleb128 0x1
+	.string	"N"
+	.byte	0x7b
+	.byte	0x54
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -68
+	.uleb128 0x7
+	.long	.LASF51
+	.byte	0x7b
+	.byte	0x5b
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 0
+	.uleb128 0x3
+	.quad	.LBB51
+	.quad	.LBE51-.LBB51
+	.uleb128 0x2
+	.string	"sj"
+	.byte	0x7d
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -28
+	.uleb128 0x3
+	.quad	.LBB52
+	.quad	.LBE52-.LBB52
+	.uleb128 0x2
+	.string	"si"
+	.byte	0x7f
+	.byte	0x11
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -24
+	.uleb128 0x3
+	.quad	.LBB53
+	.quad	.LBE53-.LBB53
+	.uleb128 0x2
+	.string	"sk"
+	.byte	0x81
+	.byte	0x15
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -20
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.uleb128 0x13
+	.long	.LASF52
+	.byte	0x68
+	.quad	.LFB5045
+	.quad	.LFE5045-.LFB5045
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0xd62
+	.uleb128 0x1
+	.string	"si"
+	.byte	0x68
+	.byte	0x13
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -52
+	.uleb128 0x1
+	.string	"sj"
+	.byte	0x68
+	.byte	0x1b
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -56
+	.uleb128 0x1
+	.string	"sk"
+	.byte	0x68
+	.byte	0x23
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -60
+	.uleb128 0x1
+	.string	"A"
+	.byte	0x68
+	.byte	0x30
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -72
+	.uleb128 0x1
+	.string	"B"
+	.byte	0x68
+	.byte	0x3c
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -80
+	.uleb128 0x1
+	.string	"C"
+	.byte	0x68
+	.byte	0x48
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -88
+	.uleb128 0x7
+	.long	.LASF51
+	.byte	0x68
+	.byte	0x4f
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 0
+	.uleb128 0x3
+	.quad	.LBB47
+	.quad	.LBE47-.LBB47
+	.uleb128 0x2
+	.string	"i"
+	.byte	0x6a
+	.byte	0xe
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -36
+	.uleb128 0x3
+	.quad	.LBB48
+	.quad	.LBE48-.LBB48
+	.uleb128 0x2
+	.string	"j"
+	.byte	0x6b
+	.byte	0x12
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -32
+	.uleb128 0x3
+	.quad	.LBB49
+	.quad	.LBE49-.LBB49
+	.uleb128 0x8
+	.long	.LASF53
+	.byte	0x6c
+	.byte	0xd
+	.long	0xeb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -24
+	.uleb128 0x3
+	.quad	.LBB50
+	.quad	.LBE50-.LBB50
+	.uleb128 0x2
+	.string	"k"
+	.byte	0x6d
+	.byte	0x16
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -28
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.uleb128 0xe
+	.long	.LASF54
+	.byte	0x3c
+	.quad	.LFB5043
+	.quad	.LFE5043-.LFB5043
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0xeb8
+	.uleb128 0x1
+	.string	"A"
+	.byte	0x3c
+	.byte	0x28
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -72
+	.uleb128 0x1
+	.string	"B"
+	.byte	0x3c
+	.byte	0x34
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -80
+	.uleb128 0x1
+	.string	"C"
+	.byte	0x3c
+	.byte	0x40
+	.long	0x2fb
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -88
+	.uleb128 0x1
+	.string	"L"
+	.byte	0x3c
+	.byte	0x47
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -92
+	.uleb128 0x1
+	.string	"M"
+	.byte	0x3c
+	.byte	0x4e
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -96
+	.uleb128 0x1
+	.string	"N"
+	.byte	0x3c
+	.byte	0x55
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -100
+	.uleb128 0x7
+	.long	.LASF55
+	.byte	0x3c
+	.byte	0x5c
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 0
+	.uleb128 0x3
+	.quad	.LBB39
+	.quad	.LBE39-.LBB39
+	.uleb128 0x2
+	.string	"i"
+	.byte	0x3e
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -64
+	.uleb128 0x3
+	.quad	.LBB40
+	.quad	.LBE40-.LBB40
+	.uleb128 0x2
+	.string	"j"
+	.byte	0x40
+	.byte	0x11
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -60
+	.uleb128 0x3
+	.quad	.LBB41
+	.quad	.LBE41-.LBB41
+	.uleb128 0x8
+	.long	.LASF56
+	.byte	0x41
+	.byte	0x14
+	.long	0xeb8
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -32
+	.byte	0x6
+	.uleb128 0xa
+	.quad	.LBB42
+	.quad	.LBE42-.LBB42
+	.long	0xe56
+	.uleb128 0x2
+	.string	"u"
+	.byte	0x43
+	.byte	0x16
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -56
+	.byte	0
+	.uleb128 0xa
+	.quad	.LBB43
+	.quad	.LBE43-.LBB43
+	.long	0xe96
+	.uleb128 0x2
+	.string	"u"
+	.byte	0x47
+	.byte	0x16
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -52
+	.uleb128 0x3
+	.quad	.LBB44
+	.quad	.LBE44-.LBB44
+	.uleb128 0x2
+	.string	"k"
+	.byte	0x49
+	.byte	0x19
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -48
+	.byte	0
+	.byte	0
+	.uleb128 0x3
+	.quad	.LBB45
+	.quad	.LBE45-.LBB45
+	.uleb128 0x2
+	.string	"u"
+	.byte	0x4e
+	.byte	0x16
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -44
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.uleb128 0x2b
+	.long	0xeb
+	.long	0xecb
+	.uleb128 0x2c
+	.long	0x3a
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -40
+	.byte	0x6
+	.byte	0
+	.uleb128 0x13
+	.long	.LASF57
+	.byte	0x2a
+	.quad	.LFB5042
+	.quad	.LFE5042-.LFB5042
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0xf8b
+	.uleb128 0x1
+	.string	"A"
+	.byte	0x2a
+	.byte	0x1f
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -40
+	.uleb128 0x1
+	.string	"B"
+	.byte	0x2a
+	.byte	0x2b
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -48
+	.uleb128 0x1
+	.string	"C"
+	.byte	0x2a
+	.byte	0x37
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -56
+	.uleb128 0x1
+	.string	"L"
+	.byte	0x2a
+	.byte	0x3e
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -60
+	.uleb128 0x1
+	.string	"M"
+	.byte	0x2a
+	.byte	0x45
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -64
+	.uleb128 0x1
+	.string	"N"
+	.byte	0x2a
+	.byte	0x4c
+	.long	0x6b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -68
+	.uleb128 0x3
+	.quad	.LBB36
+	.quad	.LBE36-.LBB36
+	.uleb128 0x2
+	.string	"i"
+	.byte	0x2c
+	.byte	0xd
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -28
+	.uleb128 0x3
+	.quad	.LBB37
+	.quad	.LBE37-.LBB37
+	.uleb128 0x2
+	.string	"j"
+	.byte	0x2e
+	.byte	0x11
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -24
+	.uleb128 0x3
+	.quad	.LBB38
+	.quad	.LBE38-.LBB38
+	.uleb128 0x2
+	.string	"k"
+	.byte	0x30
+	.byte	0x15
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -20
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.uleb128 0x21
+	.long	.LASF59
+	.byte	0x1f
+	.byte	0x8
+	.long	0xeb
+	.quad	.LFB5041
+	.quad	.LFE5041-.LFB5041
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0xfd7
+	.uleb128 0x1
+	.string	"min"
+	.byte	0x1f
+	.byte	0x15
+	.long	0xeb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -40
+	.uleb128 0x1
+	.string	"max"
+	.byte	0x1f
+	.byte	0x21
+	.long	0xeb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -48
+	.uleb128 0x8
+	.long	.LASF60
+	.byte	0x20
+	.byte	0xc
+	.long	0xeb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -24
+	.byte	0
+	.uleb128 0xe
+	.long	.LASF61
+	.byte	0x16
+	.quad	.LFB5040
+	.quad	.LFE5040-.LFB5040
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0x105a
+	.uleb128 0x1
+	.string	"mat"
+	.byte	0x16
+	.byte	0x1c
+	.long	0x2fb
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -40
+	.uleb128 0x7
+	.long	.LASF62
+	.byte	0x16
+	.byte	0x25
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -44
+	.uleb128 0x7
+	.long	.LASF63
+	.byte	0x16
+	.byte	0x2f
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -48
+	.uleb128 0x3
+	.quad	.LBB34
+	.quad	.LBE34-.LBB34
+	.uleb128 0x2
+	.string	"i"
+	.byte	0x17
+	.byte	0xc
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -24
+	.uleb128 0x3
+	.quad	.LBB35
+	.quad	.LBE35-.LBB35
+	.uleb128 0x2
+	.string	"j"
+	.byte	0x18
+	.byte	0x11
+	.long	0x6b
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -20
+	.byte	0
+	.byte	0
+	.byte	0
+	.uleb128 0xe
+	.long	.LASF64
+	.byte	0x11
+	.quad	.LFB5039
+	.quad	.LFE5039-.LFB5039
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0x1085
+	.uleb128 0x7
+	.long	.LASF39
+	.byte	0x11
+	.byte	0x21
+	.long	0x73a
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -24
+	.byte	0
+	.uleb128 0x2d
+	.long	.LASF65
+	.byte	0x2
+	.value	0x369
+	.byte	0x1
+	.byte	0x3
+	.long	0x10ac
+	.uleb128 0x10
+	.string	"__P"
+	.value	0x369
+	.byte	0x1a
+	.long	0x300
+	.uleb128 0x10
+	.string	"__A"
+	.value	0x369
+	.byte	0x27
+	.long	0x10e
+	.byte	0
+	.uleb128 0x16
+	.long	.LASF66
+	.value	0x363
+	.long	0x10e
+	.long	0x10c8
+	.uleb128 0x10
+	.string	"__P"
+	.value	0x363
+	.byte	0x1f
+	.long	0x10c8
+	.byte	0
+	.uleb128 0xd
+	.long	0xf2
+	.uleb128 0x16
+	.long	.LASF67
+	.value	0x2de
+	.long	0x10e
+	.long	0x10e9
+	.uleb128 0x10
+	.string	"__X"
+	.value	0x2de
+	.byte	0x24
+	.long	0x10c8
+	.byte	0
+	.uleb128 0x16
+	.long	.LASF68
+	.value	0x138
+	.long	0x10e
+	.long	0x1111
+	.uleb128 0x10
+	.string	"__A"
+	.value	0x138
+	.byte	0x18
+	.long	0x10e
+	.uleb128 0x10
+	.string	"__B"
+	.value	0x138
+	.byte	0x25
+	.long	0x10e
+	.byte	0
+	.uleb128 0x2e
+	.long	.LASF69
+	.byte	0x2
+	.byte	0x8d
+	.byte	0x1
+	.long	0x10e
+	.byte	0x3
+	.uleb128 0x22
+	.string	"__A"
+	.byte	0x8d
+	.byte	0x18
+	.long	0x10e
+	.uleb128 0x22
+	.string	"__B"
+	.byte	0x8d
+	.byte	0x25
+	.long	0x10e
+	.byte	0
+	.byte	0
+	.section	.debug_abbrev,"",@progbits
+.Ldebug_abbrev0:
+	.uleb128 0x1
+	.uleb128 0x5
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0x2
+	.uleb128 0x34
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0xb
+	.byte	0x1
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.byte	0
+	.byte	0
+	.uleb128 0x4
+	.uleb128 0x5
+	.byte	0
+	.uleb128 0x31
+	.uleb128 0x13
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0x5
+	.uleb128 0x24
+	.byte	0
+	.uleb128 0xb
+	.uleb128 0xb
+	.uleb128 0x3e
+	.uleb128 0xb
+	.uleb128 0x3
+	.uleb128 0xe
+	.byte	0
+	.byte	0
+	.uleb128 0x6
+	.uleb128 0xd
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x38
+	.uleb128 0xb
+	.byte	0
+	.byte	0
+	.uleb128 0x7
+	.uleb128 0x5
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0x8
+	.uleb128 0x34
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0x9
+	.uleb128 0x5
+	.byte	0
+	.uleb128 0x49
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0xa
+	.uleb128 0xb
+	.byte	0x1
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0xb
+	.uleb128 0x34
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0x5
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0xc
+	.uleb128 0x1d
+	.byte	0x1
+	.uleb128 0x31
+	.uleb128 0x13
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x58
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x59
+	.uleb128 0xb
+	.uleb128 0x57
+	.uleb128 0xb
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0xd
+	.uleb128 0xf
+	.byte	0
+	.uleb128 0xb
+	.uleb128 0x21
+	.sleb128 8
+	.uleb128 0x49
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0xe
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0x21
+	.sleb128 6
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x40
+	.uleb128 0x18
+	.uleb128 0x7c
+	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0xf
+	.uleb128 0xb
+	.byte	0x1
+	.uleb128 0x55
+	.uleb128 0x17
+	.byte	0
+	.byte	0
+	.uleb128 0x10
+	.uleb128 0x5
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 2
+	.uleb128 0x3b
+	.uleb128 0x5
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x11
+	.uleb128 0x16
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x12
+	.uleb128 0x37
+	.byte	0
+	.uleb128 0x49
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x13
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0x21
+	.sleb128 6
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x40
+	.uleb128 0x18
+	.uleb128 0x7a
+	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x14
+	.uleb128 0x1d
+	.byte	0x1
+	.uleb128 0x31
+	.uleb128 0x13
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x58
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x59
+	.uleb128 0xb
+	.uleb128 0x57
+	.uleb128 0xb
+	.byte	0
+	.byte	0
+	.uleb128 0x15
+	.uleb128 0xd
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x38
+	.uleb128 0xb
+	.byte	0
+	.byte	0
+	.uleb128 0x16
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 2
+	.uleb128 0x3b
+	.uleb128 0x5
+	.uleb128 0x39
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x20
+	.uleb128 0x21
+	.sleb128 3
+	.uleb128 0x34
+	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x17
+	.uleb128 0x26
+	.byte	0
+	.uleb128 0x49
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x18
+	.uleb128 0x1
+	.byte	0x1
+	.uleb128 0x2107
+	.uleb128 0x19
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x19
+	.uleb128 0x21
+	.byte	0
+	.uleb128 0x2f
+	.uleb128 0x21
+	.sleb128 3
+	.byte	0
+	.byte	0
+	.uleb128 0x1a
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0x21
+	.sleb128 12
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x3c
+	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x1b
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0x5
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x3c
+	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x1c
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 7
+	.uleb128 0x3b
+	.uleb128 0x5
+	.uleb128 0x39
+	.uleb128 0x21
+	.sleb128 13
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x3c
+	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x1d
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x34
+	.uleb128 0x19
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x40
+	.uleb128 0x18
+	.uleb128 0x7c
+	.uleb128 0x19
+	.byte	0
+	.byte	0
+	.uleb128 0x1e
+	.uleb128 0x5
+	.byte	0
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x34
+	.uleb128 0x19
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0x1f
+	.uleb128 0x13
+	.byte	0x1
+	.uleb128 0xb
+	.uleb128 0x21
+	.sleb128 40
+	.uleb128 0x34
+	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x20
+	.uleb128 0x10
+	.byte	0
+	.uleb128 0xb
+	.uleb128 0x21
+	.sleb128 8
+	.uleb128 0x49
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x21
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x40
+	.uleb128 0x18
+	.uleb128 0x7c
+	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x22
+	.uleb128 0x5
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 2
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x23
+	.uleb128 0x11
+	.byte	0x1
+	.uleb128 0x25
+	.uleb128 0xe
+	.uleb128 0x13
+	.uleb128 0xb
+	.uleb128 0x3
+	.uleb128 0x1f
+	.uleb128 0x1b
+	.uleb128 0x1f
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x10
+	.uleb128 0x17
+	.byte	0
+	.byte	0
+	.uleb128 0x24
+	.uleb128 0xf
+	.byte	0
+	.uleb128 0xb
+	.uleb128 0xb
+	.byte	0
+	.byte	0
+	.uleb128 0x25
+	.uleb128 0x24
+	.byte	0
+	.uleb128 0xb
+	.uleb128 0xb
+	.uleb128 0x3e
+	.uleb128 0xb
+	.uleb128 0x3
+	.uleb128 0x8
+	.byte	0
+	.byte	0
+	.uleb128 0x26
+	.uleb128 0x13
+	.byte	0x1
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0xb
+	.uleb128 0xb
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x27
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x3c
+	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x28
+	.uleb128 0x2e
+	.byte	0
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0x5
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x3c
+	.uleb128 0x19
+	.byte	0
+	.byte	0
+	.uleb128 0x29
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0x5
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x87
+	.uleb128 0x19
+	.uleb128 0x3c
+	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x2a
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.byte	0
+	.uleb128 0x2b
+	.uleb128 0x1
+	.byte	0x1
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x2c
+	.uleb128 0x21
+	.byte	0
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x2f
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0x2d
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0x5
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x20
+	.uleb128 0xb
+	.uleb128 0x34
+	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x2e
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x27
+	.uleb128 0x19
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x20
+	.uleb128 0xb
+	.uleb128 0x34
+	.uleb128 0x19
+	.byte	0
+	.byte	0
+	.byte	0
+	.section	.debug_aranges,"",@progbits
+	.long	0x2c
+	.value	0x2
+	.long	.Ldebug_info0
+	.byte	0x8
+	.byte	0
+	.value	0
+	.value	0
+	.quad	.Ltext0
+	.quad	.Letext0-.Ltext0
+	.quad	0
+	.quad	0
+	.section	.debug_rnglists,"",@progbits
+.Ldebug_ranges0:
+	.long	.Ldebug_ranges3-.Ldebug_ranges2
+.Ldebug_ranges2:
+	.value	0x5
+	.byte	0x8
+	.byte	0
+	.long	0
+.LLRL0:
+	.byte	0x4
+	.uleb128 .LBB99-.Ltext0
+	.uleb128 .LBE99-.Ltext0
+	.byte	0x4
+	.uleb128 .LBB106-.Ltext0
+	.uleb128 .LBE106-.Ltext0
+	.byte	0
+.LLRL1:
+	.byte	0x4
+	.uleb128 .LBB102-.Ltext0
+	.uleb128 .LBE102-.Ltext0
+	.byte	0x4
+	.uleb128 .LBB103-.Ltext0
+	.uleb128 .LBE103-.Ltext0
+	.byte	0
+.LLRL2:
+	.byte	0x4
+	.uleb128 .LBB107-.Ltext0
+	.uleb128 .LBE107-.Ltext0
+	.byte	0x4
+	.uleb128 .LBB114-.Ltext0
+	.uleb128 .LBE114-.Ltext0
+	.byte	0
+.LLRL3:
+	.byte	0x4
+	.uleb128 .LBB110-.Ltext0
+	.uleb128 .LBE110-.Ltext0
+	.byte	0x4
+	.uleb128 .LBB111-.Ltext0
+	.uleb128 .LBE111-.Ltext0
+	.byte	0
+.Ldebug_ranges3:
+	.section	.debug_line,"",@progbits
+.Ldebug_line0:
+	.section	.debug_str,"MS",@progbits,1
+.LASF22:
+	.string	"_Float16"
+.LASF41:
+	.string	"ADDIT_ARG"
+.LASF30:
+	.string	"block_size"
+.LASF32:
+	.string	"custom_matrix_multiply"
+.LASF14:
+	.string	"tv_sec"
+.LASF65:
+	.string	"_mm256_store_pd"
+.LASF67:
+	.string	"_mm256_broadcast_sd"
+.LASF7:
+	.string	"short int"
+.LASF9:
+	.string	"size_t"
+.LASF33:
+	.string	"multicore_matrix_multiply"
+.LASF29:
+	.string	"omp_set_num_threads"
+.LASF58:
+	.string	"main"
+.LASF43:
+	.string	"mode"
+.LASF35:
+	.string	"multicore_matrix_multiply._omp_fn.0"
+.LASF72:
+	.string	"rand"
+.LASF21:
+	.string	"__m256d"
+.LASF28:
+	.string	"free"
+.LASF61:
+	.string	"print_matrix"
+.LASF38:
+	.string	"argc"
+.LASF49:
+	.string	"subword_parallelism_matrix_multiply"
+.LASF18:
+	.string	"float"
+.LASF13:
+	.string	"long long int"
+.LASF68:
+	.string	"_mm256_mul_pd"
+.LASF8:
+	.string	"long int"
+.LASF37:
+	.string	"printf"
+.LASF69:
+	.string	"_mm256_add_pd"
+.LASF26:
+	.string	"atoi"
+.LASF50:
+	.string	"blocked_matrix_multiply"
+.LASF36:
+	.string	"exit"
+.LASF17:
+	.string	"long double"
+.LASF52:
+	.string	"do_block"
+.LASF4:
+	.string	"unsigned char"
+.LASF42:
+	.string	"ADDIT_ARG2"
+.LASF6:
+	.string	"signed char"
+.LASF24:
+	.string	"gettimeofday"
+.LASF16:
+	.string	"long long unsigned int"
+.LASF62:
+	.string	"rows"
+.LASF54:
+	.string	"unrolled_matrix_multiply"
+.LASF34:
+	.string	"custom_matrix_multiply._omp_fn.0"
+.LASF39:
+	.string	"argv"
+.LASF56:
+	.string	"C_temp"
+.LASF44:
+	.string	"start"
+.LASF5:
+	.string	"short unsigned int"
+.LASF48:
+	.string	"do_block_custom"
+.LASF12:
+	.string	"char"
+.LASF40:
+	.string	"seed"
+.LASF66:
+	.string	"_mm256_load_pd"
+.LASF57:
+	.string	"matrix_multiply"
+.LASF25:
+	.string	"aligned_alloc"
+.LASF2:
+	.string	"long unsigned int"
+.LASF19:
+	.string	"double"
+.LASF63:
+	.string	"cols"
+.LASF51:
+	.string	"_block_size"
+.LASF20:
+	.string	"__v4df"
+.LASF71:
+	.string	"timeval"
+.LASF10:
+	.string	"__time_t"
+.LASF53:
+	.string	"C_ij"
+.LASF15:
+	.string	"tv_usec"
+.LASF64:
+	.string	"print_help_and_exit"
+.LASF59:
+	.string	"drand"
+.LASF60:
+	.string	"random_double"
+.LASF23:
+	.string	"__bf16"
+.LASF46:
+	.string	"total"
+.LASF31:
+	.string	"thread_count"
+.LASF47:
+	.string	"free_matrices"
+.LASF11:
+	.string	"__suseconds_t"
+.LASF3:
+	.string	"unsigned int"
+.LASF45:
+	.string	"stop"
+.LASF27:
+	.string	"srand"
+.LASF70:
+	.string	"GNU C17 13.3.0 -mavx -mtune=generic -march=x86-64 -g -fopenmp -fasynchronous-unwind-tables -fstack-protector-strong -fstack-clash-protection -fcf-protection"
+.LASF55:
+	.string	"_unroll"
+	.section	.debug_line_str,"MS",@progbits,1
+.LASF0:
+	.string	"main.c"
+.LASF1:
+	.string	"/home/calvert/Documents/University/Year 2/Semester 2/System Architecture/Coursework 3/baselinecode"
 	.ident	"GCC: (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
 	.section	.note.GNU-stack,"",@progbits
 	.section	.note.gnu.property,"a"

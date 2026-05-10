@@ -1,3 +1,5 @@
+# MULTICORE PERFORMANCE
+
 import subprocess
 import math
 import matplotlib.pyplot as plt
@@ -14,9 +16,9 @@ MODE = 3
 PROGRAM_RUN = "../matrix_multiply.out {} {} {} {} {} {}"
 SEED = 1234
 MIN_DIM = 64
-MAX_DIM = 1024
-STEP = 64
-REPEAT_COUNT = 1
+MAX_DIM = 2048
+STEP = 128
+REPEAT_COUNT = 3
 THREAD_MAX = 16
 
 def run_test(L: int, M: int, N: int, threads: int) -> list[float]:
@@ -48,6 +50,7 @@ if __name__ == "__main__":
         for thread_count in range(0, THREAD_MAX + 1, 2):
             L = M = N = u = 0
             time_total = 0.0
+            print(thread_count)
             for j in range(REPEAT_COUNT):
                 res = run_test(i, i, i, thread_count)
                 L, M, N, time, T = int(res[0]), int(res[1]), int(res[2]), res[3], int(res[4])
@@ -56,11 +59,11 @@ if __name__ == "__main__":
             time = time_total / float(REPEAT_COUNT)
 
             flops = (float(L * N * (2 * M - 1)) / time) if time != 0 else 0
-            data.append([flops, L, T])
+            data.append([flops, L, thread_count])
 
     with open(f"data/{DIR}.csv", "w") as f:
         for line in data:
-            f.write(f"{line[0]},{line[1]}\n")
+            f.write(f"{line[0]},{line[1]},{line[2]}\n")
 
     df = pd.DataFrame(data, columns=["FLOPS", "Dimension", "Threads"])
 
@@ -70,7 +73,6 @@ if __name__ == "__main__":
     axis.set_ylabel("FLOPS")
     axis.grid(True, alpha=0.6)
 
-    # Create a separate plot for each unroll factor
     for thread_count in sorted(df["Threads"].unique()):
         subset = df[df["Threads"] == thread_count]
 

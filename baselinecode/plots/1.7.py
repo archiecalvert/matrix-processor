@@ -1,4 +1,4 @@
-# BASELINE PERFORMANCE
+# SIMD
 
 import subprocess
 import math
@@ -8,8 +8,9 @@ import matplotlib.ticker as ticker
 import os
 from pathlib import Path
 
+OPTIMISATION_FLAG = "-O3"
 DIR = Path(__file__).stem
-MODE = 1
+MODE = 5
 
 # ../matrix_multiply.out <L> <M> <N> <SEED> <MODE> <ADDITIONAL ARGS>
 PROGRAM_RUN = "../matrix_multiply.out {} {} {} {} {} {}"
@@ -39,7 +40,7 @@ def run_test(L: int, M: int, N: int) -> list[float]:
 
 if __name__ == "__main__":
     os.system("make -C ../ clean")
-    os.system("make -C ../")
+    os.system(f"make -C ../ OPT={OPTIMISATION_FLAG}")
 
     data = []
     for i in range(MIN_DIM, MAX_DIM + 1, STEP):
@@ -67,6 +68,29 @@ if __name__ == "__main__":
     axis.set_xlabel("Matrix Dimension N")
     axis.set_ylabel("FLOPS")
     axis.grid(True, alpha=0.6)
-    axis.plot(x, y, marker='o', linewidth=2, markersize=5)
+    axis.plot(x, y, marker='o', linewidth=2, markersize=5, label="SIMD")
+
+    MODE = 1
+    data = []
+    for i in range(MIN_DIM, MAX_DIM + 1, STEP):
+        print(f"Running Experiment on M={i}")
+        time_total = 0.0
+        L = M = N = 0
+        for j in range(REPEAT_COUNT):
+            res = run_test(i, i, i)
+            L, M, N, time = int(res[0]), int(res[1]), int(res[2]), res[3]
+            time_total += time
+        time = time_total / float(REPEAT_COUNT)
+
+        flops = float(L * N * (2 * M - 1)) / time if time != 0 else 0
+        data.append([flops, L])
+
+    df = pd.DataFrame(data, columns=["FLOPS", "Dimension"])
+    x = df["Dimension"]
+    y = df["FLOPS"]
+    
+    axis.plot(x, y, marker='o', linewidth=2, markersize=5, label = "Non-vectored")
+
+    axis.legend()
     plt.savefig(fname = f"graphs/{DIR}.png", dpi=200)
 
