@@ -19,7 +19,7 @@ MIN_DIM = 64
 MAX_DIM = 2048
 STEP = 128
 REPEAT_COUNT = 3
-THREAD_MAX = 16
+THREAD_MAX = 20
 
 def run_test(L: int, M: int, N: int, threads: int) -> list[float]:
     """
@@ -59,7 +59,7 @@ if __name__ == "__main__":
             time = time_total / float(REPEAT_COUNT)
 
             flops = (float(L * N * (2 * M - 1)) / time) if time != 0 else 0
-            data.append([flops, L, thread_count])
+            data.append([flops, L, T])
 
     with open(f"data/{DIR}.csv", "w") as f:
         for line in data:

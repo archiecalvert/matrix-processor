@@ -6,30 +6,35 @@
 #include <omp.h>
 
 #define PRINT_MATRICES 1 // Determines whether to print matrices
-#define MIN 0.0 // Min value in matrix
-#define MAX 1.0 // Max value in matrix
-#define UNROLL 4 // Number of times to unroll loop in unrolled_matrix_multiply()
-#define OMP_THREADS 4 // Number of threads to use with omp pragma
-#define BLOCK_SIZE 32 // Block size when using blocked_matrix_multiply()
-#define MM256_STRIDE 4 // Number of doubles operated on simultaneously in AVX instructions
-#define MEM_ALIGN 32 // Memory alignment required for _mm256 instructions
+#define MIN 0.0          // Min value in matrix
+#define MAX 1.0          // Max value in matrix
+#define UNROLL 4         // Number of times to unroll loop in unrolled_matrix_multiply()
+#define OMP_THREADS 4    // Number of threads to use with omp pragma
+#define BLOCK_SIZE 32    // Block size when using blocked_matrix_multiply()
+#define MM256_STRIDE 4   // Number of doubles operated on simultaneously in AVX instructions
+#define MEM_ALIGN 32     // Memory alignment required for _mm256 instructions
 
-void print_help_and_exit(char **argv) {
+void print_help_and_exit(char **argv)
+{
     printf("usage: %s <L> <M> <N> <seed> <mode> <additional mode arg>\n", argv[0]);
     exit(0);
 }
 
-void print_matrix(double **mat, int rows, int cols) {
-   for(int i=0; i<rows; i++) {
-        for(int j=0; j<cols; j++){
-           printf("%f ", mat[i][j]);
+void print_matrix(double **mat, int rows, int cols)
+{
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            printf("%f ", mat[i][j]);
         }
         printf("\n");
-   }
+    }
 }
 
-double drand(double min, double max){ //
-    double random_double = (double) rand() / RAND_MAX; 
+double drand(double min, double max)
+{ //
+    double random_double = (double)rand() / RAND_MAX;
     random_double = (random_double * (max - min)) + min;
     return random_double;
 }
@@ -39,13 +44,17 @@ double drand(double min, double max){ //
  * size of B is MxN
  * C should be allocated of size LxN
  */
-void matrix_multiply(double **A, double **B, double **C, int L, int M, int N) {
+void matrix_multiply(double **A, double **B, double **C, int L, int M, int N)
+{
     /* iterate over the rows of A */
-    for(int i=0; i<L; i++) {
+    for (int i = 0; i < L; i++)
+    {
         /* Iterate over the columns of B */
-        for(int j=0; j<N; j++) {
+        for (int j = 0; j < N; j++)
+        {
             /* Iterate over the rows of B */
-            for(int k=0; k<M; k++){
+            for (int k = 0; k < M; k++)
+            {
                 C[i][j] += A[i][k] * B[k][j];
             }
         }
@@ -57,26 +66,33 @@ void matrix_multiply(double **A, double **B, double **C, int L, int M, int N) {
  * size of B is MxN
  * C should be allocated of size LxN
  */
-void unrolled_matrix_multiply(double **A, double **B, double **C, int L, int M, int N, int _unroll) {
+void unrolled_matrix_multiply(double **A, double **B, double **C, int L, int M, int N, int _unroll)
+{
     /* iterate over the rows of A */
-    for(int i=0; i<L; i++) {
+    for (int i = 0; i < L; i++)
+    {
         /* Iterate over the columns of B */
-        for(int j=0; j<N; j+=_unroll) {
+        for (int j = 0; j < N; j += _unroll)
+        {
             double C_temp[_unroll];
 
-            for (int u=0; u<_unroll; u++){
-                    C_temp[u] = C[i][j+u];
+            for (int u = 0; u < _unroll; u++)
+            {
+                C_temp[u] = C[i][j + u];
             }
 
-            for (int u=0; u<_unroll; u++){
+            for (int u = 0; u < _unroll; u++)
+            {
                 /* Iterate over the rows of B */
-                for(int k=0; k<M; k++){
-                    C_temp[u] += A[i][k] * B[k][j+u];
+                for (int k = 0; k < M; k++)
+                {
+                    C_temp[u] += A[i][k] * B[k][j + u];
                 }
             }
 
-            for (int u=0; u<_unroll; u++){
-                C[i][j+u] = C_temp[u];
+            for (int u = 0; u < _unroll; u++)
+            {
+                C[i][j + u] = C_temp[u];
             }
         }
     }
@@ -87,32 +103,40 @@ void unrolled_matrix_multiply(double **A, double **B, double **C, int L, int M, 
  * size of B is MxN
  * C should be allocated of size LxN
  */
-void multicore_matrix_multiply(double **A, double **B, double **C, int L, int M, int N) {
-    #pragma omp parallel for
+void multicore_matrix_multiply(double **A, double **B, double **C, int L, int M, int N)
+{
+#pragma omp parallel for
     /* iterate over the rows of A */
-    for(int i=0; i<L; i++) {
+    for (int i = 0; i < L; i++)
+    {
         /* Iterate over the columns of B */
-        for(int j=0; j<N; j++) {
+        for (int j = 0; j < N; j++)
+        {
             /* Iterate over the rows of B */
-            for(int k=0; k<M; k++){
+            for (int k = 0; k < M; k++)
+            {
                 C[i][j] += A[i][k] * B[k][j];
-	    }
+            }
         }
     }
 }
 
-void do_block(int si, int sj, int sk, double **A, double **B, double **C, int _block_size){
+void do_block(int si, int sj, int sk, double **A, double **B, double **C, int _block_size)
+{
     // printf("do_block: si %u sj %u sk %u\n", si, sj, sk);
-    for (int i=si; i<si+_block_size; i++){
-        for (int j=sj; j<sj+_block_size; j++){
-	    double C_ij = C[i][j];
-            for (int k=sk; k<sk+_block_size; k++){
-		// printf("i %u, j %u, k %u\n", i, j, k);
-		C_ij += A[i][k] * B[k][j]; 
+    for (int i = si; i < si + _block_size; i++)
+    {
+        for (int j = sj; j < sj + _block_size; j++)
+        {
+            double C_ij = C[i][j];
+            for (int k = sk; k < sk + _block_size; k++)
+            {
+                // printf("i %u, j %u, k %u\n", i, j, k);
+                C_ij += A[i][k] * B[k][j];
             }
             C[i][j] = C_ij;
         }
-    }	 
+    }
 }
 
 /* Multiply two matrices using blocking to improve cache performance
@@ -120,13 +144,17 @@ void do_block(int si, int sj, int sk, double **A, double **B, double **C, int _b
  * size of B is MxN
  * C should be allocated of size LxN
  */
-void blocked_matrix_multiply(double **A, double **B, double **C, int L, int M, int N, int _block_size) {
+void blocked_matrix_multiply(double **A, double **B, double **C, int L, int M, int N, int _block_size)
+{
     /* iterate over the rows of A */
-    for(int sj=0; sj<L; sj+=_block_size) {
+    for (int sj = 0; sj < L; sj += _block_size)
+    {
         /* Iterate over the columns of B */
-        for(int si=0; si<N; si+=_block_size) {
+        for (int si = 0; si < N; si += _block_size)
+        {
             /* Iterate over the rows of B */
-            for(int sk=0; sk<M; sk+=_block_size){
+            for (int sk = 0; sk < M; sk += _block_size)
+            {
                 do_block(si, sj, sk, A, B, C, _block_size);
             }
         }
@@ -138,55 +166,68 @@ void blocked_matrix_multiply(double **A, double **B, double **C, int L, int M, i
  * size of B is MxN
  * C should be allocated of size LxN
  */
-void subword_parallelism_matrix_multiply(double **A, double **B, double **C, int L, int M, int N) {
+void subword_parallelism_matrix_multiply(double **A, double **B, double **C, int L, int M, int N)
+{
     /* iterate over the rows of A */
-    for(int i=0; i<L; i++) {
+    for (int i = 0; i < L; i++)
+    {
         /* Iterate over the columns of B */
-        for(int j=0; j<N; j+=MM256_STRIDE) {
+        for (int j = 0; j < N; j += MM256_STRIDE)
+        {
             // printf("starting vectorised section: %p. i %u, j %u \n", &C[i][j], i, j);
             __m256d c0 = _mm256_load_pd(&C[i][j]);
             /* Iterate over the rows of B */
-            for(int k=0; k<M; k++){
+            for (int k = 0; k < M; k++)
+            {
                 // printf("i %u j %u k %u\n", i, j, k);
                 c0 = _mm256_add_pd(c0,
-                                   _mm256_mul_pd(_mm256_load_pd(&B[k][j]), 
-  		                   _mm256_broadcast_sd(&A[i][k])));
+                                   _mm256_mul_pd(_mm256_load_pd(&B[k][j]),
+                                                 _mm256_broadcast_sd(&A[i][k])));
             }
-	    // printf("Ending vectorised section: %p. \n", &C[i][j]);
-	    _mm256_store_pd(&C[i][j], c0);
+            // printf("Ending vectorised section: %p. \n", &C[i][j]);
+            _mm256_store_pd(&C[i][j], c0);
         }
     }
 }
 
-void do_block_custom(int si, int sj, int sk, double **A, double **B, double **C, int block_size) {
-     for (int i=si; i<si+block_size; i++){
-        for (int j=sj; j<sj+block_size; j+=MM256_STRIDE){
+void do_block_custom(int si, int sj, int sk, double **A, double **B, double **C, int block_size)
+{
+    for (int i = si; i < si + block_size; i++)
+    {
+        for (int j = sj; j < sj + block_size; j += MM256_STRIDE)
+        {
             __m256d c0 = _mm256_load_pd(&C[i][j]);
-            for (int k=sk; k<sk+block_size; k++){
-		        // printf("i %u, j %u, k %u\n", i, j, k);
+            for (int k = sk; k < sk + block_size; k++)
+            {
+                // printf("i %u, j %u, k %u\n", i, j, k);
                 c0 = _mm256_add_pd(c0,
-                                   _mm256_mul_pd(_mm256_load_pd(&B[k][j]), 
-  		                   _mm256_broadcast_sd(&A[i][k])));
+                                   _mm256_mul_pd(_mm256_load_pd(&B[k][j]), _mm256_broadcast_sd(&A[i][k]))
+                                );
             }
-             _mm256_store_pd(&C[i][j], c0);
+            _mm256_store_pd(&C[i][j], c0);
         }
     }
 }
+
 
 /* Multiply two matrices using subword parallelism via AVX instructions, blocking to improve cache performance, and uses multiple cores via OMP
  * size of A is LxM
  * size of B is MxN
  * C should be allocated of size LxN
  */
-void custom_matrix_multiply(double **A, double **B, double **C, int L, int M, int N, int block_size, int thread_count) {
+void custom_matrix_multiply(double **A, double **B, double **C, int L, int M, int N, int block_size, int thread_count)
+{
     omp_set_num_threads(thread_count);
-    #pragma omp parallel for
+#pragma omp parallel for
     /* iterate over the rows of A */
-    for(int sj=0; sj<L; sj+= block_size) {
+    for (int sj = 0; sj < L; sj += block_size)
+    {
         /* Iterate over the columns of B */
-        for(int si=0; si<N; si+= block_size) {
+        for (int si = 0; si < N; si += block_size)
+        {
             /* Iterate over the rows of B */
-            for(int sk=0; sk<M; sk+= block_size){
+            for (int sk = 0; sk < M; sk += block_size)
+            {
                 do_block_custom(si, sj, sk, A, B, C, block_size);
             }
         }
@@ -199,12 +240,15 @@ void custom_matrix_multiply(double **A, double **B, double **C, int L, int M, in
  * - B of size MxN
  * - C of size LxN
  */
-void free_matrices(double **A, double **B, double **C, int L, int M, int N) {
-    for(int i=0; i<L; i++) {
+void free_matrices(double **A, double **B, double **C, int L, int M, int N)
+{
+    for (int i = 0; i < L; i++)
+    {
         free(A[i]);
         free(C[i]);
     }
-    for(int i=0; i<M; i++) {
+    for (int i = 0; i < M; i++)
+    {
         free(B[i]);
     }
     free(A);
@@ -212,17 +256,19 @@ void free_matrices(double **A, double **B, double **C, int L, int M, int N) {
     free(C);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 
     // ######################################################
-    // Read and check program arguments  
+    // Read and check program arguments
     // ######################################################
     int L, M, N, seed, ADDIT_ARG, ADDIT_ARG2;
     int mode;
     double **A, **B, **C;
     struct timeval start, stop, total;
 
-    if(argc > 8) {
+    if (argc > 8)
+    {
         printf("ERROR: incorrect number of arguments\n");
         print_help_and_exit(argv);
     }
@@ -238,11 +284,12 @@ int main(int argc, char **argv) {
         ADDIT_ARG2 = atoi(argv[7]);
     srand(seed);
 
-    if( !L || !M || !N ) {
+    if (!L || !M || !N)
+    {
         printf("ERROR: invalid arguments\n");
         print_help_and_exit(argv);
     }
-    
+
     // Set number of threads when using omp pragma
     if (mode == 3)
         omp_set_num_threads(ADDIT_ARG);
@@ -254,13 +301,16 @@ int main(int argc, char **argv) {
     // ######################################################
     // A: LxM matrix, i.e. L rows and M colums
     A = aligned_alloc(MEM_ALIGN, L * sizeof(double *));
-    if(A == NULL) {
+    if (A == NULL)
+    {
         printf("ERROR: cannot allocate memory for matrix A\n");
         return 0;
     }
-    for(int i=0; i<L; i++) {
+    for (int i = 0; i < L; i++)
+    {
         A[i] = aligned_alloc(MEM_ALIGN, M * sizeof(double));
-        if(A[i] == NULL) {
+        if (A[i] == NULL)
+        {
             printf("ERROR: cannot allocate memory for matrix A\n");
             return 0;
         }
@@ -268,55 +318,63 @@ int main(int argc, char **argv) {
 
     // B: MxN matrix, i.e. M rows and N columns
     B = aligned_alloc(MEM_ALIGN, M * sizeof(double *));
-    if(B == NULL) {
+    if (B == NULL)
+    {
         printf("ERROR: cannot allocate memory for matrix B\n");
         return 0;
     }
-    for(int i=0; i<M; i++) {
+    for (int i = 0; i < M; i++)
+    {
         B[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
-        if(B[i] == NULL) {
+        if (B[i] == NULL)
+        {
             printf("ERROR: cannot allocate memory for matrix B\n");
             return 0;
         }
     }
 
-    for(int i=0; i<L; i++)
-        for(int j=0; j<M; j++)
+    for (int i = 0; i < L; i++)
+        for (int j = 0; j < M; j++)
             A[i][j] = drand(MIN, MAX);
 
-    for(int i=0; i<M; i++)
-        for(int j=0; j<N; j++)
+    for (int i = 0; i < M; i++)
+        for (int j = 0; j < N; j++)
             B[i][j] = drand(MIN, MAX);
 
     // Allocate C matrix and initialise to zeros, its size will be LxN
     C = aligned_alloc(MEM_ALIGN, L * sizeof(double *));
-    if(C == NULL) {
+    if (C == NULL)
+    {
         printf("ERROR: cannot allocate memory for matrix C\n");
         return 0;
     }
-    for(int i=0; i<L; i++) {
+    for (int i = 0; i < L; i++)
+    {
         C[i] = aligned_alloc(MEM_ALIGN, N * sizeof(double));
-        if(C[i] == NULL) {
+        if (C[i] == NULL)
+        {
             printf("ERROR: cannot allocate memory for matrix C\n");
             return 0;
         }
         /* Initialise with zeros */
-        for(int j=0; j<N; j++){
-            C[i][j] = 0.0;    
-	}
+        for (int j = 0; j < N; j++)
+        {
+            C[i][j] = 0.0;
+        }
     }
-    
-    if (PRINT_MATRICES){	
+
+    if (PRINT_MATRICES)
+    {
         printf("\nMATRIX A:\n");
         print_matrix(A, L, M);
 
         printf("\nMATRIX B:\n");
         print_matrix(B, M, N);
-        
+
         printf("\nMATRIX C (init to zero):\n");
         print_matrix(C, L, N);
     }
-    
+
     // ######################################################
     // Perform matrix multiply
     // ######################################################
@@ -341,17 +399,21 @@ int main(int argc, char **argv) {
 
     // ######################################################
     // Report performance and free datastructures
-    // ###################################################### 
-    if (PRINT_MATRICES){
+    // ######################################################
+    if (PRINT_MATRICES)
+    {
         printf("\nOutput C:\n");
         print_matrix(C, L, N);
     }
-    
-    if (PRINT_MATRICES){
+
+    if (PRINT_MATRICES)
+    {
         // Reset C to zeros to enable calculation check
-        for(int i=0; i<L; i++){
-            for(int j=0; j<N; j++){
-                C[i][j] = 0.0;    
+        for (int i = 0; i < L; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                C[i][j] = 0.0;
             }
         }
         matrix_multiply(A, B, C, L, M, N);
@@ -359,7 +421,7 @@ int main(int argc, char **argv) {
         print_matrix(C, L, N);
         printf("\n");
     }
- 
+
     // Print timing results
     if (mode == 2)
         printf("L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld, UNROLL: %u\n", L, M, N, total.tv_sec, total.tv_usec, ADDIT_ARG);
@@ -369,10 +431,9 @@ int main(int argc, char **argv) {
         printf("L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld, BLOCK SIZE: %u\n", L, M, N, total.tv_sec, total.tv_usec, ADDIT_ARG);
     else
         printf("L = %u, M = %u, N = %u, EXEC TIME: %ld.%06ld\n", L, M, N, total.tv_sec, total.tv_usec);
-    
+
     // Free datastructures
     free_matrices(A, B, C, L, M, N);
 
     return 0;
 }
-

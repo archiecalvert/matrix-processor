@@ -16,9 +16,9 @@ SKIP_EXPERIMENT = False
 PROGRAM_RUN = "../matrix_multiply.out {} {} {} {} {}"
 SEED = 1234
 MIN_DIM = 64
-MAX_DIM = 2048
+MAX_DIM = 512
 STEP = 128
-REPEAT_COUNT = 3
+REPEAT_COUNT = 2
 
 def run_test(L: int, M: int, N: int) -> list[float]:
     """
