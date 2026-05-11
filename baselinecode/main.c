@@ -5,7 +5,7 @@
 #include <x86intrin.h>
 #include <omp.h>
 
-#define PRINT_MATRICES 1 // Determines whether to print matrices
+#define PRINT_MATRICES 0 // Determines whether to print matrices
 #define MIN 0.0          // Min value in matrix
 #define MAX 1.0          // Max value in matrix
 #define UNROLL 4         // Number of times to unroll loop in unrolled_matrix_multiply()
