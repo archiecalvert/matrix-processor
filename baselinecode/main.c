@@ -5,7 +5,7 @@
 #include <x86intrin.h>
 #include <omp.h>
 
-#define PRINT_MATRICES 0 // Determines whether to print matrices
+#define PRINT_MATRICES 1 // Determines whether to print matrices
 #define MIN 0.0          // Min value in matrix
 #define MAX 1.0          // Max value in matrix
 #define UNROLL 4         // Number of times to unroll loop in unrolled_matrix_multiply()
@@ -190,25 +190,41 @@ void subword_parallelism_matrix_multiply(double **A, double **B, double **C, int
     }
 }
 
-void do_block_custom(int si, int sj, int sk, double **A, double **B, double **C, int block_size)
+
+void do_block_custom(int si, int sj, int sk,double **A, double **B, double **C,int L, int M, int N, int block_size)
 {
-    for (int i = si; i < si + block_size; i++)
+    int i_end = si + block_size < L ? si + block_size : L;
+    int j_end = sj + block_size < N ? sj + block_size : N;
+    int k_end = sk + block_size < M ? sk + block_size : M;
+
+    for (int i = si; i < i_end; i++)
     {
-        for (int j = sj; j < sj + block_size; j += MM256_STRIDE)
+        int j;
+        for (j = sj; j + MM256_STRIDE <= j_end; j += MM256_STRIDE)
         {
-            __m256d c0 = _mm256_load_pd(&C[i][j]);
-            for (int k = sk; k < sk + block_size; k++)
+            __m256d c0 = _mm256_loadu_pd(&C[i][j]);
+
+            for (int k = sk; k < k_end; k++)
             {
-                // printf("i %u, j %u, k %u\n", i, j, k);
-                c0 = _mm256_add_pd(c0,
-                                   _mm256_mul_pd(_mm256_load_pd(&B[k][j]), _mm256_broadcast_sd(&A[i][k]))
-                                );
+                c0 = _mm256_add_pd(c0, _mm256_mul_pd(_mm256_loadu_pd(&B[k][j]), _mm256_broadcast_sd(&A[i][k])));
             }
-            _mm256_store_pd(&C[i][j], c0);
+
+            _mm256_storeu_pd(&C[i][j], c0);
+        }
+
+        for (; j < j_end; j++)
+        {
+            double sum = C[i][j];
+
+            for (int k = sk; k < k_end; k++)
+            {
+                sum += A[i][k] * B[k][j];
+            }
+
+            C[i][j] = sum;
         }
     }
 }
-
 
 /* Multiply two matrices using subword parallelism via AVX instructions, blocking to improve cache performance, and uses multiple cores via OMP
  * size of A is LxM
@@ -228,7 +244,7 @@ void custom_matrix_multiply(double **A, double **B, double **C, int L, int M, in
             /* Iterate over the rows of B */
             for (int sk = 0; sk < M; sk += block_size)
             {
-                do_block_custom(si, sj, sk, A, B, C, block_size);
+                do_block_custom(si, sj, sk, A, B, C, L, N, M, block_size);
             }
         }
     }
