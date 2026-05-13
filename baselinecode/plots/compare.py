@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 BEST_UNROLL = 8
-BEST_THREAD = 16
+BEST_THREAD = 8
 BEST_BLOCK = 32
 
 directories = {

@@ -12,7 +12,7 @@ OPTIMISATION_FLAG = "-O3"
 DIR = Path(__file__).stem
 MODE = 6
 
-THREADS = 16
+THREADS = 8
 BLOCK_SIZE = 32
 
 # ../matrix_multiply.out <L> <M> <N> <SEED> <MODE> <ADDITIONAL ARGS>

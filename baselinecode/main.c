@@ -5,7 +5,7 @@
 #include <x86intrin.h>
 #include <omp.h>
 
-#define PRINT_MATRICES 1 // Determines whether to print matrices
+#define PRINT_MATRICES 0 // Determines whether to print matrices
 #define MIN 0.0          // Min value in matrix
 #define MAX 1.0          // Max value in matrix
 #define UNROLL 4         // Number of times to unroll loop in unrolled_matrix_multiply()
@@ -193,6 +193,8 @@ void subword_parallelism_matrix_multiply(double **A, double **B, double **C, int
 
 void do_block_custom(int si, int sj, int sk,double **A, double **B, double **C,int L, int M, int N, int block_size)
 {
+    // used in order to avoid array indexing going outside of an array.
+    // this avoids spilling into the next row and also outside the array limits
     int i_end = si + block_size < L ? si + block_size : L;
     int j_end = sj + block_size < N ? sj + block_size : N;
     int k_end = sk + block_size < M ? sk + block_size : M;
@@ -212,6 +214,8 @@ void do_block_custom(int si, int sj, int sk,double **A, double **B, double **C,i
             _mm256_storeu_pd(&C[i][j], c0);
         }
 
+        // if we get a situation where the MM256 Stride leaves remaining columns,
+        // then we can just manually calculate the leftovers with the naive approach
         for (; j < j_end; j++)
         {
             double sum = C[i][j];
@@ -236,10 +240,10 @@ void custom_matrix_multiply(double **A, double **B, double **C, int L, int M, in
     omp_set_num_threads(thread_count);
 #pragma omp parallel for
     /* iterate over the rows of A */
-    for (int sj = 0; sj < L; sj += block_size)
+    for (int si = 0; si < N; si += block_size)
     {
         /* Iterate over the columns of B */
-        for (int si = 0; si < N; si += block_size)
+        for (int sj = 0; sj < L; sj += block_size)
         {
             /* Iterate over the rows of B */
             for (int sk = 0; sk < M; sk += block_size)
