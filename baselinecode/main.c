@@ -195,32 +195,32 @@ void do_block_custom(int si, int sj, int sk,double **A, double **B, double **C,i
 {
     // used in order to avoid array indexing going outside of an array.
     // this avoids spilling into the next row and also outside the array limits
-    int i_end = si + block_size < L ? si + block_size : L;
-    int j_end = sj + block_size < N ? sj + block_size : N;
-    int k_end = sk + block_size < M ? sk + block_size : M;
+    int i_max = si + block_size < L ? si + block_size : L;
+    int j_max = sj + block_size < N ? sj + block_size : N;
+    int k_max = sk + block_size < M ? sk + block_size : M;
 
-    for (int i = si; i < i_end; i++)
+    for (int i = si; i < i_max; i++)
     {
         int j;
-        for (j = sj; j + MM256_STRIDE <= j_end; j += MM256_STRIDE)
+        for (j = sj; j + MM256_STRIDE <= j_max; j += MM256_STRIDE)
         {
-            __m256d c0 = _mm256_loadu_pd(&C[i][j]);
+            __m256d c0 = _mm256_load_pd(&C[i][j]);
 
-            for (int k = sk; k < k_end; k++)
+            for (int k = sk; k < k_max; k++)
             {
-                c0 = _mm256_add_pd(c0, _mm256_mul_pd(_mm256_loadu_pd(&B[k][j]), _mm256_broadcast_sd(&A[i][k])));
+                c0 = _mm256_add_pd(c0, _mm256_mul_pd(_mm256_load_pd(&B[k][j]), _mm256_broadcast_sd(&A[i][k])));
             }
 
-            _mm256_storeu_pd(&C[i][j], c0);
+            _mm256_store_pd(&C[i][j], c0);
         }
 
         // if we get a situation where the MM256 Stride leaves remaining columns,
         // then we can just manually calculate the leftovers with the naive approach
-        for (; j < j_end; j++)
+        for (; j < j_max; j++)
         {
             double sum = C[i][j];
 
-            for (int k = sk; k < k_end; k++)
+            for (int k = sk; k < k_max; k++)
             {
                 sum += A[i][k] * B[k][j];
             }
@@ -234,21 +234,24 @@ void do_block_custom(int si, int sj, int sk,double **A, double **B, double **C,i
  * size of A is LxM
  * size of B is MxN
  * C should be allocated of size LxN
+ * 
+ * To run this, enter the command line argument for mode 6, where the command is:
+ *      ./matrix_multiply.out <L> <M> <N> <SEED> 6 <BLOCK SIZE> <THREAD COUNT>
  */
 void custom_matrix_multiply(double **A, double **B, double **C, int L, int M, int N, int block_size, int thread_count)
 {
     omp_set_num_threads(thread_count);
 #pragma omp parallel for
     /* iterate over the rows of A */
-    for (int si = 0; si < N; si += block_size)
+    for (int sj = 0; sj < L; sj += block_size)
     {
         /* Iterate over the columns of B */
-        for (int sj = 0; sj < L; sj += block_size)
+        for (int si = 0; si < N; si += block_size)
         {
             /* Iterate over the rows of B */
             for (int sk = 0; sk < M; sk += block_size)
             {
-                do_block_custom(si, sj, sk, A, B, C, L, N, M, block_size);
+                do_block_custom(si, sj, sk, A, B, C, L, M, N, block_size);
             }
         }
     }
